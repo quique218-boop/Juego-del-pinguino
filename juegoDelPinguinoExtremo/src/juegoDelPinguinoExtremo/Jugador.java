@@ -1,6 +1,6 @@
 package juegoDelPinguinoExtremo;
 import java.util.Scanner;
-public class Jugador {
+public abstract class Jugador {
 	
 private int posicion;
 private String nombre;
