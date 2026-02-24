@@ -1,5 +1,7 @@
 package juegoDelPinguinoExtremo;
 
-public class Pinguino {
+public class Pinguino extends Jugador {
+	
+	super(nombre, color);
 
 }
