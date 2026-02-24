@@ -45,6 +45,10 @@ private boolean turnoTerminado;
 		
 	}
 	
+	public void setPos(int posicion) {
+	
+		this.posicion = posicion;
+	}
 	
 	public void moverPosicion(int nDado) {
 		
