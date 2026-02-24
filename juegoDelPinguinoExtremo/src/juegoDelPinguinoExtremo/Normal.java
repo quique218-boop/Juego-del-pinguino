@@ -8,7 +8,6 @@ public class Normal extends Casilla {
 
 	@Override
 	public void realizarAccion(Tablero tablero, Jugador jugador) {
-		// TODO Auto-generated method stub
 
 	}
 
