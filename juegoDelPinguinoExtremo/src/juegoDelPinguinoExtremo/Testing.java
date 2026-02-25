@@ -61,8 +61,10 @@ public class Testing {
 		
 		int casillaActual = ran.nextInt(6);
 
-		if(casillaActual != 0) casillaActual = ran.nextInt(6);
-		if(casillaActual != 0) casillaActual = ran.nextInt(6);
+		for (int i = 0; i < 3; i++) {
+			if(casillaActual != 0) casillaActual = ran.nextInt(6);
+		}
+		
 		
 		while(casillaActual == casillaAnterior && casillaActual != 0) casillaActual = ran.nextInt(5) + 1;
 		
