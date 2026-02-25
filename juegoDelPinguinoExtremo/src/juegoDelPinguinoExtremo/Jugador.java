@@ -5,7 +5,7 @@ public abstract class Jugador {
 private int posicion;
 private String nombre;
 private String color;
-private Inventario inventario;
+private Inventario inv;
 private boolean turnoTerminado;
 
 	public Jugador(String nombre, String color) {
@@ -45,6 +45,10 @@ private boolean turnoTerminado;
 		
 	}
 	
+	public void setPos(int posicion) {
+	
+		this.posicion = posicion;
+	}
 	
 	public void moverPosicion(int nDado) {
 		
