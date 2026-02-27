@@ -4,9 +4,7 @@ public abstract class Casilla {
 
 	private int posicion;
 	
-	public Casilla() {
-		
-	}
+	public Casilla() {}
 	
 	public abstract void realizarAccion(Tablero tablero, Jugador jugador);
 	
