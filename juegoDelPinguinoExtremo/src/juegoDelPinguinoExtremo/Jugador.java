@@ -33,7 +33,7 @@ private boolean turnoTerminado;
 		
 	}
 	
-	public String setColor(String color) {
+	public void setColor(String color) {
 		
 		this.color = color;
 		
