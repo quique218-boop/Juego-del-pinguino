@@ -34,10 +34,29 @@ public class Foca extends Jugador{
 	
 	public void golpearJugador(Pinguino otro) {
 		
+		if(this.getPos() != otro.getPos()) {
+			
+			return; //Si no estan en la misma casilla no pasa nada
+			
+		}else {
+			
+			System.out.println("La foca golpea al pinguino fuertemente");
+			
+			otro.get
+			 
+		}
 		
 	}
 	
 	public void esSobornado() {
+		
+		System.out.println("La foca come el pez");
+		
+		for(int i = 0; i < 2; i++) {
+			
+			System.out.println("Foca bloqueada");
+			
+		}
 		
 		
 	}
