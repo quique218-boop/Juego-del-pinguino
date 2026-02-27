@@ -10,11 +10,18 @@ public class Pinguino extends Jugador {
 		
 		this.inventario = inventario;
 		
+		
 	}
 	
 	public Inventario getInventario() {
 		
 		return inventario;
+		
+	}
+	
+	public void setInventario(Inventario inventario) {
+		
+		this.inventario = inventario;
 		
 	}
 	
