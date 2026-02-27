@@ -2,9 +2,7 @@ package juegoDelPinguinoExtremo;
 
 public class Normal extends Casilla {
 
-	public Normal() {
-		// TODO Auto-generated constructor stub
-	}
+	public Normal() {}
 
 	@Override
 	public void realizarAccion(Tablero tablero, Jugador jugador) {
