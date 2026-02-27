@@ -1,6 +1,9 @@
 # Compiled class file
 *.class
 
+# Archivo de testeo local
+Testing.java
+
 # Log file
 *.log
 
