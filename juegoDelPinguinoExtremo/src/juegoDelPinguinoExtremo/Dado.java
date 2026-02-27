@@ -6,13 +6,13 @@ public class Dado extends Item {
 	
 	private int min;
 	
-	public Dado(String nombre, int cantidad, int max,int min) {
+	public Dado(String nombre) {
 		
-		super(nombre, cantidad);
+		super(nombre);
 		 
-		this.max = max;
+		this.max = 12;
 		 
-		this.min = min;
+		this.min = 1;
 	
 	}
 	
