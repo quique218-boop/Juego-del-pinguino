@@ -29,6 +29,17 @@ public class Tablero {
 		return this.listaCasillas.get(posicion);
 
 	}
+	
+	public ArrayList<Jugador> getArrayListJugador() {
+
+		return this.listaJugador;
+	}
+
+	public ArrayList<Casilla> getArrayListCasilla() {
+
+		return this.listaCasillas;
+
+	}
 
 	public void setjugadorActual(int jugadorActual) {
 
