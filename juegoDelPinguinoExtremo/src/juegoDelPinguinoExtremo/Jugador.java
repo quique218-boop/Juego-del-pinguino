@@ -7,12 +7,14 @@ private String nombre;
 private String color;
 private Inventario inv;
 private boolean turnoTerminado;
+private Inventario inventario;
 
-	public Jugador(String nombre, String color) {
+	public Jugador(String nombre, String color, Inventario inventario) {
 		
 		this.nombre = nombre;
 		this.color = color;
 		this.posicion = 0;
+		this.inventario = inventario;
 	}
 	
 	public String getNombre() {
@@ -53,6 +55,18 @@ private boolean turnoTerminado;
 	public void moverPosicion(int nDado) {
 		
 		this.posicion += nDado; //Sistema de avance del jugador
+		
+	}
+	
+public Inventario getInventario() {
+		
+		return inventario;
+		
+	}
+	
+	public void setInventario(Inventario inventario) {
+		
+		this.inventario = inventario;
 		
 	}
 

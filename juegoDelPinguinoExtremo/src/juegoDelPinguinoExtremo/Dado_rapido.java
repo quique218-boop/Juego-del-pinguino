@@ -6,7 +6,7 @@ public class Dado_rapido extends Dado{
 		
 			super(nombre);
 		 
-			this.setMax(12);
+			this.setMax(10);
 		 
 			this.setMin(5);
 	}
