@@ -24,17 +24,19 @@ public class Foca extends Jugador{
 		
 	}
 	
-	public void aplastarJugador(Pinguino otro) { //Esto es robar la mitat del inventario
+	public void aplastarJugador(Pinguino jugador) { //Esto es robar la mitat del inventario
 		
-		int mitad = otro.getInventario() / 2; //Dividimos el inventario a la mitad
+		int mitad = jugador.getInventario() / 2; //Dividimos el inventario a la mitad
 		
-		otro.setInventario(otro.getInventario() - mitad); //Le restamos la mitad del inventario al jugador
+		jugador.setInventario(jugador.getInventario() - mitad); //Le restamos la mitad del inventario al jugador
 		
 	}
 	
-	public void golpearJugador(Pinguino otro) {
+	public void golpearJugador(Pinguino jugador, Tablero tablero) {
 		
-		if(this.getPos() != otro.getPos()) {
+		boolean encontrado = false;
+		
+		if(this.getPos() != jugador.getPos()) {
 			
 			return; //Si no estan en la misma casilla no pasa nada
 			
@@ -42,7 +44,18 @@ public class Foca extends Jugador{
 			
 			System.out.println("La foca golpea al pinguino fuertemente");
 			
-			otro.get
+			
+
+			for (int i = jugador.getPos() - 1; i > 0 && encontrado == false; i--) {
+
+				if (tablero.getCasilla(i) instanceof Agujero) {
+					
+					jugador.setPos(i);
+					
+					encontrado = true;
+					
+				}
+			}
 			 
 		}
 		

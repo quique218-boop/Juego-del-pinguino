@@ -25,26 +25,26 @@ public class Pinguino extends Jugador {
 		
 	}
 	
-	public void gestionarBatalla(Pinguino otro) {
+	public void gestionarBatalla(Pinguino jugador) {
 		
-		if(otro == null) {
+		if(jugador == null) {
 			
 			return;
 			
 		}
 			
-			if(this.getPos() != otro.getPos()) {
+			if(this.getPos() != jugador.getPos()) {
 				
 				return;					
 		}
 		
 		int misBolas = contarBolasdeNieve();
 		
-		int susBolas = otro.contarBolasdeNieve();
+		int susBolas = jugador.contarBolasdeNieve();
 		
 		if(misBolas > susBolas) {
 			
-			otro.moverPosicion(-1);
+			jugador.moverPosicion(-1);
 			
 			this.consumirBoladeNieve();
 			
@@ -52,7 +52,7 @@ public class Pinguino extends Jugador {
 			
 			this.moverPosicion(-1);
 			
-			otro.consumirBoladeNieve();
+			jugador.consumirBoladeNieve();
 		
 		}else {
 			
@@ -60,7 +60,7 @@ public class Pinguino extends Jugador {
 			
 			ponerBolasdeNieveACero();
 			
-			otro.ponerBolasdeNieveACero();
+			jugador.ponerBolasdeNieveACero();
 			
 		}
 		
@@ -69,7 +69,9 @@ public class Pinguino extends Jugador {
 	private int contarBolasdeNieve() {
 
 	    if (inventario == null || inventario.getLista() == null) {
+	    	
 	        return 0;
+	        
 	    }
 
 	    for (Item it : inventario.getLista()) {
@@ -79,7 +81,9 @@ public class Pinguino extends Jugador {
 	            String nombre = it.getNombre().trim().toLowerCase();
 
 	            if (nombre.equals("bola de nieve") || nombre.equals("bolas de nieve")) {
+	            	
 	                return it.getCantidad();
+	                
 	            }
 	        }
 	    }
