@@ -2,26 +2,12 @@ package juegoDelPinguinoExtremo;
 
 public class Pinguino extends Jugador {
 	
-	private Inventario inventario;
+	private Inventario inventario = super.getInventario();
 	
 	public Pinguino(Inventario inventario, String nombre, String color) {
 		
-		super(nombre, color);
+		super(nombre, color, inventario);
 		
-		this.inventario = inventario;
-		
-		
-	}
-	
-	public Inventario getInventario() {
-		
-		return inventario;
-		
-	}
-	
-	public void setInventario(Inventario inventario) {
-		
-		this.inventario = inventario;
 		
 	}
 	
