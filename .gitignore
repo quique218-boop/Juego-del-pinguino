@@ -1,9 +1,6 @@
 # Compiled class file
 *.class
 
-# Archivo de testeo local
-Testing.java
-
 # Log file
 *.log
 
@@ -26,4 +23,6 @@ Testing.java
 hs_err_pid*
 replay_pid*
 /.metadata/
+
+# Archivo de testeo local
 juegoDelPinguinoExtremo/src/juegoDelPinguinoExtremo/Testing.java
