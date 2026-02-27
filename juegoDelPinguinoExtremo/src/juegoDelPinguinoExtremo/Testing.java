@@ -11,10 +11,10 @@ public class Testing {
 
 		ArrayList<Jugador> jugadores = new ArrayList<>();
 
-		jugadores.add(new Pinguino("Pedro", "Blanco"));
+		/*jugadores.add(new Pinguino("Pedro", "Blanco"));
 		jugadores.add(new Pinguino("Pablo", "Rojo"));
 		jugadores.add(new Pinguino("Tres", "Azul"));
-		jugadores.add(new Pinguino("Cuatro", "Negro"));
+		jugadores.add(new Pinguino("Cuatro", "Negro"));*/
 
 		Tablero t1 = new Tablero();
 
