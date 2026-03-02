@@ -75,7 +75,7 @@ public class Pinguino extends Jugador {
 		if (inventario == null)
 			return;
 
-		while(inventario.getBolas().size() != 0) {
+		while (inventario.getBolas().size() != 0) {
 			inventario.getBolas().removeFirst();
 		}
 
