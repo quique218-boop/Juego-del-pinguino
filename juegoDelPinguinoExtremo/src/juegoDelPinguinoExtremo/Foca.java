@@ -32,25 +32,9 @@ public class Foca extends Jugador {
 
 	public void golpearJugador(Pinguino jugador, Tablero tablero) {
 
-		if (this.getPos() != jugador.getPos()) {
+		if (this.getPos() == jugador.getPos())
+			new Agujero().realizarAccion(tablero, jugador);
 
-			return; // Si no estan en la misma casilla no pasa nada
-
-		} else {
-
-			boolean encontrado = false;
-
-			for (int i = jugador.getPos() - 1; i > 0 && encontrado == false; i--) {
-
-				if (tablero.getCasilla(i) instanceof Agujero) {
-
-					jugador.setPos(i);
-
-					encontrado = true;
-
-				}
-			}
-		}
 	}
 
 	public void esSobornado() {

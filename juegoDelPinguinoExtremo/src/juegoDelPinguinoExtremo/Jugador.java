@@ -1,7 +1,5 @@
 package juegoDelPinguinoExtremo;
 
-import java.util.Scanner;
-
 public abstract class Jugador {
 
 	private int posicion;
@@ -39,6 +37,18 @@ public abstract class Jugador {
 	public void setColor(String color) {
 
 		this.color = color;
+
+	}
+
+	public boolean getTurnoTerminado() {
+
+		return this.turnoTerminado;
+
+	}
+
+	public void setTurnoTerminado(boolean turnoTerminado) {
+
+		this.turnoTerminado = turnoTerminado;
 
 	}
 
