@@ -1,6 +1,7 @@
 package juegoDelPinguinoExtremo;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Tablero {
 
@@ -10,6 +11,8 @@ public class Tablero {
 	private int jugadorActual;
 	private boolean finalizada;
 	private Jugador ganador;
+	
+	Random rand = new Random();
 
 	public Tablero() {
 
@@ -101,5 +104,72 @@ public class Tablero {
 
 		this.finalizada = true;
 
+	}
+	
+	public ArrayList<Casilla> inicializarTablero(){
+		
+		ArrayList<Casilla> tablero = new ArrayList<>();
+		
+		
+		for(Casilla f : tablero) {
+			
+			int opcion = rand.nextInt(10);
+			
+			switch(opcion){
+			
+				case 1, 3, 5, 7, 9 :{
+					
+					Normal casilla = new Normal();
+					
+					tablero.add(casilla);
+				}
+				
+				case 0 :{
+					
+					Agujero casilla = new Agujero();
+					
+					tablero.add(casilla);
+					
+				}
+				
+				case 2 :{
+					
+					Evento casilla = new Evento();
+					
+					tablero.add(casilla);
+					
+				}
+				
+				case 4 :{
+					
+					SueloQuebradizo casilla = new SueloQuebradizo();
+					
+					tablero.add(casilla);
+					
+				}
+				
+				case 6 :{
+					
+					Oso casilla = new Oso();
+					
+					tablero.add(casilla);
+					
+				}
+				
+				case 8 :{
+					
+					Trineo casilla = new Trineo();
+					
+					tablero.add(casilla);
+					
+				}
+				
+			
+			}
+			
+			return tablero;
+			
+		}
+		
 	}
 }
