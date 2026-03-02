@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Evento extends Casilla {
 
-	String[] eventos = { "Pez", "BNeu", "Dado" };
+	String[] eventos = { "Pez", "BNeu", "Dado", "Motos" };
 
 	public Evento() {
 	}
@@ -52,6 +52,14 @@ public class Evento extends Casilla {
 				pinguino.anadirItem(new Dado_rapido("Dado Rapido"));
 
 			}
+
+			break;
+
+		}
+		
+		case "Motos": {
+
+			new Trineo().realizarAccion(tablero, jugador);
 
 			break;
 
