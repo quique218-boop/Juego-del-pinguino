@@ -101,16 +101,16 @@ public class Pinguino extends Jugador {
 			inventario = new Inventario(new ArrayList<Dado>(), new ArrayList<Pez>(), new ArrayList<BolaDeNieve>());
 
 		if (item instanceof BolaDeNieve)
-			inventario.getBolas().add((BolaDeNieve) item);
+			inventario.addListaBola((BolaDeNieve) item);
 
 		else if (item instanceof Pez)
-			inventario.getPez().add((Pez) item);
+			inventario.addListaPez((Pez) item);
 
 		else if (item instanceof Dado_lento)
-			inventario.getDado().add((Dado_lento) item);
+			inventario.addListaDado((Dado_lento) item);
 
 		else if (item instanceof Dado_rapido)
-			inventario.getDado().add((Dado_rapido) item);
+			inventario.addListaDado((Dado_rapido) item);
 
 	}
 
