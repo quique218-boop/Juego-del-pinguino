@@ -30,34 +30,16 @@ public class Inventario {
 		this.listaBolas = listaBolas;
 	}
 	
-	public boolean addListaDado(Dado item) {
-		if(listaDado.size()<3) {
-			listaDado.add(item);
-			return true;
-		}
-		else {
-			return false;
-		}
+	public void addListaDado(Dado item) {
+		listaDado.add(item);
 	}
 	
-	public boolean addListaPez(Pez item) {
-		if(listaPez.size()<2) {
-			listaPez.add(item);
-			return true;
-		}
-		else {
-			return false;
-		}
+	public void addListaPez(Pez item) {
+		listaPez.add(item);
 	}
 	
-	public boolean addListaBolas(BolaDeNieve item) {
-		if(listaBolas.size()>3) {
-			listaBolas.add(item);
-			return true;
-		}
-		else {
-			return false;
-		}
+	public void addListaBola(BolaDeNieve item) {
+		listaBolas.add(item);
 	}
 	
 	public ArrayList<Dado> getDado(){
