@@ -38,7 +38,7 @@ public class Inventario {
 		listaPez.add(item);
 	}
 	
-	public void addLista(BolaDeNieve item) {
+	public void addListaBola(BolaDeNieve item) {
 		listaBolas.add(item);
 	}
 	
