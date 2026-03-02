@@ -31,31 +31,28 @@ public class Inventario {
 	}
 
 	public boolean addListaDado(Dado item) {
-		if(listaDado.size()<3) {
+		if (listaDado.size() < 3) {
 			listaDado.add(item);
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	public boolean addListaPez(Pez item) {
-		if(listaPez.size()<2) {
+		if (listaPez.size() < 2) {
 			listaPez.add(item);
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	public boolean addListaBolas(BolaDeNieve item) {
-		if(listaBolas.size()>3) {
+		if (listaBolas.size() < 6) {
 			listaBolas.add(item);
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -76,7 +73,7 @@ public class Inventario {
 
 		int mDado = listaDado.size() / 2; // Cogemos el tamaño de la lista de dados y dividimos entre dos
 
-		int mPez = listaPez.size() / 2; 
+		int mPez = listaPez.size() / 2;
 
 		int mBolas = listaBolas.size() / 2;
 
