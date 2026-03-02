@@ -25,7 +25,7 @@ public class Pinguino extends Jugador {
 			return;
 		}
 
-		int misBolas = contarBolasdeNieve();
+		int misBolas = this.contarBolasdeNieve();
 
 		int susBolas = jugador.contarBolasdeNieve();
 
@@ -45,7 +45,7 @@ public class Pinguino extends Jugador {
 
 			// En caso de que empaten los dos pierden todas sus bolas de nieve
 
-			ponerBolasdeNieveACero();
+			this.ponerBolasdeNieveACero();
 
 			jugador.ponerBolasdeNieveACero();
 
@@ -75,15 +75,17 @@ public class Pinguino extends Jugador {
 		if (inventario == null)
 			return;
 
-		if (inventario.getBolas().size() < 6)
-			inventario.getBolas().add(new BolaDeNieve("Bola de nieve"));
+		while(inventario.getBolas().size() != 0) {
+			inventario.getBolas().removeFirst();
+		}
+
 	}
 
 	public void usarItem(Item item) {
 
 		if (item == null || inventario == null)
 			return;
-		
+
 		// TODO funcion para items??
 
 		quitarItem(item);
