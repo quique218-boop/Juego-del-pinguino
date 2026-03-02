@@ -6,7 +6,7 @@ public class Pinguino extends Jugador {
 
 	private Inventario inventario = super.getInventario();
 
-	public Pinguino(Inventario inventario, String nombre, String color) {
+	public Pinguino(String nombre, String color, Inventario inventario) {
 
 		super(nombre, color, inventario);
 
@@ -101,7 +101,7 @@ public class Pinguino extends Jugador {
 			inventario = new Inventario(new ArrayList<Dado>(), new ArrayList<Pez>(), new ArrayList<BolaDeNieve>());
 
 		if (item instanceof BolaDeNieve)
-			inventario.addListaBola((BolaDeNieve) item);
+			inventario.addListaBolas((BolaDeNieve) item);
 
 		else if (item instanceof Pez)
 			inventario.addListaPez((Pez) item);
