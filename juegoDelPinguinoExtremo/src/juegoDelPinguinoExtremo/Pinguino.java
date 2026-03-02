@@ -6,7 +6,7 @@ public class Pinguino extends Jugador {
 
 	private Inventario inventario = super.getInventario();
 
-	public Pinguino(String nombre, String color, Inventario inventario) {
+	public Pinguino(Inventario inventario, String nombre, String color) {
 
 		super(nombre, color, inventario);
 
