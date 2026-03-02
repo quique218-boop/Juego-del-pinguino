@@ -4,12 +4,10 @@ public abstract class Item {
 	
 	private String nombre;
 	
-	private int cantidad;
 	
-	public Item(String nombre, int cantidad) {
+	public Item(String nombre) {
 		
 		this.nombre = nombre;
-		this.cantidad = cantidad;
 		
 	}
 	
@@ -17,14 +15,8 @@ public abstract class Item {
 		this.nombre = nombre;
 	}
 	
-	public void setCantidad(int cantidad) {
-		this.cantidad = cantidad;
-	}
 	
 	public String getNombre() {
 		return nombre;
-	}
-	public int getCantidad() {
-		return cantidad;
 	}
 }

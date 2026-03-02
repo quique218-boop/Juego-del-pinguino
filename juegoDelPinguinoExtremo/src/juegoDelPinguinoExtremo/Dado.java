@@ -1,18 +1,21 @@
 package juegoDelPinguinoExtremo;
 
+import java.util.Random;
+
 public class Dado extends Item {
+	Random rand = new Random();
 	
 	private int max;
 	
 	private int min;
 	
-	public Dado(String nombre, int cantidad, int max,int min) {
+	public Dado(String nombre) {
 		
-		super(nombre, cantidad);
+		super(nombre);
 		 
-		this.max = max;
+		this.max = 10;
 		 
-		this.min = min;
+		this.min = 1;
 	
 	}
 	
@@ -30,6 +33,11 @@ public class Dado extends Item {
 	
 	public void setMin(int min) {
 		this.min = min;
+	}
+	
+	public int tirarDado() {
+		return rand.nextInt((max - min) + 1) + min;
+		
 	}
 	
 	

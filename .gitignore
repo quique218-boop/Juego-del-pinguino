@@ -23,3 +23,6 @@
 hs_err_pid*
 replay_pid*
 /.metadata/
+
+# Archivo de testeo local
+juegoDelPinguinoExtremo/src/juegoDelPinguinoExtremo/Testing.java

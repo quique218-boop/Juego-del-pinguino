@@ -38,7 +38,7 @@ public class Inventario {
 		listaPez.add(item);
 	}
 	
-	public void addLista(BolaDeNieve item) {
+	public void addListaBola(BolaDeNieve item) {
 		listaBolas.add(item);
 	}
 	
@@ -54,6 +54,45 @@ public class Inventario {
 		return listaBolas;
 	}
 	
-	
+	public void RobarInventario() {
+		
+		int totalDado = listaDado.size(); //Cogemos el tamaño de la lista de dados
+		
+		int mDado = totalDado / 2; //Dividimos la lista a la mitad
+		
+		while(mDado > 0) { 
+			
+			if(!listaDado.isEmpty()) { //Si la lista no es vacia
+				
+				listaDado.removeFirst(); //Borra el primero
+			}
+		}
+		
+		int totalPez = listaPez.size();
+		
+		int mPez = totalPez / 2;
+		
+		while(mPez > 0) {
+			
+			if(!listaPez.isEmpty()) {
+				
+				listaPez.removeFirst();
+				
+			}
+		}
+		
+		int totalBolas = listaBolas.size();
+		
+		int mBolas = totalBolas / 2;
+		
+		while(mBolas > 0) {
+			
+			if(!listaBolas.isEmpty()) {
+				
+				listaBolas.removeFirst();
+				
+			}
+		}
+	}
 
 }
