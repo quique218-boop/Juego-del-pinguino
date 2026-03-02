@@ -39,21 +39,8 @@ public class Foca extends Jugador{
 			return; //Si no estan en la misma casilla no pasa nada
 			
 		}else {
-			
-			System.out.println("La foca golpea al pinguino fuertemente");
-			
-			
 
-			for (int i = jugador.getPos() - 1; i > 0 && encontrado == false; i--) {
-
-				if (tablero.getCasilla(i) instanceof Agujero) {
-					
-					jugador.setPos(i);
-					
-					encontrado = true;
-					
-				}
-			}
+			new Agujero().realizarAccion(tablero, jugador);
 			 
 		}
 		
@@ -61,14 +48,7 @@ public class Foca extends Jugador{
 	
 	public void esSobornado() {
 		
-		System.out.println("La foca come el pez");
-		
-		for(int i = 2; i > 0; i--) {
-			
-			System.out.println("Foca bloqueada por " + i + " turnos");
-			
-		}
-		
+		this.soborno = this.soborno ? false : true;
 		
 	}
 
