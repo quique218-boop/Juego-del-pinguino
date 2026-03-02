@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Evento extends Casilla {
 
-	String[] eventos = { "Pez", "BNeu", "Dado"};
+	String[] eventos = { "Pez", "BNeu", "Dado" };
 
 	public Evento() {
 	}
@@ -12,36 +12,55 @@ public class Evento extends Casilla {
 	@Override
 	public void realizarAccion(Tablero tablero, Jugador jugador) {
 
+		if (!(jugador instanceof Pinguino))
+			return;
+
+		Pinguino pinguino = (Pinguino) jugador; // Convertir jugador a pinguino.
+
 		Random ran = new Random();
 
 		switch (eventos[ran.nextInt(eventos.length)]) {
-		
+
 		case "Pez": {
-			// dar pez
+
+			pinguino.anadirItem(new Pez("Pez"));
+
+			break;
 		}
 
 		case "BNeu": {
-			//bolas de nieve += ran.nextInt(3) + 1;
+
+			int totalBolas = ran.nextInt(3) + 1;
+
+			for (int i = 0; i < totalBolas; i++) {
+				pinguino.anadirItem(new BolaDeNieve("Bola de nieve"));
+			}
+
+			break;
 		}
 
 		case "Dado": {
-			
+
 			int valor = ran.nextInt(11);
-			
-			if(valor < 8) {
-				
-				// Dado rapido
-				
+
+			if (valor < 8) {
+
+				pinguino.anadirItem(new Dado_lento("Dado Lento"));
+
 			} else {
-				
-				// dado lento
-				
+
+				pinguino.anadirItem(new Dado_rapido("Dado Rapido"));
+
 			}
-			
+
+			break;
+
 		}
-		
+
 		default:
 			System.out.println("Caso no valido");
+
+			break;
 		}
 	}
 
