@@ -88,11 +88,3 @@ public class Inventario {
 		}
 	}
 }
-				
-				listaBolas.removeFirst();
-				
-			}
-		}
-	}
-
-}
