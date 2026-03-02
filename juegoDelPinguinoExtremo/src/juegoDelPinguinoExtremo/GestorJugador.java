@@ -52,21 +52,43 @@ public class GestorJugador {
 	
 	public void jugadorFinalizaTurno(Jugador jugador) {
 		
+		jugador.setTurnoTerminado(true);
 		
 	}
 	
 	public void pinguinoEvento(Pinguino jugador) {
 		
+		jugador.ejecutarCasilla(); 
 		
 	}
 	
 	public void pinguinoGuerra(Pinguino jugador, Pinguino jugador2) {
 		
+		jugador.gestionarBatalla(jugador2);
+	}
+	
+	public void focaInteractua(Pinguino jugador, Foca foca, String opc, Tablero tablero) {
+		
+		if(jugador == null || foca == null) return;
+		
+		if(opc.equalsIgnoreCase("Sobornar")) {
+			
+			foca.esSobornado();
+			
+		}
+		
+		if(opc.equalsIgnoreCase("Robar")) {
+			
+			foca.aplastarJugador(jugador);			
+			
+		}
+		
+		if(opc.equalsIgnoreCase("Golpear Jugador")) {
+			
+			foca.golpearJugador(jugador, tablero);
+			
+		}
 		
 	}
 	
-	public void focaInteractua(Pinguino jugador, Foca foca) {
-		
-		
-	}
 }
