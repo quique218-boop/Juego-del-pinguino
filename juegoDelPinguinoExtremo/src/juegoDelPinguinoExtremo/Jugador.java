@@ -40,6 +40,18 @@ public abstract class Jugador {
 
 	}
 
+	public boolean getTurnoTerminado() {
+
+		return this.turnoTerminado;
+
+	}
+
+	public void setTurnoTerminado(boolean turnoTerminado) {
+
+		this.turnoTerminado = turnoTerminado;
+
+	}
+
 	public int getPos() {
 
 		return posicion;
