@@ -65,6 +65,8 @@ public class Inventario {
 			if(!listaDado.isEmpty()) { //Si la lista no es vacia
 				
 				listaDado.removeFirst(); //Borra el primero
+				
+				mDado--;
 			}
 		}
 		
@@ -78,6 +80,7 @@ public class Inventario {
 				
 				listaPez.removeFirst();
 				
+				mPez--;
 			}
 		}
 		
@@ -90,6 +93,8 @@ public class Inventario {
 			if(!listaBolas.isEmpty()) {
 				
 				listaBolas.removeFirst();
+				
+				mBolas--;
 				
 			}
 		}
