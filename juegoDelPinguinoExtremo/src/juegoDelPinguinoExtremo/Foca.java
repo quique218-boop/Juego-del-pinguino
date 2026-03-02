@@ -4,9 +4,9 @@ public class Foca extends Jugador{
 	
 	private boolean soborno;
 	
-	public Foca(boolean soborno, String nombre, String color) {
+	public Foca(boolean soborno, String nombre, String color, Inventario inventario) {
 		
-		super(nombre, color);
+		super(nombre, color, inventario);
 		
 		this.soborno = false;
 		
@@ -24,11 +24,9 @@ public class Foca extends Jugador{
 		
 	}
 	
-	public void aplastarJugador(Pinguino jugador) { //Esto es robar la mitat del inventario
+	public void aplastarJugador(Pinguino jugador) { 
 		
-		int mitad = jugador.getInventario() / 2; //Dividimos el inventario a la mitad
-		
-		jugador.setInventario(jugador.getInventario() - mitad); //Le restamos la mitad del inventario al jugador
+	jugador.getInventario().RobarInventario(); //La foca roba la mitad del inventario del jugador
 		
 	}
 	
@@ -65,9 +63,9 @@ public class Foca extends Jugador{
 		
 		System.out.println("La foca come el pez");
 		
-		for(int i = 0; i < 2; i++) {
+		for(int i = 2; i > 0; i--) {
 			
-			System.out.println("Foca bloqueada");
+			System.out.println("Foca bloqueada por " + i + " turnos");
 			
 		}
 		
