@@ -14,16 +14,8 @@ public class Pinguino extends Jugador {
 
 	public void gestionarBatalla(Pinguino jugador) {
 
-		if (jugador == null) {
-
+		if (jugador == null || (this.getPos() != jugador.getPos()))
 			return;
-
-		}
-
-		if (this.getPos() != jugador.getPos()) {
-
-			return;
-		}
 
 		int misBolas = this.contarBolasdeNieve();
 
@@ -31,15 +23,19 @@ public class Pinguino extends Jugador {
 
 		if (misBolas > susBolas) {
 
-			jugador.moverPosicion(-1);
+			this.moverPosicion(misBolas - susBolas);
 
-			this.consumirBoladeNieve();
+			this.ponerBolasdeNieveACero();
+
+			jugador.ponerBolasdeNieveACero();
 
 		} else if (susBolas > misBolas) {
 
-			this.moverPosicion(-1);
+			jugador.moverPosicion(susBolas - misBolas);
 
-			jugador.consumirBoladeNieve();
+			jugador.ponerBolasdeNieveACero();
+
+			this.ponerBolasdeNieveACero();
 
 		} else {
 
@@ -59,15 +55,6 @@ public class Pinguino extends Jugador {
 			return 0;
 
 		return inventario.getBolas().size();
-	}
-
-	private void consumirBoladeNieve() {
-
-		if (inventario == null)
-			return;
-
-		if (inventario.getBolas().size() > 0)
-			inventario.getBolas().removeFirst();
 	}
 
 	public void ponerBolasdeNieveACero() {
