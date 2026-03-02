@@ -25,27 +25,15 @@ public class Pinguino extends Jugador {
 
 			this.moverPosicion(misBolas - susBolas);
 
-			this.ponerBolasdeNieveACero();
-
-			jugador.ponerBolasdeNieveACero();
-
 		} else if (susBolas > misBolas) {
 
 			jugador.moverPosicion(susBolas - misBolas);
 
-			jugador.ponerBolasdeNieveACero();
-
-			this.ponerBolasdeNieveACero();
-
-		} else {
-
-			// En caso de que empaten los dos pierden todas sus bolas de nieve
-
-			this.ponerBolasdeNieveACero();
-
-			jugador.ponerBolasdeNieveACero();
-
 		}
+		
+		this.ponerBolasdeNieveACero();
+
+		jugador.ponerBolasdeNieveACero();
 
 	}
 
