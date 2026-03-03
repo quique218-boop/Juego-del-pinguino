@@ -119,48 +119,37 @@ public class Tablero {
 			
 				case 1, 3, 5, 7, 9 :{
 					
-					Normal casilla = new Normal();
-					
-					tablero.add(casilla);
+					tablero.add(new Normal());
 				}
 				
 				case 0 :{
 					
-					Agujero casilla = new Agujero();
-					
-					tablero.add(casilla);
+					tablero.add(new Agujero());
 					
 				}
 				
 				case 2 :{
 					
-					Evento casilla = new Evento();
-					
-					tablero.add(casilla);
+					tablero.add(new Evento());
 					
 				}
 				
 				case 4 :{
 					
-					SueloQuebradizo casilla = new SueloQuebradizo();
-					
-					tablero.add(casilla);
+					tablero.add(new SueloQuebradizo());
 					
 				}
 				
 				case 6 :{
 					
-					Oso casilla = new Oso();
-					
-					tablero.add(casilla);
+					tablero.add(new Oso());
 					
 				}
 				
 				case 8 :{
 					
-					Trineo casilla = new Trineo();
 					
-					tablero.add(casilla);
+					tablero.add(new Trineo());
 					
 				}
 			}
