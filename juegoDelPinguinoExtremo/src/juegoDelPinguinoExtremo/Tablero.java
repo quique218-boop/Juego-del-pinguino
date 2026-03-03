@@ -163,13 +163,10 @@ public class Tablero {
 					tablero.add(casilla);
 					
 				}
-				
-			
 			}
-			
-			return tablero;
-			
 		}
+		
+		return tablero;
 		
 	}
 }
