@@ -21,14 +21,16 @@ public class SueloQuebradizo extends Casilla {
 
 		} else if (numeroItemsTotal > 0 && numeroItemsTotal <= 5) {
 
-			// TODO Pierde turno
+			jugador.setDeudaTurnos(1);
 
 		}
 
 		if (ran.nextInt(11) < 2) {
 
 			if (ran.nextBoolean()) {
-				// TODO pierde turno
+				
+				jugador.setDeudaTurnos(1);
+			
 			} else {
 
 				switch (ran.nextInt(3)) {
@@ -61,8 +63,6 @@ public class SueloQuebradizo extends Casilla {
 
 				}
 			}
-
 		}
 	}
-
 }
