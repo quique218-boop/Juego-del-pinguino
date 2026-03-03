@@ -7,6 +7,7 @@ public abstract class Jugador {
 	private String color;
 	private boolean turnoTerminado;
 	private Inventario inventario;
+	private int deudaTurnos;
 
 	public Jugador(String nombre, String color, Inventario inventario) {
 
@@ -79,6 +80,20 @@ public abstract class Jugador {
 
 		this.inventario = inventario;
 
+	}
+
+	public int getDeudaTurnos() {
+		return this.deudaTurnos;
+	}
+
+	public void setDeudaTurnos(int deudaTurnos) {
+		this.deudaTurnos = deudaTurnos;
+	}
+	
+	public void terminarTurnoSiHayDeuda() {
+		
+		if(this.deudaTurnos > 0) this.turnoTerminado = true;
+		
 	}
 
 }
