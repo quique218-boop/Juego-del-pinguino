@@ -2,27 +2,12 @@ package juegoDelPinguinoExtremo;
 
 public class Foca extends Jugador {
 
-	private boolean soborno;
-
 	public Foca(String nombre, String color, Inventario inventario) {
 
 		super(nombre, color, inventario);
 
-		this.soborno = false;
-
 	}
 
-	public boolean getSoborno() {
-
-		return this.soborno;
-
-	}
-
-	public void setSoborno(boolean soborno) {
-
-		this.soborno = soborno;
-
-	}
 
 	public void aplastarJugador(Pinguino jugador) {
 
@@ -38,8 +23,8 @@ public class Foca extends Jugador {
 	}
 
 	public void esSobornado() {
-
-		this.soborno = this.soborno ? false : true;
+		
+		this.setDeudaTurnos(2);
 
 	}
 
