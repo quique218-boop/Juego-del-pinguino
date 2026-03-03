@@ -58,12 +58,6 @@ public class GestorJugador {
 
 	}
 
-	public void pinguinoEvento(Pinguino jugador) {
-
-		jugador.ejecutarCasilla();
-
-	}
-
 	public void pinguinoGuerra(Pinguino jugador, Pinguino jugador2) {
 
 		jugador.gestionarBatalla(jugador2);
