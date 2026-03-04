@@ -120,29 +120,34 @@ public class Tablero {
 				case 1, 3, 5, 7, 9 :{
 					
 					tablero.add(new Normal());
+					break;
 				}
 				
 				case 0 :{
 					
 					tablero.add(new Agujero());
+					break;
 					
 				}
 				
 				case 2 :{
 					
 					tablero.add(new Evento());
+					break;
 					
 				}
 				
 				case 4 :{
 					
 					tablero.add(new SueloQuebradizo());
+					break;
 					
 				}
 				
 				case 6 :{
 					
 					tablero.add(new Oso());
+					break;
 					
 				}
 				
@@ -150,6 +155,7 @@ public class Tablero {
 					
 					
 					tablero.add(new Trineo());
+					break;
 					
 				}
 			}
