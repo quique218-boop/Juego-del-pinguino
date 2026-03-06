@@ -33,6 +33,13 @@
       <HBox>
          <children>
             <Button mnemonicParsing="false" onMouseClicked="#Click" prefHeight="99.0" prefWidth="175.0" text="Button" />
+            <VBox nodeOrientation="RIGHT_TO_LEFT" prefHeight="200.0" prefWidth="272.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Button" />
+                  <Button mnemonicParsing="false" text="Button" />
+                  <Button mnemonicParsing="false" text="Button" />
+               </children>
+            </VBox>
          </children>
       </HBox>
    </children>
