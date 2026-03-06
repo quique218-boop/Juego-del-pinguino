@@ -7,7 +7,6 @@ import java.util.Scanner;
 
 public class menu {
 	public static Connection con;
-	//public static ArrayList<Actor> listaActor = new ArrayList<Actor>();
 	public static int nactor;
 	public static String nombre;
 	public static String fechan;
@@ -22,7 +21,7 @@ public class menu {
 		cols.add("NACTOR");
 		cols.add("NOMBRE");
 		cols.add("FECHAN");
-		procesamientoSelect(con, "SELECT * FROM ACTOR\n" + "WHERE \"NACTOR\" = 1", cols);
+		procesamientoSelect(con, "SELECT * FROM ACTOR\n" + "WHERE \"NACTOR\" = " + args[0], cols);
 		/////////////////////////////////////////////////////////////////////////////////
 		BBDD.cerrar(con);
 		/////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +84,7 @@ public class menu {
 				// las variables nactor, nombre y fechan ya tienen valores.
 				// Con esos datos creamos un objeto Actor.
 				
-			//	listaActor.add(new Actor(nactor, nombre, fechan));
+			System.out.println(nactor + nombre + fechan);
 			}
 		}
 	}

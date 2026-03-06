@@ -27,10 +27,10 @@ public class BBDD {
 		boolean valido = false;
 		while (!valido) {
 			// PODEIS HARDCODEAR ESTAS VARIABLES SI VAIS A USAR SIEMPRE LAS MISMAS
-			//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+			// VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 			System.out.println("Selecciona centro o fuera de centro (CENTRO/FUERA):");
-			entorno = scan.nextLine().trim().toLowerCase();
-
+			// entorno = scan.nextLine().trim().toLowerCase();
+			entorno = "Centro";
 			if (entorno.equalsIgnoreCase("centro") || entorno.equalsIgnoreCase("fuera")) {
 				valido = true;
 			} else {
@@ -43,7 +43,7 @@ public class BBDD {
 
 		// 2) Pedir credenciales (con trim para evitar espacios raros)
 		// PODEIS HARDCODEAR ESTAS CREDENCIALES SI VAIS A USAR SIEMPRE LAS MISMAS
-		//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+		// VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 		System.out.println("¿Usuario?");
 		String user = "DM1_2526_COS_JORDI";
 

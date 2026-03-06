@@ -35,7 +35,9 @@ public class LoginController {
 		window.setScene(tableViewScene);
 		window.setTitle("Partida");
 		window.show();
+		String[] hola = {userField.getText()};
 		
+		menu.main(hola);
 		
 		//GestorJugador.jugadorUsarItem(null, null);
 	}
