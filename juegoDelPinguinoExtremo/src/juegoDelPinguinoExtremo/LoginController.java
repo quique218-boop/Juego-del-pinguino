@@ -33,7 +33,10 @@ public class LoginController {
 
 		Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		window.setScene(tableViewScene);
-		window.show();
 		window.setTitle("Partida");
+		window.show();
+		
+		
+		//GestorJugador.jugadorUsarItem(null, null);
 	}
 }
