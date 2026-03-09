@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button layoutX="52.0" layoutY="82.0" mnemonicParsing="false" onAction="#bajo" text="25%" />
+      <Button layoutX="101.0" layoutY="82.0" mnemonicParsing="false" onAction="#medio" text="50%" />
+      <Button layoutX="153.0" layoutY="82.0" mnemonicParsing="false" onAction="#alto" text="75%" />
+      <Button layoutX="201.0" layoutY="82.0" mnemonicParsing="false" onAction="#max" text="100%" />
+      <Button layoutX="14.0" layoutY="82.0" mnemonicParsing="false" onAction="#Mute" text="0%" />
+      <Label layoutX="19.0" layoutY="52.0" text="VOLUMEN" />
+      <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#BMenu" text="Home" />
+      <Label layoutX="224.0" layoutY="18.0" text="CONFIGURACIÓN" />
+      <Label layoutX="19.0" layoutY="127.0" text="SONIDOS ESPECIALES" />
+      <Button layoutX="13.0" layoutY="164.0" mnemonicParsing="false" onAction="#SObjetos" text="Button" />
+      <Button layoutX="13.0" layoutY="200.0" mnemonicParsing="false" onAction="#SAmbiental" text="Button" />
+      <Button layoutX="13.0" layoutY="238.0" mnemonicParsing="false" onAction="#SFoca" text="Button" />
+      <Button layoutX="13.0" layoutY="281.0" mnemonicParsing="false" onAction="#SVictoria" text="Button" />
+      <Label layoutX="73.0" layoutY="168.0" text="SONIDOS DE OBJETOS" />
+      <Label layoutX="73.0" layoutY="204.0" text="SONIDO AMBIENTAL" />
+      <Label layoutX="73.0" layoutY="242.0" text="SONIDOS DE LA FOCA" />
+      <Label layoutX="73.0" layoutY="285.0" text="MUSICA DE VICTORIA" />
+   </children>
+</AnchorPane>
