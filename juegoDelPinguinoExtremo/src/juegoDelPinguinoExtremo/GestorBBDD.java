@@ -12,11 +12,18 @@ public class GestorBBDD {
 	private static String username;
 	private static String password;
 
-	public static void guardarBBDD(Tablero t) {
-		con = BBDD.conectarBaseDatos();
+	private static int count;
 
-		BBDD.insert(con, "INSERT INTO TABLEROS (ID, USERNAME, PASSWORD)\n" + "VALUES (2, \'" + username + "\', "
-				+ password + ")");
+	public static void guardarBBDD(String username, String password) {
+		con = BBDD.conectarBaseDatos();
+		ArrayList<String> cols = new ArrayList<>();
+
+		cols.add("NUMIDS");
+
+		procesamientoSelect(con, "SELECT COUNT(*) AS NUMIDS FROM TABLEROS", cols);
+
+		BBDD.insert(con, "INSERT INTO TABLEROS (ID, USERNAME, PASSWORD)\n" + "VALUES (" + count + ", \'" + username + "\', \'"
+				+ password + "\')");
 
 		BBDD.cerrar(con);
 	}
@@ -73,16 +80,8 @@ public class GestorBBDD {
 	 */
 	public static void procesarValor(String col, String valor) {
 
-		if (col.equals("NACTOR")) {
-			System.out.println(Integer.parseInt(valor));
-		}
-
-		else if (col.equals("NOMBRE")) {
-			System.out.println(valor);
-		}
-
-		else if (col.equals("FECHAN")) {
-			System.out.println(valor);
+		if (col.equals("NUMIDS")) {
+			count = Integer.parseInt(valor) + 1;
 		}
 	}
 }
