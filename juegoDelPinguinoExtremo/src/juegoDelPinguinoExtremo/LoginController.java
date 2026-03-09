@@ -19,14 +19,6 @@ public class LoginController {
 
 	@FXML
 	private PasswordField passField;
-	
-	/*private GestorPartida dd;
-	
-	private void initialize() {
-		
-		//GestorPartida d = new Ges
-		
-	}*/
 
 	@FXML
 	private void onEnter(ActionEvent event) throws IOException {
