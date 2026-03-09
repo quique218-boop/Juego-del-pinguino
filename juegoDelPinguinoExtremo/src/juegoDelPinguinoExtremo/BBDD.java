@@ -30,6 +30,9 @@ public class BBDD {
 			// VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 			//System.out.println("Selecciona centro o fuera de centro (CENTRO/FUERA):");
 			// entorno = scan.nextLine().trim().toLowerCase();
+			
+			System.out.println("SI NO FUNCIONA ES POR QUE ESTA HARDCODEADO A CENTRO!");
+			
 			entorno = "Centro";
 			
 			if (entorno.equalsIgnoreCase("centro") || entorno.equalsIgnoreCase("fuera")) {
