@@ -5,30 +5,36 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
 
-public class menu {
+public class GestorBBDD {
+
 	public static Connection con;
-	public static int nactor;
-	public static String nombre;
-	public static String fechan;
 
-	public static void main(String[] args) {
+	private static String urlBBDD;
+	private static String username;
+	private static String password;
 
-		Scanner scan = new Scanner(System.in);
-		con = BBDD.conectarBaseDatos(scan);
-		/////////////////////////////////////////////////////////////////////////////////
+	public static void guardarBBDD(Tablero t) {
+		con = BBDD.conectarBaseDatos();
+
+		BBDD.insert(con, "INSERT INTO TABLEROS (ID, USERNAME, PASSWORD)\n" + "VALUES (2, \'" + username + "\', "
+				+ password + ")");
+
+		BBDD.cerrar(con);
+	}
+
+	public static Tablero cargarTablero(int id) {
+		con = BBDD.conectarBaseDatos();
+
 		System.out.println("Select");
 		ArrayList<String> cols = new ArrayList<>();
 		cols.add("NACTOR");
 		cols.add("NOMBRE");
 		cols.add("FECHAN");
-		procesamientoSelect(con, "SELECT * FROM ACTOR\n" + "WHERE \"NACTOR\" = " + args[0], cols);
-		/////////////////////////////////////////////////////////////////////////////////
+		procesamientoSelect(con, "SELECT * FROM ACTOR\n" + "WHERE \"NACTOR\" = " + id, cols);
+
 		BBDD.cerrar(con);
-		/////////////////////////////////////////////////////////////////////////////////
-		System.out.println("Imprimendo todos los actores de la lista:");
-	/*	for (Actor actor : listaActor) {
-			System.out.println(actor.toString());
-		}*/
+
+		return null;
 	}
 
 	/**
@@ -83,8 +89,8 @@ public class menu {
 				// Cuando ya hemos procesado todas las columnas de la fila,
 				// las variables nactor, nombre y fechan ya tienen valores.
 				// Con esos datos creamos un objeto Actor.
-				
-			System.out.println(nactor + nombre + fechan);
+
+
 			}
 		}
 	}
@@ -107,17 +113,17 @@ public class menu {
 
 		// Si la columna es NACTOR → convertir a entero
 		if (col.equals("NACTOR")) {
-			nactor = Integer.parseInt(valor); // String → int
+			System.out.println(Integer.parseInt(valor)); 
 		}
 
 		// Si la columna es NOMBRE → guardar directamente
 		else if (col.equals("NOMBRE")) {
-			nombre = valor;
+			System.out.println(valor);
 		}
 
 		// Si la columna es FECHAN → guardar directamente
 		else if (col.equals("FECHAN")) {
-			fechan = valor;
+			System.out.println(valor);
 		}
 	}
 

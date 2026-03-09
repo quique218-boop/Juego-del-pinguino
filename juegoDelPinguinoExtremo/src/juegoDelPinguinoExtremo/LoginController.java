@@ -19,6 +19,14 @@ public class LoginController {
 
 	@FXML
 	private PasswordField passField;
+	
+	/*private GestorPartida dd;
+	
+	private void initialize() {
+		
+		//GestorPartida d = new Ges
+		
+	}*/
 
 	@FXML
 	private void onEnter(ActionEvent event) throws IOException {
@@ -35,10 +43,9 @@ public class LoginController {
 		window.setScene(tableViewScene);
 		window.setTitle("Partida");
 		window.show();
-		String[] hola = {userField.getText()};
 		
-		menu.main(hola);
+		GestorBBDD.cargarTablero(Integer.parseInt(userField.getText()));
 		
-		//GestorJugador.jugadorUsarItem(null, null);
+		
 	}
 }

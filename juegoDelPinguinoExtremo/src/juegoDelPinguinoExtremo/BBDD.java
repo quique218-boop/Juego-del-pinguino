@@ -3,7 +3,7 @@ package juegoDelPinguinoExtremo;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Scanner;
+//import java.util.Scanner;
 
 /**
  * Clase que proporciona métodos para interactuar con una base de datos Oracle.
@@ -19,7 +19,7 @@ public class BBDD {
 	 *         LA VARIABLE QUE DEVUELVE LA TENÉIS QUE GUARDAR PARA LAS DEMÁS
 	 *         FUNCIONES
 	 */
-	public static Connection conectarBaseDatos(Scanner scan) {
+	public static Connection conectarBaseDatos(/*Scanner scan*/) {
 		System.out.println("Intentando conectarse a la base de datos...");
 
 		// 1) Elegir entorno con validación
@@ -28,9 +28,10 @@ public class BBDD {
 		while (!valido) {
 			// PODEIS HARDCODEAR ESTAS VARIABLES SI VAIS A USAR SIEMPRE LAS MISMAS
 			// VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-			System.out.println("Selecciona centro o fuera de centro (CENTRO/FUERA):");
+			//System.out.println("Selecciona centro o fuera de centro (CENTRO/FUERA):");
 			// entorno = scan.nextLine().trim().toLowerCase();
 			entorno = "Centro";
+			
 			if (entorno.equalsIgnoreCase("centro") || entorno.equalsIgnoreCase("fuera")) {
 				valido = true;
 			} else {
@@ -44,10 +45,10 @@ public class BBDD {
 		// 2) Pedir credenciales (con trim para evitar espacios raros)
 		// PODEIS HARDCODEAR ESTAS CREDENCIALES SI VAIS A USAR SIEMPRE LAS MISMAS
 		// VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-		System.out.println("¿Usuario?");
+		//System.out.println("¿Usuario?");
 		String user = "DM1_2526_COS_JORDI";
 
-		System.out.println("¿Contraseña?");
+		//System.out.println("¿Contraseña?");
 		String pwd = "A48254736T"; // aquí NO hago trim por si la contraseña tuviera espacios
 
 		// 3) Conectar
