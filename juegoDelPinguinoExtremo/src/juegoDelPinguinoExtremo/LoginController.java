@@ -36,7 +36,7 @@ public class LoginController {
 		window.setTitle("Partida");
 		window.show();
 		
-		GestorBBDD.cargarTablero(Integer.parseInt(userField.getText()));
+		GestorBBDD.guardarBBDD(userField.getText(), passField.getText());
 		
 		
 	}
