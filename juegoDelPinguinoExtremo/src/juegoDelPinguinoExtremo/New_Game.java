@@ -32,13 +32,14 @@ public class New_Game {
 	    @FXML
 	    private void cuatrof(ActionEvent event) {
 	    
-	    cambiarVentana(event, "tablero.fmxl");
+	    cambiarVentana(event, "tablero.fxml");
 
 	    }
 	    
+	    @FXML
 	    private void Ret(ActionEvent event) {
 	    	
-	    	cambiarVentana(event, "Main.fxml");
+	    	cambiarVentana(event, "Menu.fxml");
 	    	
 	    }
 }
