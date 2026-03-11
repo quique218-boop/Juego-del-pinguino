@@ -14,30 +14,36 @@ import javafx.stage.Stage;
 
 public class LoginController {
 
-	@FXML
-	private TextField userField;
+    @FXML
+    
+    private TextField userField;
 
-	@FXML
-	private PasswordField passField;
+    @FXML
+    
+    private PasswordField passField;
 
-	@FXML
-	private void onEnter(ActionEvent event) throws IOException {
+    @FXML
+    
+    private void onEnter(ActionEvent event) throws IOException {
 
-		System.out.println("Usuario: " + userField.getText());
-		System.out.println("Password: " + passField.getText());
+        System.out.println("Usuario: " + userField.getText());
+        
+        System.out.println("Password: " + passField.getText());
 
-		Parent tableViewParent = FXMLLoader.load(getClass().getResource("test.fxml"));
-		Scene tableViewScene = new Scene(tableViewParent);
+        GestorBBDD.guardarBBDD(userField.getText(), passField.getText());
 
-		// This line gets the stage information
+        Parent root = FXMLLoader.load(getClass().getResource("Menu.fxml"));
+        
+        Scene scene = new Scene(root);
 
-		Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-		window.setScene(tableViewScene);
-		window.setTitle("Partida");
-		window.show();
-		
-		GestorBBDD.guardarBBDD(userField.getText(), passField.getText());
-		
-		
-	}
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        
+        window.setScene(scene);
+        
+        window.setTitle("Menú");
+        
+        window.show();
+        
+    }
+    
 }

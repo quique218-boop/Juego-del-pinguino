@@ -22,7 +22,7 @@
             <Font size="25.0" />
          </font>
       </Button>
-      <Button layoutX="150.0" layoutY="263.0" mnemonicParsing="false" text="4 JUGADORES + FOCA">
+      <Button layoutX="150.0" layoutY="263.0" mnemonicParsing="false" onAction="#cuatrof" text="4 JUGADORES + FOCA">
          <font>
             <Font size="25.0" />
          </font>
