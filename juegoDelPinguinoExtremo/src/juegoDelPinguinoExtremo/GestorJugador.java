@@ -42,7 +42,7 @@ public class GestorJugador {
 		}
 	}
 
-	public jugadorSeMueve(Jugador jugador, int pasos) {
+	public void jugadorSeMueve(Jugador jugador, int pasos) {
 
 		if (jugador == null)
 			return;

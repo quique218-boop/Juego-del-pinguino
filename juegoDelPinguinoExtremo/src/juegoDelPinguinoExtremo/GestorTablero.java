@@ -1,13 +1,19 @@
 package juegoDelPinguinoExtremo;
 
-public class GestorPartida {
-
-	public GestorPartida() {
-		//TODO
-		
-	}
+public class GestorTablero {
 	
-	public void NuevaPartida() {
+	private Tablero tablero;
+	
+	private GestorJugador gestorjugador;
+	
+	private GestorBBDD gestorbbdd;
+	
+	private GestorCasilla gestorcasilla;
+
+	
+	public void NuevoTablero() {
+		
+		tablero.setArrayListCasilla(null); = tablero.inicializarTablero();
 
 		
 	}
@@ -18,7 +24,7 @@ public class GestorPartida {
 		
 		int resultado = dadoOpcional.tirarDado();
 		
-		GestorJugador.jugadorSeMueve(jugador, resultado);
+		gestorjugador.jugadorSeMueve(jugador, resultado);
 		
 		return resultado;
 		

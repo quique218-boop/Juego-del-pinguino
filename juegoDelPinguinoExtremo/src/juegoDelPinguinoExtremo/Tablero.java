@@ -43,6 +43,17 @@ public class Tablero {
 		return this.listaCasillas;
 
 	}
+	
+	public void setArrayListJugador(ArrayList<Jugador> listaJugador) {
+
+		this.listaJugador = listaJugador;
+	}
+
+	public void setArrayListCasilla(ArrayList<Casilla> listaCasillas) {
+
+		this.listaCasillas = listaCasillas;
+
+	}
 
 	public void setjugadorActual(int jugadorActual) {
 
