@@ -1,0 +1,169 @@
+package modelo;
+
+import java.util.ArrayList;
+
+public abstract class Jugador {
+
+	private int posicion;
+	private String nombre;
+	private String color;
+	private boolean turnoTerminado;
+	private Inventario inventario;
+	private int deudaTurnos;
+
+	public Jugador(String nombre, String color, Inventario inventario) {
+
+		this.nombre = nombre;
+		this.color = color;
+		this.posicion = 0;
+		this.inventario = inventario;
+	}
+
+	public String getNombre() {
+
+		return nombre;
+
+	}
+
+	public void setNombre(String nombre) {
+
+		this.nombre = nombre;
+
+	}
+
+	public String getColor() {
+
+		return color;
+
+	}
+
+	public void setColor(String color) {
+
+		this.color = color;
+
+	}
+
+	public boolean getTurnoTerminado() {
+
+		return this.turnoTerminado;
+
+	}
+
+	public void setTurnoTerminado(boolean turnoTerminado) {
+
+		this.turnoTerminado = turnoTerminado;
+
+	}
+
+	public int getPos() {
+
+		return posicion;
+
+	}
+
+	public void setPos(int posicion) {
+
+		this.posicion = posicion;
+	}
+
+	public void moverPosicion(int nDado) {
+
+		this.posicion += nDado; // Sistema de avance del jugador
+
+	}
+
+	public Inventario getInventario() {
+
+		return inventario;
+
+	}
+
+	public void setInventario(Inventario inventario) {
+
+		this.inventario = inventario;
+
+	}
+
+	public int getDeudaTurnos() {
+		return this.deudaTurnos;
+	}
+
+	public void setDeudaTurnos(int deudaTurnos) {
+		this.deudaTurnos = deudaTurnos;
+	}
+	
+	public void terminarTurnoSiHayDeuda() {
+		
+		if(this.deudaTurnos > 0) this.turnoTerminado = true;
+		
+	}
+	
+	public int contarBolasdeNieve() {
+
+		if (inventario == null)
+			return 0;
+
+		return inventario.getBolas().size();
+	}
+
+	public void ponerBolasdeNieveACero() {
+
+		if (inventario == null)
+			return;
+
+		while (inventario.getBolas().size() != 0) {
+			inventario.getBolas().removeFirst();
+		}
+
+	}
+
+	public void usarItem(Item item) {
+
+		if (item == null || inventario == null)
+			return;
+
+		// TODO funcion para items??
+
+		quitarItem(item);
+
+	}
+
+	public void anadirItem(Item item) {
+
+		if (item == null)
+			return;
+
+		if (inventario == null)
+			inventario = new Inventario(new ArrayList<Dado>(), new ArrayList<Pez>(), new ArrayList<BolaDeNieve>());
+
+		if (item instanceof BolaDeNieve)
+			inventario.addListaBolas((BolaDeNieve) item);
+
+		else if (item instanceof Pez)
+			inventario.addListaPez((Pez) item);
+
+		else if (item instanceof Dado_lento)
+			inventario.addListaDado((Dado_lento) item);
+
+		else if (item instanceof Dado_rapido)
+			inventario.addListaDado((Dado_rapido) item);
+
+	}
+
+	public void quitarItem(Item item) {
+
+		if (item instanceof BolaDeNieve)
+			inventario.getBolas().removeFirst();
+
+		else if (item instanceof Pez)
+			inventario.getPez().removeFirst();
+
+		else if (item instanceof Dado_lento)
+			inventario.getDado().remove(item);
+
+		else if (item instanceof Dado_rapido)
+			inventario.getDado().remove(item);
+
+	}
+
+}
