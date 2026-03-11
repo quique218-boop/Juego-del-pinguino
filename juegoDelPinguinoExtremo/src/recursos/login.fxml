@@ -5,7 +5,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="juegoDelPinguinoExtremo.LoginController"
+      fx:controller="vista.LoginController"
       alignment="CENTER"
       spacing="10">
 
