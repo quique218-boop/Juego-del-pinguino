@@ -42,14 +42,13 @@ public class GestorJugador {
 		}
 	}
 
-	public void jugadorSeMueve(Jugador jugador, int pasos, Tablero tablero) {
+	public jugadorSeMueve(Jugador jugador, int pasos) {
 
 		if (jugador == null)
 			return;
 
 		jugador.moverPosicion(pasos);
 
-		tablero.getCasilla(jugador.getPos());
 	}
 
 	public void jugadorFinalizaTurno(Jugador jugador) {
