@@ -41,34 +41,42 @@ public class CargarP {
 	@FXML
 	private void c1(ActionEvent event) {
 
-
+		//TODO
+		
 	}
 
 	@FXML
 	private void c2(ActionEvent event) {
 
+		//TODO
 
 	}
 
 	@FXML
 	private void c3(ActionEvent event) {
 
+		//TODO
 
 	}
 
 	@FXML
 	private void c4(ActionEvent event) {
 
+		//TODO
+		
 	}
 
 	@FXML
 	private void c5(ActionEvent event) {
 
+		//TODO
+		
 	}
 
 	@FXML
 	private void c6(ActionEvent event) {
 
+		//TODO
 
 	}
 	
@@ -82,6 +90,7 @@ public class CargarP {
 	@FXML
 	private void Guardar(ActionEvent event) {
 
+		//TODO
 
 	}
 	

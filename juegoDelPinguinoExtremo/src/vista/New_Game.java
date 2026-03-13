@@ -33,6 +33,8 @@ public class New_Game {
 	    private void cuatrof(ActionEvent event) {
 	    
 	    cambiarVentana(event, "/recursos/tablero.fxml");
+	    
+	  //TODO
 
 	    }
 	    
@@ -43,3 +45,5 @@ public class New_Game {
 	    	
 	    }
 }
+
+//TODO

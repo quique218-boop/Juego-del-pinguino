@@ -33,7 +33,7 @@ public class LoginController {
 
         Parent root = FXMLLoader.load(getClass().getResource("/recursos/Menu.fxml"));
         
-        GestorBBDD.guardarBBDD(null);
+        //GestorBBDD.guardarBBDD(null);
         
         Scene scene = new Scene(root);
 
