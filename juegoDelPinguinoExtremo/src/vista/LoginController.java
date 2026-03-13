@@ -31,8 +31,6 @@ public class LoginController {
         
         System.out.println("Password: " + passField.getText());
 
-        GestorBBDD.guardarBBDD(userField.getText(), passField.getText());
-
         Parent root = FXMLLoader.load(getClass().getResource("/recursos/Menu.fxml"));
         
         Scene scene = new Scene(root);
