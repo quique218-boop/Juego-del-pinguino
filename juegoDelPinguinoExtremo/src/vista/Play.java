@@ -10,7 +10,7 @@ public class Play {
 	@FXML
 	private void initialize() {
 		
-		GestorTablero = new GestorTablero();
+		//GestorTablero = new GestorTablero();
 	}
 
 	@FXML

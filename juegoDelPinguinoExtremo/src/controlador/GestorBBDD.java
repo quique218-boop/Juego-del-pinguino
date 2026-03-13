@@ -18,7 +18,7 @@ public class GestorBBDD {
 	public static void guardarBBDD(Tablero t1) {
 		con = BBDD.conectarBaseDatos();
 
-		int TABLERO_TURNOS = t1.getTurnos();
+		/*int TABLERO_TURNOS = t1.getTurnos();
 
 		int TABLERO_JUGADORACTUAL = t1.getjugadorActual();
 
@@ -43,9 +43,8 @@ public class GestorBBDD {
 		cols.add("NUMIDS");
 
 		procesamientoSelect(con, "SELECT COUNT(*) AS NUMIDS FROM TABLEROS", cols);
-
-		BBDD.insert(con, "INSERT INTO TABLEROS (ID, USERNAME, PASSWORD)\n" + "VALUES (" + count + ", \'" + username
-				+ "\', \'" + password + "\')");
+*/
+		BBDD.insert(con, "INSERT INTO testing (Num)\n" + "VALUES (2)");
 
 		BBDD.cerrar(con);
 	}
