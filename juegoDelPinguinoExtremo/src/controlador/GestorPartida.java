@@ -1,5 +1,7 @@
 package controlador;
 
+import modelo.*;
+
 public class GestorTablero {
 	
 	private Tablero tablero;

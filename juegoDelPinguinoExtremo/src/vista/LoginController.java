@@ -1,5 +1,6 @@
 package vista;
 
+import controlador.*;
 import java.io.IOException;
 
 import javafx.event.ActionEvent;

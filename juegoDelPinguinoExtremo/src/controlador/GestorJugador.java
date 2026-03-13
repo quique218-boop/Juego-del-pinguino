@@ -1,5 +1,7 @@
 package controlador;
 
+import modelo.*;
+
 public class GestorJugador {
 
 	public GestorJugador() {
