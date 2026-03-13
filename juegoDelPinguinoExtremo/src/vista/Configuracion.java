@@ -61,6 +61,8 @@ public class Configuracion {
 
 			Menu.musicaAmbiente.play();
 
+			System.out.println("Sonido Ambiental activado");
+			
 		}
 
 	}
@@ -75,6 +77,8 @@ public class Configuracion {
 		if (Menu.musicaAmbiente != null) {
 
 			Menu.musicaAmbiente.stop();
+			
+			System.out.println("Sonido Ambiental desactivado");
 
 		}
 
