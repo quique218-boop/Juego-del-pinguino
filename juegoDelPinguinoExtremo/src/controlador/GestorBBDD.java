@@ -30,6 +30,9 @@ public class GestorBBDD {
 
 			if (jugador instanceof Pinguino) {
 
+				BBDD.insert(con, "INSERT INTO JUGADOR (ID_JUGADOR, FOCA, ID_TABLERO, ID_USUARIO)\n" + "VALUES (" + count + ", \'" + username
+						+ "\', \'" + password + "\')");
+				
 			} else if (jugador instanceof Foca) {
 
 			}
