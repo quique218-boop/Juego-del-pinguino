@@ -11,11 +11,25 @@ public class GestorTablero {
 	private GestorBBDD gestorbbdd;
 	
 	private GestorCasilla gestorcasilla;
+	
+	public GestorTablero() {
+		
+		this.tablero = new Tablero();
+		
+		this.gestorjugador = new GestorJugador();
+		
+		this.gestorbbdd = new GestorBBDD();
+		
+		this.gestorcasilla = new GestorCasilla();
+			
+	}
+
+	
 
 	
 	public void NuevoTablero() {
 		
-		tablero.setArrayListCasilla(null); = tablero.inicializarTablero();
+		 tablero.inicializarTablero();
 
 		
 	}
@@ -35,6 +49,16 @@ public class GestorTablero {
 	}
 	
 	public void ejecutarTurnoCompleto() {
+		
+		if(tablero.getjugadorActual() instanceof Foca) {
+			
+			Dado d = new Dado("eleccion"); //AQUÍ DEBEREMOS DE TOMAR ELDADO ELEGIDO ENLA VISTA
+			
+			int movimiento = tirarDado(tablero.getjugadorActual(), d);
+			
+			gestorjugador.jugadorSeMueve(tablero.getjugadorActual(), movimiento);
+			
+		}
 
 		
 	}

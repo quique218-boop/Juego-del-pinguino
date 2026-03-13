@@ -117,7 +117,7 @@ public class Tablero {
 
 	}
 	
-	public ArrayList<Casilla> inicializarTablero(){
+	public void inicializarTablero(){
 		
 		ArrayList<Casilla> tablero = new ArrayList<>();
 		
@@ -172,7 +172,7 @@ public class Tablero {
 			}
 		}
 		
-		return tablero;
+		listaCasillas = tablero;
 		
 	}
 }
