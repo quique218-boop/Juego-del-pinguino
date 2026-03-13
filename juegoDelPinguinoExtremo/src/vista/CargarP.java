@@ -34,7 +34,7 @@ public class CargarP {
 
 	private void BHome(ActionEvent event) {
 
-		cambiarVentana(event, "Menu.fxml");
+		cambiarVentana(event, "/recursos/Menu.fxml");
 
 	}
 
@@ -75,7 +75,7 @@ public class CargarP {
 	@FXML
 	private void Cancelar(ActionEvent event) {
 
-		cambiarVentana(event, "Menu.fxml");
+		cambiarVentana(event, "/recursos/Menu.fxml");
 
 	}
 	

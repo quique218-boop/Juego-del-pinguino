@@ -34,7 +34,7 @@ public class Menu {
     
     private void nuevaPartida(ActionEvent event) {
     	
-        cambiarVentana(event, "New_Game.fxml");
+        cambiarVentana(event, "/recursos/New_Game.fxml");
         
     }
 
@@ -42,7 +42,7 @@ public class Menu {
     
     private void cargarPartida(ActionEvent event) {
     	
-        cambiarVentana(event, "CargarP.fxml");
+        cambiarVentana(event, "/recursos/CargarP.fxml");
         
     }
 
@@ -50,7 +50,7 @@ public class Menu {
     
     private void Personalizar(ActionEvent event) {
     	
-        cambiarVentana(event, "Personalizacion.fxml");
+        cambiarVentana(event, "/recursos/Personalizacion.fxml");
         
     }
 
@@ -58,7 +58,7 @@ public class Menu {
     
     private void Configuracion(ActionEvent event) {
     	
-        cambiarVentana(event, "Configuracion.fxml");
+        cambiarVentana(event, "/recursos/Configuracion.fxml");
         
     }
 
