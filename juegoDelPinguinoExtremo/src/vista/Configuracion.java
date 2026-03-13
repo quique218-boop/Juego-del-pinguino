@@ -1,165 +1,219 @@
 package vista;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class Configuracion {
 
-    private boolean sAmbiental = true;
-    
-    private double volumen = 0.5; // 50%
-   
-    private static boolean sObjetos = true;
-    
-    private static boolean sFoca = true;
-    
-    private static boolean mVictory = true;
-    
-    @FXML
-    
-    private void actAmbiental() {
-    	
-        sAmbiental = true;
+	private boolean sAmbiental = true;
 
-        if (Menu.musicaAmbiente != null) {
-        	
-            Menu.musicaAmbiente.setVolume(volumen);
-            
-            Menu.musicaAmbiente.play();
-            
-        }
-        
-    }
+	private double volumen = 0.5; // 50%
 
-    @FXML
-    
-    private void desAmbiental() {
-    	
-        sAmbiental = false;
+	private static boolean sObjetos = true;
 
-        if (Menu.musicaAmbiente != null) {
-        	
-            Menu.musicaAmbiente.stop();
-            
-        }
-        
-    }
+	private static boolean sFoca = true;
 
-    @FXML
-    
-    private void actSonidosObjetos() {
+	private static boolean mVictory = true;
 
-    	sObjetos = true;
-    	
-    }
 
-    @FXML
-    
-    private void desSonidosObjetos() {
+	private void cambiarVentana(ActionEvent event, String fxml) {
 
-    	sObjetos = false;
-    	
-    }
+		try {
 
-    @FXML
-    
-    private void actSonidosFoca() {
+			Parent root = FXMLLoader.load(getClass().getResource(fxml));
 
-    	sFoca = true;
-    	
-    }
+			Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-    @FXML
-    
-    private void desSonidosFoca() {
+			stage.setScene(new Scene(root));
 
-    	sFoca = false;
-    	
-    }
+			stage.show();
 
-    @FXML
-    
-    private void MVictory() {
+		} catch (Exception e) {
 
-    	mVictory = true;
-    	
-    }
+			e.printStackTrace();
 
-    @FXML
-    
-    private void desMVictory() {
+		}
 
-    	mVictory = false;
-    	
-    }
+	}
 
-    @FXML
-    
-    private void volumen0() {
-    	
-        volumen = 0.0;
+	@FXML
+	
+	private void BMenu(ActionEvent event) {
 
-        if (Menu.musicaAmbiente != null) {
-        	
-            Menu.musicaAmbiente.setVolume(volumen);
-            
-        }
-        
-    }
+		cambiarVentana(event, "/recursos/Menu.fxml");
 
-    @FXML
-    
-    private void volumen25() {
-    	
-        volumen = 0.25;
+	}
 
-        if (Menu.musicaAmbiente != null) {
-        	
-            Menu.musicaAmbiente.setVolume(volumen);
-            
-        }
-        
-    }
+	@FXML
 
-    @FXML
-    
-    private void volumen50() {
-    	
-        volumen = 0.5;
+	private void actAmbiental() {
 
-        if (Menu.musicaAmbiente != null) {
-        	
-            Menu.musicaAmbiente.setVolume(volumen);
-            
-        }
-        
-    }
+		sAmbiental = true;
 
-    @FXML
-    
-    private void volumen75() {
-    	
-        volumen = 0.75;
+		if (Menu.musicaAmbiente != null) {
 
-        if (Menu.musicaAmbiente != null) {
-        	
-            Menu.musicaAmbiente.setVolume(volumen);
-            
-        }
-        
-    }
+			Menu.musicaAmbiente.setVolume(volumen);
 
-    @FXML
-    
-    private void volumen100() {
-    	
-        volumen = 1.0;
+			Menu.musicaAmbiente.play();
 
-        if (Menu.musicaAmbiente != null) {
-        	
-            Menu.musicaAmbiente.setVolume(volumen);
-            
-        }
-        
-    }
-    
+		}
+
+	}
+
+	
+	@FXML
+
+	private void desAmbiental() {
+
+		sAmbiental = false;
+
+		if (Menu.musicaAmbiente != null) {
+
+			Menu.musicaAmbiente.stop();
+
+		}
+
+	}
+
+	@FXML
+
+	private void actSonidosObjetos() {
+
+		sObjetos = true;
+
+		System.out.println("Sonidos de Objetos activados");
+		
+	}
+
+	@FXML
+
+	private void desSonidosObjetos() {
+
+		sObjetos = false;
+
+		System.out.println("Sonidos de Objetos desactivados");
+	}
+
+	@FXML
+
+	private void actSonidosFoca() {
+
+		sFoca = true;
+
+		System.out.println("Sonidos de Foca activados");
+	}
+
+	@FXML
+
+	private void desSonidosFoca() {
+
+		sFoca = false;
+
+		System.out.println("Sonidos de Foca desactivados");
+	}
+
+	@FXML
+
+	private void MVictory() {
+
+		mVictory = true;
+
+		System.out.println("Musica de Victoria activada");
+		
+	}
+
+	@FXML
+
+	private void desMVictory() {
+
+		mVictory = false;
+
+		System.out.println("Musica de Victoria desactivada");
+		
+	}
+
+	@FXML
+
+	private void volumen0() {
+
+		volumen = 0.0;
+
+		if (Menu.musicaAmbiente != null) {
+
+			Menu.musicaAmbiente.setVolume(volumen);
+
+			System.out.println("Volumen del juego silenciado");
+		}
+
+	}
+
+	@FXML
+
+	private void volumen25() {
+
+		volumen = 0.25;
+
+		if (Menu.musicaAmbiente != null) {
+
+			Menu.musicaAmbiente.setVolume(volumen);
+
+			System.out.println("Volumen del juego ajustado al 25%");
+			
+		}
+
+	}
+
+	@FXML
+
+	private void volumen50() {
+
+		volumen = 0.5;
+
+		if (Menu.musicaAmbiente != null) {
+
+			Menu.musicaAmbiente.setVolume(volumen);
+
+			System.out.println("Volumen del juego ajustado al 50%");
+			
+		}
+
+	}
+
+	@FXML
+
+	private void volumen75() {
+
+		volumen = 0.75;
+
+		if (Menu.musicaAmbiente != null) {
+
+			Menu.musicaAmbiente.setVolume(volumen);
+
+			System.out.println("Volumen del juego ajustado al 75%");
+			
+		}
+
+	}
+
+	@FXML
+
+	private void volumen100() {
+
+		volumen = 1.0;
+
+		if (Menu.musicaAmbiente != null) {
+
+			Menu.musicaAmbiente.setVolume(volumen);
+			
+			System.out.println("Volumen del juego ajustado al máximo");
+
+		}
+
+	}
+
 }
