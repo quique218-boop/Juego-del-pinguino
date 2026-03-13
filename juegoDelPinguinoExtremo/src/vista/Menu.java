@@ -50,7 +50,7 @@ public class Menu {
     
     private void Personalizar(ActionEvent event) {
     	
-        cambiarVentana(event, "/recursos/Personalizacion.fxml");
+        cambiarVentana(event, "/recursos/personalizar.fxml");
         
     }
 

@@ -62,5 +62,9 @@
          </image>
       </ImageView>
       <Button layoutX="20.0" layoutY="14.0" mnemonicParsing="false" onAction="#BMenu" text="HOME" />
+      <Button layoutX="390.0" layoutY="237.0" mnemonicParsing="false" onAction="#J1" text="J1" />
+      <Button layoutX="442.0" layoutY="237.0" mnemonicParsing="false" onAction="#J2" text="J2" />
+      <Button layoutX="390.0" layoutY="276.0" mnemonicParsing="false" onAction="#J3" text="J3" />
+      <Button layoutX="442.0" layoutY="276.0" mnemonicParsing="false" onAction="#J4" text="J4" />
    </children>
 </AnchorPane>
