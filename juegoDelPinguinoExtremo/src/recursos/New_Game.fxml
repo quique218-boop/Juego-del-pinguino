@@ -12,12 +12,12 @@
             <Font size="31.0" />
          </font>
       </Label>
-      <Button layoutX="150.0" layoutY="88.0" mnemonicParsing="false" text="2 JUGADORES + FOCA">
+      <Button layoutX="150.0" layoutY="88.0" mnemonicParsing="false" onAction="#dosf" text="2 JUGADORES + FOCA">
          <font>
             <Font size="25.0" />
          </font>
       </Button>
-      <Button layoutX="150.0" layoutY="168.0" mnemonicParsing="false" text="3 JUGADORES + FOCA">
+      <Button layoutX="150.0" layoutY="168.0" mnemonicParsing="false" onAction="#tresf" text="3 JUGADORES + FOCA">
          <font>
             <Font size="25.0" />
          </font>
