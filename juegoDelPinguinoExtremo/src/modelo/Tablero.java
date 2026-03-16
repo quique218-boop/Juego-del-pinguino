@@ -8,7 +8,7 @@ public class Tablero {
 	private ArrayList<Jugador> listaJugador;
 	private ArrayList<Casilla> listaCasillas;
 	private int turnos;
-	private int jugadorActual;
+	private Jugador jugadorActual;
 	private boolean finalizada;
 	private Jugador ganador;
 	
@@ -55,12 +55,12 @@ public class Tablero {
 
 	}
 
-	public void setjugadorActual(int jugadorActual) {
+	public void setJugadorActual(Jugador jugadorActual) {
 
 		this.jugadorActual = jugadorActual;
 	}
 
-	public int getjugadorActual() {
+	public Jugador getJugadorActual() {
 
 		return this.jugadorActual;
 	}
