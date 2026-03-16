@@ -30,11 +30,23 @@ public class New_Game {
 	    }
 
 	    @FXML
+	    private void dosf(ActionEvent event) {
+	    
+	    cambiarVentana(event, "/recursos/Id4j.fxml");
+	    
+	    }
+	    
+	    @FXML
+	    private void tresf(ActionEvent event) {
+	    
+	    cambiarVentana(event, "/recursos/Id4j.fxml");
+	    
+	    }
+	    
+	    @FXML
 	    private void cuatrof(ActionEvent event) {
 	    
-	    cambiarVentana(event, "/recursos/tablero.fxml");
-	    
-	  //TODO
+	    cambiarVentana(event, "/recursos/Id4j.fxml");
 
 	    }
 	    

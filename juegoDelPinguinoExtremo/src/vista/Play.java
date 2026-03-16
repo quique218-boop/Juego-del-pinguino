@@ -187,5 +187,10 @@ public class Play {
 		}
 
 	}
+	
+	private void Pausa() {
+		
+		
+	}
 
 }
