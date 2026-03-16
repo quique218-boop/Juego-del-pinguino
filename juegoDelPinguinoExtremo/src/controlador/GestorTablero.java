@@ -156,8 +156,9 @@ public class GestorTablero {
 		
 	}
 	
-	public Partida getPartida() {
+	public Tablero getPartida() {
 
+		return tablero;
 		
 	}
 	
