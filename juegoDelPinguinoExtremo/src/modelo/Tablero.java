@@ -56,12 +56,12 @@ public class Tablero {
 
 	}
 
-	public void setjugadorActual(Jugador jugadorActual) {
+	public void setJugadorActual(Jugador jugadorActual) {
 
 		this.jugadorActual = jugadorActual;
 	}
 
-	public Jugador getjugadorActual() {
+	public Jugador getJugadorActual() {
 
 		return this.jugadorActual;
 	}
