@@ -25,7 +25,7 @@ public class GestorJugador {
 				jugador.usarItem(inventario.getBolas().get(0)); // El jugador coge la primera bola de nieve de la lista
 			}
 
-			if (nItem.equalsIgnoreCase("Pez")) {
+			else if (nItem.equalsIgnoreCase("Pez")) {
 
 				if (!inventario.getPez().isEmpty()) {
 
@@ -33,7 +33,7 @@ public class GestorJugador {
 
 				}
 
-				if (nItem.equalsIgnoreCase("Dado")) {
+				else if (nItem.equalsIgnoreCase("Dado")) {
 
 					if (!inventario.getDado().isEmpty()) {
 
