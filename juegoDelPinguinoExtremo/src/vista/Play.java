@@ -39,9 +39,9 @@ public class Play {
 		Inventario inventario = pinguino.getInventario();
 
 		if (inventario.getBolas().isEmpty()) { // Si la lista no es vacia
-			
+
 			System.out.println("No tienes este objeto");
-			
+
 		}else {
 
 			pinguino.usarItem(inventario.getBolas().get(0)); // El jugador coge la primera bola de nieve de la lista
@@ -53,13 +53,13 @@ public class Play {
 			gestorTablero.getPartida().getArrayListJugador();
 
 			Pinguino pinguino2 = null;
-			
+
 			for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
 
 				if (jugador.getNombre().equalsIgnoreCase(el)) {
 
 					pinguino2 = (Pinguino) jugador;
-					
+
 				} else {
 
 					System.out.println("No existe");
@@ -73,13 +73,13 @@ public class Play {
 			if (skill <= 5) {
 
 				System.out.println("Has fallado");
-				
+
 			}else {
-				
+
 				System.out.println("Has acertado");
-				
+
 				pinguino2.moverPosicion(-1);
-				
+
 			}
 
 		}
@@ -94,43 +94,43 @@ public class Play {
 		Inventario inventario = pinguino.getInventario();
 
 		Foca foca = null;
-		
+
 		for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
 
 			if (jugador.getNombre().equalsIgnoreCase("foca")) {
 
 				foca = (Foca) jugador;
-			
+
 			}
 		}
-		
+
 		if (inventario.getPez().isEmpty()) { // Si la lista no es vacia
-			
+
 			System.out.println("No tienes este objeto");
-			
+
 		}else {
-			
-		Casilla casillaActual = gestorTablero.getPartida().getCasilla(pinguino.getPos()); //Casilla donde se encuentra
-		
-		if(casillaActual instanceof Oso) {
-			
-			pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
-			
-		}else if(pinguino.getPos() == foca.getPos()) { //Si estamos en la misma casilla de foca
-			
-			System.out.println("Quieres usar un pez para salvar tu inventario?");
-			
-			//TODO debido a que queremos que se haga con ventanas emergentes de botones
-			
-			
-			// En caso de que si se usa pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
-			
-			//En caso de que no se pierde mitad de inventario
-			
-			foca.golpearJugador(pinguino, gestorTablero.getPartida()); //Te empuja al anterior agujero
-			
-		}
-			
+
+			Casilla casillaActual = gestorTablero.getPartida().getCasilla(pinguino.getPos()); //Casilla donde se encuentra
+
+			if(casillaActual instanceof Oso) {
+
+				pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
+
+			}else if(pinguino.getPos() == foca.getPos()) { //Si estamos en la misma casilla de foca
+
+				System.out.println("Quieres usar un pez para salvar tu inventario?");
+
+				//TODO debido a que queremos que se haga con ventanas emergentes de botones
+
+
+				// En caso de que si se usa pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
+
+				//En caso de que no se pierde mitad de inventario
+
+				foca.golpearJugador(pinguino, gestorTablero.getPartida()); //Te empuja al anterior agujero
+
+			}
+
 		}
 
 	}
@@ -138,14 +138,53 @@ public class Play {
 	@FXML
 	private void usarDadoR() {
 
-		// TODO
+		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
+		Inventario inventario = pinguino.getInventario();
+
+		if(inventario.getDado().size() < 0) {
+
+			System.out.println("No tienes ningún dado especial");
+
+		}else {
+
+			for(Dado d : pinguino.getInventario().getDado()) {
+
+				if(d.getNombre().equalsIgnoreCase("DadoR")) {
+
+					d.tirarDado(); //Tiramos el primer dado rápido que encontramos
+
+				}else if(d.getNombre().equalsIgnoreCase("Dado Lento")) {
+
+					d.tirarDado();
+
+				}
+			}
+		}
 	}
 
 	@FXML
 	private void usarDadoL() {
 
-		// TODO
+		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+
+		Inventario inventario = pinguino.getInventario();
+
+		if(inventario.getDado().size() < 0) {
+
+			System.out.println("No tienes ningún dado especial");
+
+		}else {
+
+			for(Dado d : pinguino.getInventario().getDado()) {
+
+				if(d.getNombre().equalsIgnoreCase("DadoL")) {
+
+					d.tirarDado();
+
+				}
+			}
+		}
 
 	}
 
