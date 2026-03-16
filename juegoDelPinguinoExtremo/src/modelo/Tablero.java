@@ -48,6 +48,7 @@ public class Tablero {
 
 		this.listaJugador = listaJugador;
 	}
+	
 
 	public void setArrayListCasilla(ArrayList<Casilla> listaCasillas) {
 

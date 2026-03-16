@@ -164,11 +164,14 @@ public class GestorTablero {
 	
 	public void guardarPartida() {
 
+		//Aquí guardaremos nuestra partida en la BBDD
 		
 	}
 	
 	public void cargarPartida(int id) {
-
 		
+		//Aquí cargaremos nuestra partida en la BBDD
+
 	}
+	
 }
