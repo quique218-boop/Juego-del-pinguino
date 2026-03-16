@@ -1,7 +1,9 @@
 package vista;
 
 import controlador.*;
+import modelo.*;
 import javafx.fxml.FXML;
+
 
 public class Play {
 	
@@ -10,15 +12,16 @@ public class Play {
 	@FXML
 	private void initialize() {
 		
-		//TODO
-		
-		//GestorTablero = new GestorTablero();
+		this.gestorTablero = new GestorTablero();
 	}
 
 	@FXML
 	private void lanzar() {
-
-		//TODO
+		
+		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+		Dado dado = (Dado) pinguino.getInventario().getDado().getFirst();
+		
+		int resultado = gestorTablero.tirarDado(pinguino, dado);
 		
 	}
 	
