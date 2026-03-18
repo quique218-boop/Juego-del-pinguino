@@ -13,7 +13,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import controlador.GestorPartida;
+import controlador.GestorTablero;
 import modelo.*;
 
 public class PantallaJuego {
@@ -66,7 +66,7 @@ public class PantallaJuego {
 	@FXML
 	private Circle P4;
 
-	private GestorPartida gestorPartida;
+	private GestorTablero gestorTablero;
 	// ONLY FOR TESTING!!!
 	private int p1Position = 0; // Tracks current position (from 0 to 49 in a 5x10 grid)
 	private static final int COLUMNS = 5;
@@ -87,7 +87,7 @@ public class PantallaJuego {
 		 */
 
 		// Partida p = new Partida();
-		gestorPartida = new GestorPartida();
+		gestorTablero = new GestorTablero();
 		
 		ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
 		Inventario inventario = new Inventario();
