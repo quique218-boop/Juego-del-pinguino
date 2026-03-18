@@ -8,7 +8,7 @@ public class GestorJugador {
 
 	}
 
-	public void jugadorUsarItem(Pinguino jugador, String nItem) {
+	public void jugadorUsarItem(Pinguino jugador, Item nItem) {
 
 		if (jugador == null || nItem == null)
 			return;
@@ -18,28 +18,28 @@ public class GestorJugador {
 		if (inventario == null)
 			return;
 
-		if (nItem.equalsIgnoreCase("Bola de Nieve")) {
+		if (nItem instanceof BolaDeNieve) {
 
 			if (!inventario.getBolas().isEmpty()) { // Si la lista no es vacia
 
 				jugador.usarItem(inventario.getBolas().get(0)); // El jugador coge la primera bola de nieve de la lista
 			}
+		}
 
-			else if (nItem.equalsIgnoreCase("Pez")) {
+		else if (nItem instanceof Pez) {
 
-				if (!inventario.getPez().isEmpty()) {
+			if (!inventario.getPez().isEmpty()) {
 
-					jugador.usarItem(inventario.getPez().get(0));
+				jugador.usarItem(inventario.getPez().get(0));
 
-				}
+			}
+		}
 
-				else if (nItem.equalsIgnoreCase("Dado")) {
+		else if (nItem instanceof Dado) {
 
-					if (!inventario.getDado().isEmpty()) {
+			if (!inventario.getDado().isEmpty()) {
 
-						jugador.usarItem(inventario.getDado().get(0));
-					}
-				}
+				jugador.usarItem(inventario.getDado().get(0));
 			}
 		}
 	}

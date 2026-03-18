@@ -4,17 +4,25 @@ import java.util.ArrayList;
 
 public class Inventario {
 
-	private ArrayList<Dado> listaDado = new ArrayList<>();
+	private ArrayList<Dado> listaDado;
 
-	private ArrayList<Pez> listaPez = new ArrayList<>();
+	private ArrayList<Pez> listaPez;
 
-	private ArrayList<BolaDeNieve> listaBolas = new ArrayList<>();
+	private ArrayList<BolaDeNieve> listaBolas;
 
 	public Inventario(ArrayList<Dado> listaDado, ArrayList<Pez> listaPez, ArrayList<BolaDeNieve> listaBolas) {
 
 		this.listaDado = listaDado;
 		this.listaPez = listaPez;
 		this.listaBolas = listaBolas;
+
+	}
+	
+	public Inventario() {
+
+		this.listaDado =  new ArrayList<>();
+		this.listaPez = new ArrayList<>();
+		this.listaBolas = new ArrayList<>();
 
 	}
 
