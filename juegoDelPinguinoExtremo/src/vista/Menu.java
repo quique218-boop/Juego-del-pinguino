@@ -54,7 +54,7 @@ public class Menu {
 
     @FXML
     private void nuevaPartida(ActionEvent event) {
-        cambiarVentana(event, "/recursos/New_Game.fxml");
+        cambiarVentana(event, "/recursos/PantallaJuego.fxml");
     }
 
     @FXML

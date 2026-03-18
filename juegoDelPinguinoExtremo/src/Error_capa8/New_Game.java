@@ -1,4 +1,4 @@
-package vista;
+package Error_capa8;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
