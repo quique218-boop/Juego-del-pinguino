@@ -158,14 +158,16 @@ public class PantallaJuego {
 	// Button actions
 	@FXML
 	private void handleDado(ActionEvent event) {
-		Pinguino pingu = (Pinguino) gestorPartida.getPartida().getJugadores().get(0);
-		Dado d = (Dado) pingu.getInv().getLista().get(0);
 		
-		System.out.println("Pos pingu previa:" + pingu.getPosicion());
+		Jugador pingu = (Jugador) gestorTablero.getPartida().getJugadorActual();
 		
-		int resultado = gestorPartida.tirarDado((Jugador) pingu, d);
+		Dado d = (Dado) pingu.getInventario().getDado().get(0);
 		
-		System.out.println("Pos pingu actual:" + pingu.getPosicion());
+		System.out.println("Pos pingu previa:" + pingu.getPos());
+		
+		int resultado = gestorTablero.tirarDado(pingu, d);
+		
+		System.out.println("Pos pingu actual:" + pingu.getPos());
 
 		// Update the Text
 		dadoResultText.setText("Ha salido: " + resultado);
