@@ -76,56 +76,46 @@ public class PantallaJuego {
 
 	@FXML
 	private void initialize() {
+
 		eventos.setText("¡El juego ha comenzado!");
 
-		// Generate model board
-		/*
-		 * ArrayList<Jugador> jugadores = new ArrayList<>(); jugadores.add(new
-		 * Pinguino(0, "Jugador 1", "Rojo", new Inventario(new ArrayList<>()))); Tablero
-		 * modeloTablero = new Tablero(new ArrayList<>(), jugadores, 0,
-		 * jugadores.get(0)); modeloTablero.generarCasillasAleatorias();
-		 */
-
-		// Partida p = new Partida();
 		gestorTablero = new GestorTablero();
-		
-		ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
-		Inventario inventario = new Inventario();
-		Dado dado = new Dado("normal", 1, 1, 6);
-		inventario.getLista().add(dado);
-		
-		jugadores.add(new Pinguino("Jugador1", "Azul", 0, inventario));
 
-		gestorPartida.nuevaPartida();
-		
-		gestorPartida.getPartida().setJugadores(jugadores);
+		Inventario inventario = new Inventario();
+		Dado dado = new Dado();
+
+		inventario.addListaDado(dado);
+
+		gestorTablero.NuevoTablero();
+
+		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", inventario));
 
 		// Show board info
-		mostrarTiposDeCasillasEnTablero(gestorPartida.getPartida().getTablero());
+		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
 		// Clear only the labels we generated in previous calls
 		tablero.getChildren().removeIf(node -> TAG_CASILLA_TEXT.equals(node.getUserData()));
 
-		for (int i = 0; i < t.getCasillas().size(); i++) {
-			Casilla casilla = t.getCasillas().get(i);
+		for (int i = 0; i < t.getArrayListCasilla().size(); i++) {
+			Casilla casilla = t.getArrayListCasilla().get(i);
 
 			// Skip position 0 and 49 if you want them to be special (start/end)
 			if (i > 0 && i < 49) {
-			String tipo = casilla.getClass().getSimpleName();
+				String tipo = casilla.getClass().getSimpleName();
 
-			Text texto = new Text(tipo);
-			texto.setUserData(TAG_CASILLA_TEXT);
-			texto.getStyleClass().add("cell-type");
+				Text texto = new Text(tipo);
+				texto.setUserData(TAG_CASILLA_TEXT);
+				texto.getStyleClass().add("cell-type");
 
-			int row = i / COLUMNS;
-			int col = i % COLUMNS;
+				int row = i / COLUMNS;
+				int col = i % COLUMNS;
 
-			GridPane.setRowIndex(texto, row);
-			GridPane.setColumnIndex(texto, col);
+				GridPane.setRowIndex(texto, row);
+				GridPane.setColumnIndex(texto, col);
 
-			tablero.getChildren().add(texto);
+				tablero.getChildren().add(texto);
 			}
 		}
 	}
@@ -158,15 +148,15 @@ public class PantallaJuego {
 	// Button actions
 	@FXML
 	private void handleDado(ActionEvent event) {
-		
+
 		Jugador pingu = (Jugador) gestorTablero.getPartida().getJugadorActual();
-		
+
 		Dado d = (Dado) pingu.getInventario().getDado().get(0);
-		
+
 		System.out.println("Pos pingu previa:" + pingu.getPos());
-		
+
 		int resultado = gestorTablero.tirarDado(pingu, d);
-		
+
 		System.out.println("Pos pingu actual:" + pingu.getPos());
 
 		// Update the Text
@@ -176,82 +166,74 @@ public class PantallaJuego {
 		moveP1(resultado);
 	}
 
-	
-/*	Old simple version
- * private void moveP1(int steps) {
+	/*
+	 * Old simple version private void moveP1(int steps) { p1Position += steps;
+	 * 
+	 * // Bound player if (p1Position >= 50) { p1Position = 49; // 5 columns * 10
+	 * rows = 50 cells (index 0 to 49) }
+	 * 
+	 * if (p1Position < 0) { p1Position = 0; }
+	 * 
+	 * // Check row and column int row = p1Position / COLUMNS; int col = p1Position
+	 * % COLUMNS;
+	 * 
+	 * // Change P1 property to match row and column GridPane.setRowIndex(P1, row);
+	 * GridPane.setColumnIndex(P1, col); }
+	 */
+
+	private void moveP1(int steps) {
+
+		// Evita spam del botón
+		dado.setDisable(true);
+
+		int oldPosition = p1Position;
+
 		p1Position += steps;
 
 		// Bound player
 		if (p1Position >= 50) {
-			p1Position = 49; // 5 columns * 10 rows = 50 cells (index 0 to 49)
+			p1Position = 49;
 		}
-		
+
 		if (p1Position < 0) {
 			p1Position = 0;
 		}
 
-		// Check row and column
-		int row = p1Position / COLUMNS;
-		int col = p1Position % COLUMNS;
+		// OLD position
+		int oldRow = oldPosition / COLUMNS;
+		int oldCol = oldPosition % COLUMNS;
 
-		// Change P1 property to match row and column
-		GridPane.setRowIndex(P1, row);
-		GridPane.setColumnIndex(P1, col);
-	}*/
-	
-	private void moveP1(int steps) {
+		// NEW position
+		int newRow = p1Position / COLUMNS;
+		int newCol = p1Position % COLUMNS;
 
-	    // Evita spam del botón
-	    dado.setDisable(true);
+		// Cell size (aproximado)
+		double cellWidth = tablero.getWidth() / COLUMNS;
+		double cellHeight = tablero.getHeight() / 10;
 
-	    int oldPosition = p1Position;
+		double dx = (newCol - oldCol) * cellWidth;
+		double dy = (newRow - oldRow) * cellHeight;
 
-	    p1Position += steps;
+		TranslateTransition slide = new TranslateTransition(Duration.millis(350), P1);
 
-	    // Bound player
-	    if (p1Position >= 50) {
-	        p1Position = 49;
-	    }
+		slide.setByX(dx);
+		slide.setByY(dy);
 
-	    if (p1Position < 0) {
-	        p1Position = 0;
-	    }
+		slide.setOnFinished(e -> {
 
-	    // OLD position
-	    int oldRow = oldPosition / COLUMNS;
-	    int oldCol = oldPosition % COLUMNS;
+			// reset translation
+			P1.setTranslateX(0);
+			P1.setTranslateY(0);
 
-	    // NEW position
-	    int newRow = p1Position / COLUMNS;
-	    int newCol = p1Position % COLUMNS;
+			// set real position in grid
+			GridPane.setRowIndex(P1, newRow);
+			GridPane.setColumnIndex(P1, newCol);
 
-	    // Cell size (aproximado)
-	    double cellWidth = tablero.getWidth() / COLUMNS;
-	    double cellHeight = tablero.getHeight() / 10;
+			// volver a activar el botón
+			dado.setDisable(false);
+		});
 
-	    double dx = (newCol - oldCol) * cellWidth;
-	    double dy = (newRow - oldRow) * cellHeight;
-
-	    TranslateTransition slide = new TranslateTransition(Duration.millis(350), P1);
-
-	    slide.setByX(dx);
-	    slide.setByY(dy);
-
-	    slide.setOnFinished(e -> {
-
-	        // reset translation
-	        P1.setTranslateX(0);
-	        P1.setTranslateY(0);
-
-	        // set real position in grid
-	        GridPane.setRowIndex(P1, newRow);
-	        GridPane.setColumnIndex(P1, newCol);
-
-	        // volver a activar el botón
-	        dado.setDisable(false);
-	    });
-
-	    slide.play();
+		slide.play();
 	}
 
 	@FXML
@@ -278,7 +260,7 @@ public class PantallaJuego {
 		// TODO
 	}
 
-	public void setGestorPartida(GestorPartida gestorPartida) {
-		this.gestorPartida = gestorPartida;
+	public void setGestorPartida(GestorTablero gestorTablero) {
+		this.gestorTablero = gestorTablero;
 	}
 }
