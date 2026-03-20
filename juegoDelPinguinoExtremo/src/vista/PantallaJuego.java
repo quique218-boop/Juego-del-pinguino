@@ -107,7 +107,7 @@ public class PantallaJuego {
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
-		
+
 		// Clear only the labels we generated in previous calls
 		tablero.getChildren().removeIf(node -> TAG_CASILLA_TEXT.equals(node.getUserData()));
 
@@ -174,7 +174,9 @@ public class PantallaJuego {
 
 		// Update the position
 		moveP1(resultado);
-		
+
+		jugador.anadirItem(new Dado_lento());
+
 		ActualizarInventarioGUI(jugador);
 	}
 
@@ -281,29 +283,30 @@ public class PantallaJuego {
 
 		Inventario inventario = pinguino.getInventario();
 
-		if (inventario.getDado().size() < 0) {
+		Dado_lento dadoLento = null;
 
-			System.out.println("No tienes ningún dado especial");
-
-		} else {
+		if (inventario.getDado().size() > 0) {
 
 			for (Dado d : pinguino.getInventario().getDado()) {
 
 				if (d instanceof Dado_lento) {
 
-					System.out.println("Pos pingu previa:" + pinguino.getPos());
-
-					int resultado = gestorTablero.tirarDado(pinguino, d);
-
-					System.out.println("Pos pingu actual:" + pinguino.getPos());
-
-					AddEventoHistorial("Usando dado lento ha salido: " + resultado);
-
-					lento_t.setText("Dado lento: " + inventario.getDado().size());
-
-					moveP1(resultado);
+					dadoLento = (Dado_lento) d;
 
 				}
+			}
+
+			if (dadoLento != null) {
+
+				System.out.println("Pos pingu previa:" + pinguino.getPos());
+
+				int resultado = gestorTablero.tirarDado(pinguino, dadoLento);
+
+				System.out.println("Pos pingu actual:" + pinguino.getPos());
+
+				AddEventoHistorial("Usando dado lento ha salido: " + resultado);
+
+				moveP1(resultado);
 			}
 		}
 
@@ -380,6 +383,10 @@ public class PantallaJuego {
 
 		int dadoLento = 0;
 
+		int peces = inventario.getPez().size();
+
+		int bolasNieve = inventario.getBolas().size();
+
 		for (Dado dado : inventario.getDado()) {
 
 			if (dado instanceof Dado_rapido) {
@@ -397,9 +404,29 @@ public class PantallaJuego {
 
 		lento_t.setText("Dado lento: " + dadoLento);
 
-		peces_t.setText("Peces: " + inventario.getPez().size());
+		peces_t.setText("Peces: " + peces);
 
-		nieve_t.setText("Bolas de nieve: " + inventario.getBolas().size());
+		nieve_t.setText("Bolas de nieve: " + bolasNieve);
+
+		if (dadoRapido == 0)
+			rapido.setDisable(true);
+		else
+			rapido.setDisable(false);
+
+		if (dadoLento == 0)
+			lento.setDisable(true);
+		else
+			lento.setDisable(false);
+
+		if (peces == 0)
+			this.peces.setDisable(true);
+		else
+			this.peces.setDisable(false);
+
+		if (bolasNieve == 0)
+			nieve.setDisable(true);
+		else
+			nieve.setDisable(false);
 
 	}
 
