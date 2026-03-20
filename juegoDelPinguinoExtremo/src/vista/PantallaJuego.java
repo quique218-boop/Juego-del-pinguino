@@ -1,6 +1,7 @@
 package vista;
 
 import java.util.Random;
+
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -92,10 +93,13 @@ public class PantallaJuego {
 		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", inventario));
 
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new Dado_lento());
+		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new Dado_rapido());
+		gestorTablero.getPartida().getJugador(0).getInventario().addListaBolas(new BolaDeNieve());
+		gestorTablero.getPartida().getJugador(0).getInventario().addListaPez(new Pez());
 
 		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getJugador(0)));
 
-		lento_t.setText("Dado lento: " + gestorTablero.getPartida().getJugador(0).getInventario().getDado().size());
+		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
 
 		// Show board info
 		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
@@ -156,19 +160,21 @@ public class PantallaJuego {
 	@FXML
 	private void handleDado(ActionEvent event) {
 
-		Jugador pingu = (Jugador) gestorTablero.getPartida().getJugadorActual();
+		Jugador jugador = (Jugador) gestorTablero.getPartida().getJugadorActual();
 
-		System.out.println("Pos pingu previa:" + pingu.getPos());
+		System.out.println("Pos pingu previa:" + jugador.getPos());
 
-		int resultado = gestorTablero.tirarDado(pingu);
+		int resultado = gestorTablero.tirarDado(jugador);
 
-		System.out.println("Pos pingu actual:" + pingu.getPos());
+		System.out.println("Pos pingu actual:" + jugador.getPos());
 
 		// Update the Text
 		dadoResultText.setText("Ha salido: " + resultado);
 
 		// Update the position
 		moveP1(resultado);
+		
+		ActualizarInventarioGUI(jugador);
 	}
 
 	/*
@@ -263,6 +269,8 @@ public class PantallaJuego {
 				}
 			}
 		}
+
+		ActualizarInventarioGUI(pinguino);
 	}
 
 	@FXML
@@ -286,21 +294,19 @@ public class PantallaJuego {
 
 					int resultado = gestorTablero.tirarDado(pinguino, d);
 
-					gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new Dado_lento());
-
 					System.out.println("Pos pingu actual:" + pinguino.getPos());
 
 					AddEventoHistorial("Usando dado lento ha salido: " + resultado);
 
-					lento_t.setText(
-							"Dado lento: " + gestorTablero.getPartida().getJugador(0).getInventario().getDado().size());
+					lento_t.setText("Dado lento: " + inventario.getDado().size());
 
 					moveP1(resultado);
 
-					return;
 				}
 			}
 		}
+
+		ActualizarInventarioGUI(pinguino);
 	}
 
 	@FXML
@@ -352,65 +358,47 @@ public class PantallaJuego {
 
 		}
 
+		ActualizarInventarioGUI(pinguino);
 	}
 
 	@FXML
 	private void handleNieve() {
+		System.out.println("Snow.");
 
-	/*	Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
-		Inventario inventario = pinguino.getInventario();
+		ActualizarInventarioGUI(pinguino);
+		// TODO
+	}
 
-		if (inventario.getBolas().isEmpty()) { // Si la lista no es vacia
+	private void ActualizarInventarioGUI(Jugador jugador) {
 
-			System.out.println("No tienes este objeto");
+		Inventario inventario = jugador.getInventario();
 
-		}else {
+		int dadoRapido = 0;
 
-			pinguino.usarItem(inventario.getBolas().get(0)); // El jugador coge la primera bola de nieve de la lista
+		int dadoLento = 0;
 
-			/*System.out.println("A que jugador quieres lanzar-le la bola de nieve?");
+		for (Dado dado : inventario.getDado()) {
 
-			String el = scanb.nextLine(); 
+			if (dado instanceof Dado_rapido) {
 
-			gestorTablero.getPartida().getArrayListJugador();
+				dadoRapido++;
 
-			Pinguino pinguino2 = null;
+			} else if (dado instanceof Dado_lento) {
 
-			for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
-
-				if (jugador.getNombre().equalsIgnoreCase(el)) {
-
-					pinguino2 = (Pinguino) jugador;
-
-				} else { 
-
-					System.out.println("No existe");
-
-				}
+				dadoLento++;
 
 			}
-		 
-		 
-			
-			int skill = random.nextInt() + 1;
-
-			if (skill <= 5) {
-
-				System.out.println("Has fallado");
-
-			}else {
-
-				System.out.println("Has acertado");
-
-				pinguino2.moverPosicion(-1);
-
-			}
-			
-			 
-			
 		}
-	*/
+
+		rapido_t.setText("Dado rápido: " + dadoRapido);
+
+		lento_t.setText("Dado lento: " + dadoLento);
+
+		peces_t.setText("Peces: " + inventario.getPez().size());
+
+		nieve_t.setText("Bolas de nieve: " + inventario.getBolas().size());
 
 	}
 
