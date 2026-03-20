@@ -19,6 +19,8 @@ public class Tablero {
 		listaJugador = new ArrayList<>();
 
 		listaCasillas = new ArrayList<>();
+		
+		turnos = 0;
 
 	}
 
@@ -109,7 +111,9 @@ public class Tablero {
 	}
 
 	public void siguienteTurno() {
+		
 		this.turnos++;
+		
 	}
 
 	public void marcarFinalizada() {
@@ -122,8 +126,9 @@ public class Tablero {
 		
 		ArrayList<Casilla> tablero = new ArrayList<>();
 		
+		tablero.add(new Normal());
 		
-		for(Casilla f : tablero) {
+		for(int i = 0; i < 48; i++) {
 			
 			int opcion = rand.nextInt(10);
 			
@@ -172,6 +177,8 @@ public class Tablero {
 				}
 			}
 		}
+		
+		tablero.add(new Normal());
 		
 		listaCasillas = tablero;
 		
