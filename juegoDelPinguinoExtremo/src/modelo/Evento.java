@@ -23,7 +23,7 @@ public class Evento extends Casilla {
 
 		case "Pez": {
 
-			pinguino.anadirItem(new Pez("Pez"));
+			pinguino.anadirItem(new Pez());
 
 			break;
 		}
@@ -33,7 +33,7 @@ public class Evento extends Casilla {
 			int totalBolas = ran.nextInt(3) + 1;
 
 			for (int i = 0; i < totalBolas; i++) {
-				pinguino.anadirItem(new BolaDeNieve("Bola de nieve"));
+				pinguino.anadirItem(new BolaDeNieve());
 			}
 
 			break;
@@ -45,11 +45,11 @@ public class Evento extends Casilla {
 
 			if (valor < 8) {
 
-				pinguino.anadirItem(new Dado_lento("Dado Lento"));
+				pinguino.anadirItem(new Dado_lento());
 
 			} else {
 
-				pinguino.anadirItem(new Dado_rapido("Dado Rapido"));
+				pinguino.anadirItem(new Dado_rapido());
 
 			}
 
