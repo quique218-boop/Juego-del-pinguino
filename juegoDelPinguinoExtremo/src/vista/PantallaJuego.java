@@ -256,21 +256,101 @@ public class PantallaJuego {
 
 	@FXML
 	private void handleRapido() {
-		System.out.println("Fast.");
-		// TODO
+		
+		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+
+		Inventario inventario = pinguino.getInventario();
+
+		if(inventario.getDado().size() < 0) {
+
+			System.out.println("No tienes ningún dado especial");
+
+		}else {
+
+			for(Dado d : pinguino.getInventario().getDado()) {
+
+				if(d instanceof Dado_rapido) {
+
+					d.tirarDado(); //Tiramos el primer dado rápido que encontramos
+
+				}
+			}
+		}
 	}
 
 	@FXML
 	private void handleLento() {
-		System.out.println("Slow.");
-		// TODO
+		
+		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+
+		Inventario inventario = pinguino.getInventario();
+
+		if(inventario.getDado().size() < 0) {
+
+			System.out.println("No tienes ningún dado especial");
+
+		}else {
+
+			for(Dado d : pinguino.getInventario().getDado()) {
+
+				if(d instanceof Dado_lento) {
+
+					d.tirarDado();
+
+				}
+			}
+		}
 	}
 
 	@FXML
 	private void handlePeces() {
-		System.out.println("Fish.");
-		// TODO
-	}
+		
+		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+
+		Inventario inventario = pinguino.getInventario();
+
+		Foca foca = null;
+
+		for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
+
+			if (jugador.getNombre().equalsIgnoreCase("foca")) {
+
+				foca = (Foca) jugador;
+
+			}
+		}
+
+		if (inventario.getPez().isEmpty()) { // Si la lista no es vacia
+
+			return;
+
+		}else {
+
+			Casilla casillaActual = gestorTablero.getPartida().getCasilla(pinguino.getPos()); //Casilla donde se encuentra
+
+			if(casillaActual instanceof Oso) {
+
+				pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
+
+			} else if(pinguino.getPos() == foca.getPos()) { //Si estamos en la misma casilla de foca
+
+				pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
+				
+				foca.esSobornado();
+				
+			} else if(pinguino.getPos() == foca.getPos() && pinguino.getInventario().getPez().isEmpty()) {
+					
+				foca.golpearJugador(pinguino, gestorTablero.getPartida()); //Te empuja al anterior agujero
+					
+				}else if(casillaActual instanceof Oso) {
+					
+					foca.usarItem(foca.getInventario().getPez().getFirst());
+					
+				}
+
+			}
+
+		}
 
 	@FXML
 	private void handleNieve() {
