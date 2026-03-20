@@ -68,7 +68,7 @@ public class GestorTablero {
 
 			else {
 
-				d = new Dado("normal");
+				d = new Dado();
 
 			}
 
@@ -101,7 +101,7 @@ public class GestorTablero {
 
 		else {
 
-			Dado d = new Dado("eleccion"); // AQUÍ DEBEREMOS DE TOMAR EL DADO ELEGIDO EN LA VISTA
+			Dado d = new Dado(); // AQUÍ DEBEREMOS DE TOMAR EL DADO ELEGIDO EN LA VISTA
 
 			int movimiento = tirarDado(tablero.getJugadorActual(), d);
 
