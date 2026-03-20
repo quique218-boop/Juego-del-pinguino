@@ -2,7 +2,6 @@ package vista;
 
 import java.util.ArrayList;
 import java.util.Random;
-
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -354,8 +353,62 @@ public class PantallaJuego {
 
 	@FXML
 	private void handleNieve() {
-		System.out.println("Snow.");
-		// TODO
+
+	/*	Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+
+		Inventario inventario = pinguino.getInventario();
+
+		if (inventario.getBolas().isEmpty()) { // Si la lista no es vacia
+
+			System.out.println("No tienes este objeto");
+
+		}else {
+
+			pinguino.usarItem(inventario.getBolas().get(0)); // El jugador coge la primera bola de nieve de la lista
+
+			/*System.out.println("A que jugador quieres lanzar-le la bola de nieve?");
+
+			String el = scanb.nextLine(); 
+
+			gestorTablero.getPartida().getArrayListJugador();
+
+			Pinguino pinguino2 = null;
+
+			for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
+
+				if (jugador.getNombre().equalsIgnoreCase(el)) {
+
+					pinguino2 = (Pinguino) jugador;
+
+				} else { 
+
+					System.out.println("No existe");
+
+				}
+
+			}
+		 
+		 
+			
+			int skill = random.nextInt() + 1;
+
+			if (skill <= 5) {
+
+				System.out.println("Has fallado");
+
+			}else {
+
+				System.out.println("Has acertado");
+
+				pinguino2.moverPosicion(-1);
+
+			}
+			
+			 
+			
+		}
+	*/
+
 	}
 
 	public void setGestorPartida(GestorPartida gestorPartida) {
