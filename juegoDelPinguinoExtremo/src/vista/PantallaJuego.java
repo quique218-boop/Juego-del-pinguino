@@ -1,11 +1,13 @@
 package vista;
 
-import java.util.ArrayList;
 import java.util.Random;
 import javafx.animation.TranslateTransition;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Circle;
@@ -50,8 +52,6 @@ public class PantallaJuego {
 	private Text peces_t;
 	@FXML
 	private Text nieve_t;
-	@FXML
-	private Text eventos;
 
 	// Game board and player pieces
 	@FXML
@@ -65,6 +65,11 @@ public class PantallaJuego {
 	@FXML
 	private Circle P4;
 
+	@FXML
+	private ListView<Text> ListaEventos;
+
+	private ObservableList<Text> ListaObservable = FXCollections.observableArrayList();
+
 	private GestorTablero gestorTablero;
 	// ONLY FOR TESTING!!!
 	private int p1Position = 0; // Tracks current position (from 0 to 49 in a 5x10 grid)
@@ -75,56 +80,49 @@ public class PantallaJuego {
 
 	@FXML
 	private void initialize() {
-		eventos.setText("¡El juego ha comenzado!");
 
-		// Generate model board
-		/*
-		 * ArrayList<Jugador> jugadores = new ArrayList<>(); jugadores.add(new
-		 * Pinguino(0, "Jugador 1", "Rojo", new Inventario(new ArrayList<>()))); Tablero
-		 * modeloTablero = new Tablero(new ArrayList<>(), jugadores, 0,
-		 * jugadores.get(0)); modeloTablero.generarCasillasAleatorias();
-		 */
+		AddEventoHistorial("¡El juego ha comenzado!");
 
-		// Partida p = new Partida();
 		gestorTablero = new GestorTablero();
-		
-		ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
-		Inventario inventario = new Inventario();
-		Dado dado = new Dado("normal", 1, 1, 6);
-		inventario.getLista().add(dado);
-		
-		jugadores.add(new Pinguino("Jugador1", "Azul", 0, inventario));
 
-		gestorPartida.nuevaPartida();
-		
-		gestorPartida.getPartida().setJugadores(jugadores);
+		Inventario inventario = new Inventario();
+
+		gestorTablero.NuevoTablero();
+
+		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", inventario));
+
+		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new Dado_lento());
+
+		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getJugador(0)));
+
+		lento_t.setText("Dado lento: " + gestorTablero.getPartida().getJugador(0).getInventario().getDado().size());
 
 		// Show board info
-		mostrarTiposDeCasillasEnTablero(gestorPartida.getPartida().getTablero());
+		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
 		// Clear only the labels we generated in previous calls
 		tablero.getChildren().removeIf(node -> TAG_CASILLA_TEXT.equals(node.getUserData()));
 
-		for (int i = 0; i < t.getCasillas().size(); i++) {
-			Casilla casilla = t.getCasillas().get(i);
+		for (int i = 0; i < t.getArrayListCasilla().size(); i++) {
+			Casilla casilla = t.getArrayListCasilla().get(i);
 
 			// Skip position 0 and 49 if you want them to be special (start/end)
 			if (i > 0 && i < 49) {
-			String tipo = casilla.getClass().getSimpleName();
+				String tipo = casilla.getClass().getSimpleName();
 
-			Text texto = new Text(tipo);
-			texto.setUserData(TAG_CASILLA_TEXT);
-			texto.getStyleClass().add("cell-type");
+				Text texto = new Text(tipo);
+				texto.setUserData(TAG_CASILLA_TEXT);
+				texto.getStyleClass().add("cell-type");
 
-			int row = i / COLUMNS;
-			int col = i % COLUMNS;
+				int row = i / COLUMNS;
+				int col = i % COLUMNS;
 
-			GridPane.setRowIndex(texto, row);
-			GridPane.setColumnIndex(texto, col);
+				GridPane.setRowIndex(texto, row);
+				GridPane.setColumnIndex(texto, col);
 
-			tablero.getChildren().add(texto);
+				tablero.getChildren().add(texto);
 			}
 		}
 	}
@@ -157,15 +155,13 @@ public class PantallaJuego {
 	// Button actions
 	@FXML
 	private void handleDado(ActionEvent event) {
-		
+
 		Jugador pingu = (Jugador) gestorTablero.getPartida().getJugadorActual();
-		
-		Dado d = (Dado) pingu.getInventario().getDado().get(0);
-		
+
 		System.out.println("Pos pingu previa:" + pingu.getPos());
-		
-		int resultado = gestorTablero.tirarDado(pingu, d);
-		
+
+		int resultado = gestorTablero.tirarDado(pingu);
+
 		System.out.println("Pos pingu actual:" + pingu.getPos());
 
 		// Update the Text
@@ -175,102 +171,94 @@ public class PantallaJuego {
 		moveP1(resultado);
 	}
 
-	
-/*	Old simple version
- * private void moveP1(int steps) {
+	/*
+	 * Old simple version private void moveP1(int steps) { p1Position += steps;
+	 * 
+	 * // Bound player if (p1Position >= 50) { p1Position = 49; // 5 columns * 10
+	 * rows = 50 cells (index 0 to 49) }
+	 * 
+	 * if (p1Position < 0) { p1Position = 0; }
+	 * 
+	 * // Check row and column int row = p1Position / COLUMNS; int col = p1Position
+	 * % COLUMNS;
+	 * 
+	 * // Change P1 property to match row and column GridPane.setRowIndex(P1, row);
+	 * GridPane.setColumnIndex(P1, col); }
+	 */
+
+	private void moveP1(int steps) {
+
+		// Evita spam del botón
+		dado.setDisable(true);
+
+		int oldPosition = p1Position;
+
 		p1Position += steps;
 
 		// Bound player
 		if (p1Position >= 50) {
-			p1Position = 49; // 5 columns * 10 rows = 50 cells (index 0 to 49)
+			p1Position = 49;
 		}
-		
+
 		if (p1Position < 0) {
 			p1Position = 0;
 		}
 
-		// Check row and column
-		int row = p1Position / COLUMNS;
-		int col = p1Position % COLUMNS;
+		// OLD position
+		int oldRow = oldPosition / COLUMNS;
+		int oldCol = oldPosition % COLUMNS;
 
-		// Change P1 property to match row and column
-		GridPane.setRowIndex(P1, row);
-		GridPane.setColumnIndex(P1, col);
-	}*/
-	
-	private void moveP1(int steps) {
+		// NEW position
+		int newRow = p1Position / COLUMNS;
+		int newCol = p1Position % COLUMNS;
 
-	    // Evita spam del botón
-	    dado.setDisable(true);
+		// Cell size (aproximado)
+		double cellWidth = tablero.getWidth() / COLUMNS;
+		double cellHeight = tablero.getHeight() / 10;
 
-	    int oldPosition = p1Position;
+		double dx = (newCol - oldCol) * cellWidth;
+		double dy = (newRow - oldRow) * cellHeight;
 
-	    p1Position += steps;
+		TranslateTransition slide = new TranslateTransition(Duration.millis(350), P1);
 
-	    // Bound player
-	    if (p1Position >= 50) {
-	        p1Position = 49;
-	    }
+		slide.setByX(dx);
+		slide.setByY(dy);
 
-	    if (p1Position < 0) {
-	        p1Position = 0;
-	    }
+		slide.setOnFinished(e -> {
 
-	    // OLD position
-	    int oldRow = oldPosition / COLUMNS;
-	    int oldCol = oldPosition % COLUMNS;
+			// reset translation
+			P1.setTranslateX(0);
+			P1.setTranslateY(0);
 
-	    // NEW position
-	    int newRow = p1Position / COLUMNS;
-	    int newCol = p1Position % COLUMNS;
+			// set real position in grid
+			GridPane.setRowIndex(P1, newRow);
+			GridPane.setColumnIndex(P1, newCol);
 
-	    // Cell size (aproximado)
-	    double cellWidth = tablero.getWidth() / COLUMNS;
-	    double cellHeight = tablero.getHeight() / 10;
+			// volver a activar el botón
+			dado.setDisable(false);
+		});
 
-	    double dx = (newCol - oldCol) * cellWidth;
-	    double dy = (newRow - oldRow) * cellHeight;
-
-	    TranslateTransition slide = new TranslateTransition(Duration.millis(350), P1);
-
-	    slide.setByX(dx);
-	    slide.setByY(dy);
-
-	    slide.setOnFinished(e -> {
-
-	        // reset translation
-	        P1.setTranslateX(0);
-	        P1.setTranslateY(0);
-
-	        // set real position in grid
-	        GridPane.setRowIndex(P1, newRow);
-	        GridPane.setColumnIndex(P1, newCol);
-
-	        // volver a activar el botón
-	        dado.setDisable(false);
-	    });
-
-	    slide.play();
+		slide.play();
 	}
 
 	@FXML
 	private void handleRapido() {
-		
+
 		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
 		Inventario inventario = pinguino.getInventario();
 
-		if(inventario.getDado().size() < 0) {
+		if (inventario.getDado().size() < 0) {
 
 			System.out.println("No tienes ningún dado especial");
 
-		}else {
+		} else {
 
-			for(Dado d : pinguino.getInventario().getDado()) {
+			for (Dado d : pinguino.getInventario().getDado()) {
 
-				if(d instanceof Dado_rapido) {
+				if (d instanceof Dado_rapido) {
 
-					d.tirarDado(); //Tiramos el primer dado rápido que encontramos
+					d.tirarDado(); // Tiramos el primer dado rápido que encontramos
 
 				}
 			}
@@ -279,23 +267,37 @@ public class PantallaJuego {
 
 	@FXML
 	private void handleLento() {
-		
+
 		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
 		Inventario inventario = pinguino.getInventario();
 
-		if(inventario.getDado().size() < 0) {
+		if (inventario.getDado().size() < 0) {
 
 			System.out.println("No tienes ningún dado especial");
 
-		}else {
+		} else {
 
-			for(Dado d : pinguino.getInventario().getDado()) {
+			for (Dado d : pinguino.getInventario().getDado()) {
 
-				if(d instanceof Dado_lento) {
+				if (d instanceof Dado_lento) {
 
-					d.tirarDado();
+					System.out.println("Pos pingu previa:" + pinguino.getPos());
 
+					int resultado = gestorTablero.tirarDado(pinguino, d);
+
+					gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new Dado_lento());
+
+					System.out.println("Pos pingu actual:" + pinguino.getPos());
+
+					AddEventoHistorial("Usando dado lento ha salido: " + resultado);
+
+					lento_t.setText(
+							"Dado lento: " + gestorTablero.getPartida().getJugador(0).getInventario().getDado().size());
+
+					moveP1(resultado);
+
+					return;
 				}
 			}
 		}
@@ -303,7 +305,7 @@ public class PantallaJuego {
 
 	@FXML
 	private void handlePeces() {
-		
+
 		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
 		Inventario inventario = pinguino.getInventario();
@@ -323,33 +325,34 @@ public class PantallaJuego {
 
 			return;
 
-		}else {
+		} else {
 
-			Casilla casillaActual = gestorTablero.getPartida().getCasilla(pinguino.getPos()); //Casilla donde se encuentra
+			Casilla casillaActual = gestorTablero.getPartida().getCasilla(pinguino.getPos()); // Casilla donde se
+																								// encuentra
 
-			if(casillaActual instanceof Oso) {
+			if (casillaActual instanceof Oso) {
+
+				pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
+
+			} else if (pinguino.getPos() == foca.getPos()) { // Si estamos en la misma casilla de foca
 
 				pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
 
-			} else if(pinguino.getPos() == foca.getPos()) { //Si estamos en la misma casilla de foca
-
-				pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
-				
 				foca.esSobornado();
-				
-			} else if(pinguino.getPos() == foca.getPos() && pinguino.getInventario().getPez().isEmpty()) {
-					
-				foca.golpearJugador(pinguino, gestorTablero.getPartida()); //Te empuja al anterior agujero
-					
-				}else if(casillaActual instanceof Oso) {
-					
-					foca.usarItem(foca.getInventario().getPez().getFirst());
-					
-				}
+
+			} else if (pinguino.getPos() == foca.getPos() && pinguino.getInventario().getPez().isEmpty()) {
+
+				foca.golpearJugador(pinguino, gestorTablero.getPartida()); // Te empuja al anterior agujero
+
+			} else if (casillaActual instanceof Oso) {
+
+				foca.usarItem(foca.getInventario().getPez().getFirst());
 
 			}
 
 		}
+
+	}
 
 	@FXML
 	private void handleNieve() {
@@ -411,7 +414,17 @@ public class PantallaJuego {
 
 	}
 
-	public void setGestorPartida(GestorPartida gestorPartida) {
-		this.gestorPartida = gestorPartida;
+	private void AddEventoHistorial(String evento) {
+
+		Text texto = new Text(evento);
+		texto.getStyleClass().add("events");
+
+		ListaObservable.add(0, texto);
+
+		ListaEventos.setItems(ListaObservable);
+	}
+
+	public void setGestorPartida(GestorTablero gestorTablero) {
+		this.gestorTablero = gestorTablero;
 	}
 }
