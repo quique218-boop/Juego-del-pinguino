@@ -40,6 +40,18 @@ public class GestorTablero {
 		tablero.getArrayListJugador().add(jugador);
 	}
 
+	public int tirarDado(Jugador jugador) {
+
+		Dado dadoDefault = new Dado();
+
+		int resultado = dadoDefault.tirarDado();
+
+		gestorjugador.jugadorSeMueve(jugador, resultado);
+
+		return resultado;
+
+	}
+	
 	public int tirarDado(Jugador jugador, Dado dadoOpcional) {
 
 		jugador.quitarItem(dadoOpcional);
