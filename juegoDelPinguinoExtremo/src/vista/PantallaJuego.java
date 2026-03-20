@@ -92,6 +92,7 @@ public class PantallaJuego {
 
 		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", inventario));
 
+		// TEMPORALMENTE DAMOS TODOS LOS OBJETOS AL PRINCIPIO
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new Dado_lento());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new Dado_rapido());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaBolas(new BolaDeNieve());
@@ -106,6 +107,7 @@ public class PantallaJuego {
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
+		
 		// Clear only the labels we generated in previous calls
 		tablero.getChildren().removeIf(node -> TAG_CASILLA_TEXT.equals(node.getUserData()));
 
@@ -152,8 +154,7 @@ public class PantallaJuego {
 
 	@FXML
 	private void handleQuitGame() {
-		System.out.println("Exit...");
-		// TODO
+		System.exit(0);
 	}
 
 	// Button actions
