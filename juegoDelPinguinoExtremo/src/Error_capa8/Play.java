@@ -147,7 +147,7 @@ public class Play {
 
 			for(Dado d : pinguino.getInventario().getDado()) {
 
-				if(d instanceof Dado_rapido) {
+				if(d instanceof DadoRapido) {
 
 					d.tirarDado(); //Tiramos el primer dado rápido que encontramos
 
@@ -171,7 +171,7 @@ public class Play {
 
 			for(Dado d : pinguino.getInventario().getDado()) {
 
-				if(d instanceof Dado_lento) {
+				if(d instanceof DadoLento) {
 
 					d.tirarDado();
 
