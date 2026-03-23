@@ -1,13 +1,8 @@
 package vista;
 
-import java.text.NumberFormat.Style;
-import java.util.Iterator;
-import java.util.Random;
-
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.css.StyleClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -18,6 +13,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.util.Random;
 import controlador.GestorTablero;
 import modelo.*;
 
