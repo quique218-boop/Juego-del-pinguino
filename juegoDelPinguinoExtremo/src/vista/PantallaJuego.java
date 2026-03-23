@@ -77,7 +77,7 @@ public class PantallaJuego {
 
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random rand = new Random();
-
+	private boolean modoBola = false;
 	@FXML
 	private void initialize() {
 
@@ -97,6 +97,8 @@ public class PantallaJuego {
 
 		lento_t.setText("Dado lento: " + gestorTablero.getPartida().getJugador(0).getInventario().getDado().size());
 
+		gestorTablero.getPartida().getJugador(0).getInventario().addListaBolas(new BolaDeNieve());
+		
 		// Show board info
 		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
 	}
@@ -355,63 +357,68 @@ public class PantallaJuego {
 	}
 
 	@FXML
-	private void handleNieve() {
-
-	/*	Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+	private void handleNieve() { //Seleccionamos el estado del juego
+		
+		
+		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
 		Inventario inventario = pinguino.getInventario();
 
 		if (inventario.getBolas().isEmpty()) { // Si la lista no es vacia
 
-			System.out.println("No tienes este objeto");
-
-		}else {
-
-			pinguino.usarItem(inventario.getBolas().get(0)); // El jugador coge la primera bola de nieve de la lista
-
-			/*System.out.println("A que jugador quieres lanzar-le la bola de nieve?");
-
-			String el = scanb.nextLine(); 
-
-			gestorTablero.getPartida().getArrayListJugador();
-
-			Pinguino pinguino2 = null;
-
-			for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
-
-				if (jugador.getNombre().equalsIgnoreCase(el)) {
-
-					pinguino2 = (Pinguino) jugador;
-
-				} else { 
-
-					System.out.println("No existe");
-
-				}
-
-			}
-		 
-		 
-			
-			int skill = random.nextInt() + 1;
-
-			if (skill <= 5) {
-
-				System.out.println("Has fallado");
-
-			}else {
-
-				System.out.println("Has acertado");
-
-				pinguino2.moverPosicion(-1);
-
-			}
-			
-			 
+			return;
+		
+		}
+		
+		modoBola = true;
+		
+	}
+	
+	
+	@FXML
+	
+	private void selecPingu(Pinguino objBola) {
+		
+		if(!modoBola) {
+						
+			return;
 			
 		}
-	*/
+		
+		tirarBola(objBola);
+		
+		modoBola = false;		
+		
+	}
+	
+	
+	private void tirarBola(Pinguino objBola) {
+		
+		Random random = new Random();
+		
+		Pinguino pinguinoact = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
+		Inventario inventario = pinguinoact.getInventario();
+		
+		if(inventario.getBolas().isEmpty()) {
+			
+			return;
+			
+		}else if(objBola == null || objBola == pinguinoact) {
+			
+			return;
+			
+		}
+		
+		pinguinoact.usarItem(inventario.getBolas().getFirst());
+		
+		int skill = random .nextInt(10) + 1;
+		
+		if(skill > 5 ) {
+			
+			objBola.moverPosicion(-1);
+		}
+		
 	}
 
 	private void AddEventoHistorial(String evento) {

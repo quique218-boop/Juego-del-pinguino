@@ -10,6 +10,7 @@ public abstract class Jugador {
 	private boolean turnoTerminado;
 	private Inventario inventario;
 	private int deudaTurnos;
+	private boolean objBola;
 
 	public Jugador(String nombre, String color, Inventario inventario) {
 
@@ -17,6 +18,7 @@ public abstract class Jugador {
 		this.color = color;
 		this.posicion = 0;
 		this.inventario = inventario;
+		this.objBola = false;
 	}
 
 	public String getNombre() {
@@ -164,6 +166,17 @@ public abstract class Jugador {
 		else if (item instanceof Dado_rapido)
 			inventario.getDado().remove(item);
 
+	}
+	
+	public boolean objBola() {
+		
+		return objBola;
+		
+	}
+	
+	public void modoBola(boolean objBola) {
+		
+		this.objBola = objBola;
 	}
 
 }
