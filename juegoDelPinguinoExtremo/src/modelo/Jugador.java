@@ -10,6 +10,7 @@ public abstract class Jugador {
 	private boolean turnoTerminado;
 	private Inventario inventario;
 	private int deudaTurnos;
+	private boolean objBola;
 
 	public Jugador(String nombre, String color, Inventario inventario) {
 
@@ -17,6 +18,7 @@ public abstract class Jugador {
 		this.color = color;
 		this.posicion = 0;
 		this.inventario = inventario;
+		this.objBola = false;
 	}
 
 	public String getNombre() {
@@ -91,13 +93,14 @@ public abstract class Jugador {
 	public void setDeudaTurnos(int deudaTurnos) {
 		this.deudaTurnos = deudaTurnos;
 	}
-	
+
 	public void terminarTurnoSiHayDeuda() {
-		
-		if(this.deudaTurnos > 0) this.turnoTerminado = true;
-		
+
+		if (this.deudaTurnos > 0)
+			this.turnoTerminado = true;
+
 	}
-	
+
 	public int contarBolasdeNieve() {
 
 		if (inventario == null)
@@ -164,6 +167,14 @@ public abstract class Jugador {
 		else if (item instanceof DadoRapido)
 			inventario.getDado().remove(item);
 
+	}
+
+	public boolean objBola() {
+		return objBola;
+	}
+
+	public void modoBola(boolean objBola) {
+		this.objBola = objBola;
 	}
 
 }
