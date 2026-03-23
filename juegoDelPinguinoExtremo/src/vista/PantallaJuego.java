@@ -75,6 +75,8 @@ public class PantallaJuego {
 	private int p1Position = 0; // Tracks current position (from 0 to 49 in a 5x10 grid)
 	private static final int COLUMNS = 5;
 
+	private boolean modoBola = false;
+
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random rand = new Random();
 
@@ -329,13 +331,37 @@ public class PantallaJuego {
 	}
 
 	@FXML
-	private void handleNieve() {
-		System.out.println("Snow.");
-
+	private void handleNieve() { // Seleccionamos el estado del juego
 		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
-		ActualizarInventarioGUI(pinguino);
-		// TODO
+		Inventario inventario = pinguino.getInventario();
+
+		if (inventario.getBolas().isEmpty()) { // Si la lista no es vacia
+
+			return;
+		}
+		modoBola = true;
+	}
+
+	private void selecPingu(Pinguino objBola) {
+		if (!modoBola) {
+			return;
+		}
+		tirarBola(objBola);
+		modoBola = false;
+	}
+
+	private void tirarBola(Pinguino objBola) {
+
+		Random random = new Random();
+		Pinguino pinguinoact = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+
+		Inventario inventario = pinguinoact.getInventario();
+		if (inventario.getBolas().isEmpty()) {
+			return;
+		} else if (objBola == null || objBola == pinguinoact) {
+			return;
+		}
 	}
 
 	private void ActualizarInventarioGUI(Jugador jugador) {
