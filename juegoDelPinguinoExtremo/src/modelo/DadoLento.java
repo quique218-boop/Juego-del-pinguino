@@ -1,8 +1,8 @@
 package modelo;
 
-public class Dado_lento extends Dado {
+public class DadoLento extends Dado {
 
-	public Dado_lento() {
+	public DadoLento() {
 
 		this.setMax(3);
 

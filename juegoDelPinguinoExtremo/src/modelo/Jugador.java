@@ -144,11 +144,11 @@ public abstract class Jugador {
 		else if (item instanceof Pez)
 			inventario.addListaPez((Pez) item);
 
-		else if (item instanceof Dado_lento)
-			inventario.addListaDado((Dado_lento) item);
+		else if (item instanceof DadoLento)
+			inventario.addListaDado((DadoLento) item);
 
-		else if (item instanceof Dado_rapido)
-			inventario.addListaDado((Dado_rapido) item);
+		else if (item instanceof DadoRapido)
+			inventario.addListaDado((DadoRapido) item);
 
 	}
 
@@ -160,10 +160,10 @@ public abstract class Jugador {
 		else if (item instanceof Pez)
 			inventario.getPez().removeFirst();
 
-		else if (item instanceof Dado_lento)
+		else if (item instanceof DadoLento)
 			inventario.getDado().remove(item);
 
-		else if (item instanceof Dado_rapido)
+		else if (item instanceof DadoRapido)
 			inventario.getDado().remove(item);
 
 	}

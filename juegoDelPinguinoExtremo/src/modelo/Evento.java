@@ -44,11 +44,11 @@ public class Evento extends Casilla {
 
 			if (valor < 8) {
 
-				jugador.anadirItem(new Dado_lento());
+				jugador.anadirItem(new DadoLento());
 
 			} else {
 
-				jugador.anadirItem(new Dado_rapido());
+				jugador.anadirItem(new DadoRapido());
 
 			}
 
