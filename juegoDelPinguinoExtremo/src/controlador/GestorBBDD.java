@@ -90,32 +90,6 @@ public class GestorBBDD {
 		
 		int turno_foca = 4;
 		
-		/*int TABLERO_TURNOS = t1.getTurnos();
-
-		int TABLERO_JUGADORACTUAL = t1.getjugadorActual();
-
-		ArrayList<Casilla> TABLERO_CASILLAS = t1.getArrayListCasilla();
-
-		int numeroJugadores = t1.getArrayListJugador().size();
-
-		for (Jugador jugador : t1.getArrayListJugador()) {
-
-			if (jugador instanceof Pinguino) {
-
-				BBDD.insert(con, "INSERT INTO JUGADOR (ID_JUGADOR, FOCA, ID_TABLERO, ID_USUARIO)\n" + "VALUES (" + count + ", \'" + username
-						+ "\', \'" + password + "\')");
-
-			} else if (jugador instanceof Foca) {
-
-			}
-		}
-
-		ArrayList<String> cols = new ArrayList<>();
-
-		cols.add("NUMIDS");
-
-		procesamientoSelect(con, "SELECT COUNT(*) AS NUMIDS FROM TABLEROS", cols);
-		 */
 		BBDD.insert(con, "INSERT INTO testing (Num)\n" + "VALUES (2)");
 
 		BBDD.cerrar(con);
