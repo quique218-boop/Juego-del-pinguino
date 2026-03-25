@@ -13,6 +13,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
 import java.util.Random;
 import controlador.GestorTablero;
 import modelo.*;
@@ -71,7 +72,7 @@ public class PantallaJuego {
 	private ObservableList<Text> ListaObservable = FXCollections.observableArrayList();
 
 	private boolean modoBola = false;
-	
+
 	private GestorTablero gestorTablero;
 	// ONLY FOR TESTING!!!
 	private int p1Position = 0; // Tracks current position (from 0 to 49 in a 5x10 grid)
@@ -91,10 +92,14 @@ public class PantallaJuego {
 		gestorTablero = new GestorTablero();
 
 		Inventario inventario = new Inventario();
-		
+
 		gestorTablero.NuevoTablero();
 
 		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", inventario));
+
+		gestorTablero.añadirJugador(new Pinguino("Jugador2", "Verde", inventario));
+
+		gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", inventario));
 
 		// TEMPORALMENTE DAMOS TODOS LOS OBJETOS AL PRINCIPIO
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new DadoLento());
@@ -108,6 +113,8 @@ public class PantallaJuego {
 
 		// Show board info
 		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
+
+		BorrarFichasSinJugador();
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
@@ -166,6 +173,9 @@ public class PantallaJuego {
 	private void handleDado(ActionEvent event) {
 
 		Jugador jugador = (Jugador) gestorTablero.getPartida().getJugadorActual();
+		Jugador jugador2 = (Jugador) gestorTablero.getPartida().getJugador(1);
+
+		System.out.println("Pos pingu2 actual:" + jugador2.getPos());
 
 		System.out.println("Pos pingu previa:" + jugador.getPos());
 
@@ -297,6 +307,24 @@ public class PantallaJuego {
 		selecPingu(gestorTablero.getPartida().getJugador(3));
 	}
 
+	private void BorrarFichasSinJugador() {
+
+		ArrayList<Jugador> listaJugadores = gestorTablero.getPartida().getArrayListJugador();
+
+		if (listaJugadores.size() == 4) {
+
+			tablero.getChildren().remove(P4);
+
+		}
+
+		if (listaJugadores.size() == 3) {
+
+			tablero.getChildren().remove(P4);
+			tablero.getChildren().remove(P3);
+
+		}
+	}
+
 	private void selecPingu(Jugador objBola) {
 		if (!modoBola) {
 			return;
@@ -318,9 +346,22 @@ public class PantallaJuego {
 		}
 
 		int distancia = CalcularDistancia(pinguinoAct, objBola);
+		
+		pinguinoAct.usarItem(inventario.getBolas().getFirst());
 
-		if (CalcularExito(distancia))
-			objBola.moverPosicion(-1);
+		ActualizarInventarioGUI(pinguinoAct);
+
+		if (CalcularExito(distancia)) {
+
+			objBola.moverPosicion(3); // TODO testing !!! (DEBERIA SER -1)
+
+			AddEventoHistorial("¡¡Has acertado!!");
+
+		} else {
+			
+			AddEventoHistorial("Has fallado :(");
+			
+		}
 
 	}
 
