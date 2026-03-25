@@ -70,12 +70,12 @@ public class PantallaJuego {
 
 	private ObservableList<Text> ListaObservable = FXCollections.observableArrayList();
 
+	private boolean modoBola = false;
+	
 	private GestorTablero gestorTablero;
 	// ONLY FOR TESTING!!!
 	private int p1Position = 0; // Tracks current position (from 0 to 49 in a 5x10 grid)
 	private static final int COLUMNS = 5;
-
-	private boolean modoBola = false;
 
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random random = new Random();
