@@ -93,13 +93,14 @@ public abstract class Jugador {
 	public void setDeudaTurnos(int deudaTurnos) {
 		this.deudaTurnos = deudaTurnos;
 	}
-	
+
 	public void terminarTurnoSiHayDeuda() {
-		
-		if(this.deudaTurnos > 0) this.turnoTerminado = true;
-		
+
+		if (this.deudaTurnos > 0)
+			this.turnoTerminado = true;
+
 	}
-	
+
 	public int contarBolasdeNieve() {
 
 		if (inventario == null)
@@ -176,6 +177,14 @@ public abstract class Jugador {
 	
 	public void modoBola(boolean objBola) {
 		
+		this.objBola = objBola;
+	}
+
+	public boolean objBola() {
+		return objBola;
+	}
+
+	public void modoBola(boolean objBola) {
 		this.objBola = objBola;
 	}
 

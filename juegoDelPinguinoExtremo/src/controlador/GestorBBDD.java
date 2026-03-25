@@ -18,32 +18,78 @@ public class GestorBBDD {
 	public static void guardarBBDD(Tablero t1) {
 		con = BBDD.conectarBaseDatos();
 
-		/*int TABLERO_TURNOS = t1.getTurnos();
+		int n_jug_actual;
+		int id_tablero = -1;
 
-		int TABLERO_JUGADORACTUAL = t1.getjugadorActual();
+		int turnos_tablero = t1.getTurnos();
 
-		ArrayList<Casilla> TABLERO_CASILLAS = t1.getArrayListCasilla();
+		Jugador jugador_actual = t1.getJugadorActual();
 
-		int numeroJugadores = t1.getArrayListJugador().size();
+		for(int i = 0; i < t1.getArrayListJugador().size(); i++) {
 
-		for (Jugador jugador : t1.getArrayListJugador()) {
+			if(jugador_actual == t1.getArrayListJugador().get(i)){
 
-			if (jugador instanceof Pinguino) {
+				n_jug_actual = i;
+			}
 
-				BBDD.insert(con, "INSERT INTO JUGADOR (ID_JUGADOR, FOCA, ID_TABLERO, ID_USUARIO)\n" + "VALUES (" + count + ", \'" + username
-						+ "\', \'" + password + "\')");
-				
-			} else if (jugador instanceof Foca) {
+		}
+
+		ArrayList<Casilla> casillas = t1.getArrayListCasilla();
+
+		int n_peces = t1.getJugador(0).getInventario().getPez().size();
+
+		int n_bolas = t1.getJugador(0).getInventario().getBolas().size();
+
+		int n_dadoR = 0;
+		int n_dadoL = 0;
+
+		for (Dado dado : t1.getJugador(0).getInventario().getDado()) {
+
+			if (dado instanceof DadoRapido) {
+
+				n_dadoR++;
+
+			} else if (dado instanceof DadoLento) {
+
+				n_dadoL++;
 
 			}
 		}
 
-		ArrayList<String> cols = new ArrayList<>();
+		Jugador j1 = t1.getJugador(0);
 
-		cols.add("NUMIDS");
+		Jugador j2 = t1.getJugador(1);
 
-		procesamientoSelect(con, "SELECT COUNT(*) AS NUMIDS FROM TABLEROS", cols);
-*/
+		Jugador j3 = t1.getJugador(2);
+
+		Jugador j4 = t1.getJugador(3);
+
+		Jugador j5 = t1.getJugador(4);
+
+		Jugador foca = t1.getJugador(5); //Al insertarlo en SQL se tendria que poner 1
+
+		int pos_j1 = t1.getJugador(0).getPos();
+
+		int pos_j2 = t1.getJugador(1).getPos();
+
+		int pos_j3 = t1.getJugador(2).getPos();
+
+		int pos_j4 = t1.getJugador(3).getPos();
+
+		int pos_j5 = t1.getJugador(4).getPos();
+
+		int pos_foca = t1.getJugador(5).getPos();
+
+		int turno_j1 = 0;
+
+		int turno_j2 = 1;
+		
+		int turno_j3 = 2;
+		
+		int turno_j4 = 3;
+		
+		int turno_foca = 4;
+		
 		BBDD.insert(con, "INSERT INTO testing (Num)\n" + "VALUES (2)");
 
 		BBDD.cerrar(con);
