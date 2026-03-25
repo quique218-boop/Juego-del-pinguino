@@ -78,7 +78,10 @@ public class PantallaJuego {
 	private boolean modoBola = false;
 
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
-	private final Random rand = new Random();
+	private final Random random = new Random();
+
+	private final Double RATIO_DESCENSO_PROBABILIDAD = 0.45d;
+	private final Double e = 2.718281828459045235360d;
 
 	@FXML
 	private void initialize() {
@@ -88,7 +91,7 @@ public class PantallaJuego {
 		gestorTablero = new GestorTablero();
 
 		Inventario inventario = new Inventario();
-
+		
 		gestorTablero.NuevoTablero();
 
 		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", inventario));
@@ -179,76 +182,6 @@ public class PantallaJuego {
 		ActualizarInventarioGUI(jugador);
 	}
 
-	/*
-	 * Old simple version private void moveP1(int steps) { p1Position += steps;
-	 * 
-	 * // Bound player if (p1Position >= 50) { p1Position = 49; // 5 columns * 10
-	 * rows = 50 cells (index 0 to 49) }
-	 * 
-	 * if (p1Position < 0) { p1Position = 0; }
-	 * 
-	 * // Check row and column int row = p1Position / COLUMNS; int col = p1Position
-	 * % COLUMNS;
-	 * 
-	 * // Change P1 property to match row and column GridPane.setRowIndex(P1, row);
-	 * GridPane.setColumnIndex(P1, col); }
-	 */
-
-	private void moveP1(int steps) {
-
-		// Evita spam del botón
-		dado.setDisable(true);
-
-		int oldPosition = p1Position;
-
-		p1Position += steps;
-
-		// Bound player
-		if (p1Position >= 50) {
-			p1Position = 49;
-		}
-
-		if (p1Position < 0) {
-			p1Position = 0;
-		}
-
-		// OLD position
-		int oldRow = oldPosition / COLUMNS;
-		int oldCol = oldPosition % COLUMNS;
-
-		// NEW position
-		int newRow = p1Position / COLUMNS;
-		int newCol = p1Position % COLUMNS;
-
-		// Cell size (aproximado)
-		double cellWidth = tablero.getWidth() / COLUMNS;
-		double cellHeight = tablero.getHeight() / 10;
-
-		double dx = (newCol - oldCol) * cellWidth;
-		double dy = (newRow - oldRow) * cellHeight;
-
-		TranslateTransition slide = new TranslateTransition(Duration.millis(350), P1);
-
-		slide.setByX(dx);
-		slide.setByY(dy);
-
-		slide.setOnFinished(e -> {
-
-			// reset translation
-			P1.setTranslateX(0);
-			P1.setTranslateY(0);
-
-			// set real position in grid
-			GridPane.setRowIndex(P1, newRow);
-			GridPane.setColumnIndex(P1, newCol);
-
-			// volver a activar el botón
-			dado.setDisable(false);
-		});
-
-		slide.play();
-	}
-
 	@FXML
 	private void handleRapido() {
 
@@ -332,18 +265,39 @@ public class PantallaJuego {
 
 	@FXML
 	private void handleNieve() { // Seleccionamos el estado del juego
+
 		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
 		Inventario inventario = pinguino.getInventario();
 
 		if (inventario.getBolas().isEmpty()) { // Si la lista no es vacia
-
 			return;
 		}
+
 		modoBola = true;
 	}
 
-	private void selecPingu(Pinguino objBola) {
+	@FXML
+	private void selecP1() {
+		selecPingu(gestorTablero.getPartida().getJugador(0));
+	}
+
+	@FXML
+	private void selecP2() {
+		selecPingu(gestorTablero.getPartida().getJugador(1));
+	}
+
+	@FXML
+	private void selecP3() {
+		selecPingu(gestorTablero.getPartida().getJugador(2));
+	}
+
+	@FXML
+	private void selecP4() {
+		selecPingu(gestorTablero.getPartida().getJugador(3));
+	}
+
+	private void selecPingu(Jugador objBola) {
 		if (!modoBola) {
 			return;
 		}
@@ -351,17 +305,42 @@ public class PantallaJuego {
 		modoBola = false;
 	}
 
-	private void tirarBola(Pinguino objBola) {
+	private void tirarBola(Jugador objBola) {
 
-		Random random = new Random();
-		Pinguino pinguinoact = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+		Jugador pinguinoAct = gestorTablero.getPartida().getJugadorActual();
 
-		Inventario inventario = pinguinoact.getInventario();
+		Inventario inventario = pinguinoAct.getInventario();
+
 		if (inventario.getBolas().isEmpty()) {
 			return;
-		} else if (objBola == null || objBola == pinguinoact) {
+		} else if (objBola == null || objBola == pinguinoAct) {
 			return;
 		}
+
+		int distancia = CalcularDistancia(pinguinoAct, objBola);
+
+		if (CalcularExito(distancia))
+			objBola.moverPosicion(-1);
+
+	}
+
+	private int CalcularDistancia(Jugador j1, Jugador j2) {
+
+		if (j1.getPos() > j2.getPos())
+			return j1.getPos() - j2.getPos();
+
+		else
+			return j2.getPos() - j1.getPos();
+	}
+
+	private boolean CalcularExito(int distancia) {
+
+		int Probabilidad = (int) Math
+				.round(Math.pow(RATIO_DESCENSO_PROBABILIDAD * e, -(RATIO_DESCENSO_PROBABILIDAD * distancia)) * 10);
+
+		double resultado = random.nextDouble(10 - Probabilidad + 1) + Probabilidad;
+
+		return (resultado >= 10);
 	}
 
 	private void ActualizarInventarioGUI(Jugador jugador) {
@@ -442,6 +421,61 @@ public class PantallaJuego {
 		ListaObservable.add(0, texto);
 
 		ListaEventos.setItems(ListaObservable);
+	}
+
+	private void moveP1(int steps) {
+
+		// Evita spam del botón
+		dado.setDisable(true);
+
+		int oldPosition = p1Position;
+
+		p1Position += steps;
+
+		// Bound player
+		if (p1Position >= 50) {
+			p1Position = 49;
+		}
+
+		if (p1Position < 0) {
+			p1Position = 0;
+		}
+
+		// OLD position
+		int oldRow = oldPosition / COLUMNS;
+		int oldCol = oldPosition % COLUMNS;
+
+		// NEW position
+		int newRow = p1Position / COLUMNS;
+		int newCol = p1Position % COLUMNS;
+
+		// Cell size (aproximado)
+		double cellWidth = tablero.getWidth() / COLUMNS;
+		double cellHeight = tablero.getHeight() / 10;
+
+		double dx = (newCol - oldCol) * cellWidth;
+		double dy = (newRow - oldRow) * cellHeight;
+
+		TranslateTransition slide = new TranslateTransition(Duration.millis(350), P1);
+
+		slide.setByX(dx);
+		slide.setByY(dy);
+
+		slide.setOnFinished(e -> {
+
+			// reset translation
+			P1.setTranslateX(0);
+			P1.setTranslateY(0);
+
+			// set real position in grid
+			GridPane.setRowIndex(P1, newRow);
+			GridPane.setColumnIndex(P1, newCol);
+
+			// volver a activar el botón
+			dado.setDisable(false);
+		});
+
+		slide.play();
 	}
 
 	public void setGestorPartida(GestorTablero gestorTablero) {
