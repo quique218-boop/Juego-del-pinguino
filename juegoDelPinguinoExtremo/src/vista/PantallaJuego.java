@@ -201,65 +201,68 @@ public class PantallaJuego {
 			
 			
 
-			// Evita spam del botón
-			dado.setDisable(true);
+		// Evita spam del botón
+	    dado.setDisable(true);
+	    
+	    int jugadorActual = turno;
 
-			int oldPosition = posiciones[turno];
+	    int oldPosition = posiciones[jugadorActual];
 
-			posiciones[turno] += steps;
+	    posiciones[jugadorActual] += steps;
 
-			// Bound player
-			if (posiciones[turno] >= 50) {
-			posiciones[turno] = 49;
-			}
+	    // Bound player
+	    if (posiciones[jugadorActual] >= 50) {
+	    	posiciones[jugadorActual] = 49;
+	    }
 
-			if (posiciones[turno] < 0) {
-			posiciones[turno] = 0;
-			}
+	    if (posiciones[jugadorActual] < 0) {
+	    	posiciones[jugadorActual] = 0;
+	    }
 
-			// OLD position
-			int oldRow = oldPosition / COLUMNS;
-			int oldCol = oldPosition % COLUMNS;
+	    // OLD position
+	    int oldRow = oldPosition / COLUMNS;
+	    int oldCol = oldPosition % COLUMNS;
 
-			// NEW position
-			int newRow = posiciones[turno] / COLUMNS;
-			int newCol = posiciones[turno] % COLUMNS;
+	    // NEW position
+	    int newRow = posiciones[jugadorActual] / COLUMNS;
+	    int newCol = posiciones[jugadorActual] % COLUMNS;
 
-			// Cell size (aproximado)
-			double cellWidth = tablero.getWidth() / COLUMNS;
-			double cellHeight = tablero.getHeight() / 10;
+	    // Cell size (aproximado)
+	    double cellWidth = tablero.getWidth() / COLUMNS;
+	    double cellHeight = tablero.getHeight() / 10;
 
-			double dx = (newCol - oldCol) * cellWidth;
-			double dy = (newRow - oldRow) * cellHeight;
+	    double dx = (newCol - oldCol) * cellWidth;
+	    double dy = (newRow - oldRow) * cellHeight;
 
-			TranslateTransition slide = new TranslateTransition(Duration.millis(350), jugadores[turno]);
+	    TranslateTransition slide = new TranslateTransition(Duration.millis(350), jugadores[jugadorActual]);
 
-			slide.setByX(dx);
-			slide.setByY(dy);
+	    slide.setByX(dx);
+	    slide.setByY(dy);
 
-			slide.setOnFinished(e -> {
+	    slide.setOnFinished(e -> {
 
-				// reset translation
-				jugadores[turno].setTranslateX(0);
-				jugadores[turno].setTranslateY(0);
+	        // reset translation
+	    	jugadores[jugadorActual].setTranslateX(0);
+	    	jugadores[jugadorActual].setTranslateY(0);
 
-				// set real position in grid
-				GridPane.setRowIndex(jugadores[turno], newRow);
-				GridPane.setColumnIndex(jugadores[turno], newCol);
-				
-				if (posiciones[turno] == 49) {
-		            gestorTablero.getPartida().setFinalizada(true);
-		            System.out.println("Jugador " + turno + " gana");
-		        }
-				
-				turno = (turno + 1) % jugadores.length;
+	        // set real position in grid
+	        GridPane.setRowIndex(jugadores[jugadorActual], newRow);
+	        GridPane.setColumnIndex(jugadores[jugadorActual], newCol);
+	        
+	        turno = (turno + 1) % jugadores.length;
 
-				// volver a activar el botón
-				dado.setDisable(false);
-			});
+	        // Cambiar jugador actual en la lógica
+	        gestorTablero.getPartida().setJugadorActual(
+	            gestorTablero.getPartida().getJugador(turno)
+	            );
 
-			slide.play();
-		
+	        // volver a activar el botón
+	        dado.setDisable(false);
+	    });
+
+	    slide.play();
+	    
+	    
 	}
 	
 
