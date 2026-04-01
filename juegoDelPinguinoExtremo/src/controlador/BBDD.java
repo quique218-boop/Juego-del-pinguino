@@ -37,7 +37,8 @@ public class BBDD {
 			
 			if (entorno.equalsIgnoreCase("centro") || entorno.equalsIgnoreCase("fuera")) {
 				valido = true;
-			} else {
+			} 
+			else {
 				System.out.println("Entrada no válida. Escribe CENTRO o FUERA.");
 			}
 		}
