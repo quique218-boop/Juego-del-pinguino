@@ -15,24 +15,13 @@ public class GestorBBDD {
 
 	private static int count;
 
-	public static void guardarBBDD(Tablero t1) {
+	public static void guardar(Tablero t1) {
 		con = BBDD.conectarBaseDatos();
 
-		int n_jug_actual;
-		int id_tablero = -1;
 
 		int turnos_tablero = t1.getTurnos();
 
 		Jugador jugador_actual = t1.getJugadorActual();
-
-		for(int i = 0; i < t1.getArrayListJugador().size(); i++) {
-
-			if(jugador_actual == t1.getArrayListJugador().get(i)){
-
-				n_jug_actual = i;
-			}
-
-		}
 
 		ArrayList<Casilla> casillas = t1.getArrayListCasilla();
 
@@ -55,6 +44,17 @@ public class GestorBBDD {
 
 			}
 		}
+		
+		Jugador foca;
+		
+		for(int i = 0; i < t1.getArrayListJugador().size(); i++) {
+			
+			if(t1.getJugador(i) instanceof Foca) {
+				
+				foca = t1.getJugador(i);
+				
+			}
+		}
 
 		Jugador j1 = t1.getJugador(0);
 
@@ -66,8 +66,7 @@ public class GestorBBDD {
 
 		Jugador j5 = t1.getJugador(4);
 
-		Jugador foca = t1.getJugador(5); //Al insertarlo en SQL se tendria que poner 1
-
+		
 		int pos_j1 = t1.getJugador(0).getPos();
 
 		int pos_j2 = t1.getJugador(1).getPos();
@@ -89,6 +88,20 @@ public class GestorBBDD {
 		int turno_j4 = 3;
 		
 		int turno_foca = 4;
+		
+		
+		
+		
+		    String sql = "SELECT MAX(id_tablero) AS max_id FROM TABLERO";
+
+		    ArrayList<LinkedHashMap<String, String>> resultado = BBDD.select(con, sql);
+
+		    if (resultado.size() > 0 && resultado.get(0).get("MAX_ID") != null) {
+		        return Integer.parseInt(resultado.get(0).get("MAX_ID")) + 1;
+		    } else {
+		        return 1; 
+		    }
+		
 		
 		BBDD.insert(con, "INSERT INTO testing (Num)\n" + "VALUES (2)");
 
