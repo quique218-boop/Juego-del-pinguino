@@ -50,10 +50,10 @@ public class BBDD {
 		// PODEIS HARDCODEAR ESTAS CREDENCIALES SI VAIS A USAR SIEMPRE LAS MISMAS
 		// VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 		//System.out.println("¿Usuario?");
-		String user = "DM1_2526_GRUP02";
+		String user = "DM1_2526_DEN_JE";
 
 		//System.out.println("¿Contraseña?");
-		String pwd = "AGRUP02"; // aquí NO hago trim por si la contraseña tuviera espacios
+		String pwd = "A03935003W"; // aquí NO hago trim por si la contraseña tuviera espacios
 
 		// 3) Conectar
 		try {
@@ -61,6 +61,8 @@ public class BBDD {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 
 			Connection con = DriverManager.getConnection(url, user, pwd);
+			
+			con.setAutoCommit(true);
 
 			// 4) Comprobar que la conexión es válida (timeout 5 s)
 			if (con.isValid(5)) {

@@ -10,6 +10,10 @@ public class Pinguino extends Jugador {
 		super(nombre, color, inventario);
 
 	}
+	
+	public Pinguino() {
+		super();
+	}
 
 	public void gestionarBatalla(Pinguino jugador) {
 

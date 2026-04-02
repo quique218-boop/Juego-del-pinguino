@@ -16,6 +16,7 @@ public class GestorBBDD {
 	private static int count;
 
 	public static void guardar(Tablero t1) {
+		
 		con = BBDD.conectarBaseDatos();
 
 
@@ -45,7 +46,87 @@ public class GestorBBDD {
 			}
 		}
 		
-		Jugador foca;
+		int id_tablero = obtenerIdTablero(con);
+		
+		ArrayList<Jugador> jugadores = t1.getArrayListJugador();
+		
+		int posActual = 0;
+		
+		for(int i = 0; i < jugadores.size(); i++) {
+			
+			if(jugadores.get(i) == t1.getJugadorActual()) {
+				
+				posActual = i;
+				
+			}
+			
+		}
+		
+		ArrayList<String> casillasBBDD = new ArrayList<>();
+		
+		for(int i = 0; i < casillas.size(); i++) {
+			
+			if(casillas.get(i) instanceof Agujero) {
+				
+				casillasBBDD.add("Agujero");
+				
+			}
+			
+			else if(casillas.get(i) instanceof Evento) {
+				
+				casillasBBDD.add("Evento");
+				
+			}
+			
+			else if(casillas.get(i) instanceof SueloQuebradizo) {
+				
+				casillasBBDD.add("SueloQuebradizo");
+				
+			}
+			
+			else if(casillas.get(i) instanceof Trineo) {
+				
+				casillasBBDD.add("Trineo");
+				
+			}
+			
+			else if(casillas.get(i) instanceof Normal) {
+				
+				casillasBBDD.add("Normal");
+				
+			}
+			
+			else if(casillas.get(i) instanceof Oso) {
+				
+				casillasBBDD.add("Oso");
+				
+			}
+			
+		}
+		
+		String varray = "";
+		
+		for(int i = 0; i < casillasBBDD.size()-1; i++) {
+			
+			 varray+= " '"+casillasBBDD.get(i)+"',";
+			
+		}
+		
+		varray += " '"+casillasBBDD.get(49)+"'";
+		
+		String sql = "INSERT INTO TABLERO VALUES("+id_tablero+", "+turnos_tablero+", "+posActual+", ARRAY_CASILLAS("+varray+"), SYSDATE, 1)";
+		System.out.println(sql);
+		
+		BBDD.print(con, "SELECT USER FROM dual", new String[]{"USER"});
+
+		
+		BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
+		           new String[]{"TOTAL"});
+
+		BBDD.insert(con, sql);
+		
+		
+		/*Jugador foca;
 		
 		for(int i = 0; i < t1.getArrayListJugador().size(); i++) {
 			
@@ -54,9 +135,9 @@ public class GestorBBDD {
 				foca = t1.getJugador(i);
 				
 			}
-		}
+		}*/
 
-		Jugador j1 = t1.getJugador(0);
+		/*Jugador j1 = t1.getJugador(0);
 
 		Jugador j2 = t1.getJugador(1);
 
@@ -88,23 +169,21 @@ public class GestorBBDD {
 		int turno_j4 = 3;
 		
 		int turno_foca = 4;
+		*/
 		
 		
 		
-		
-		    String sql = "SELECT MAX(id_tablero) AS max_id FROM TABLERO";
+		  /*  String sql = "SELECT MAX(id_tablero) AS max_id FROM TABLERO";
 
 		    ArrayList<LinkedHashMap<String, String>> resultado = BBDD.select(con, sql);
 
-		    if (resultado.size() > 0 && resultado.get(0).get("MAX_ID") != null) {
-		        return Integer.parseInt(resultado.get(0).get("MAX_ID")) + 1;
-		    } else {
-		        return 1; 
-		    }
+		    
 		
 		
 		BBDD.insert(con, "INSERT INTO testing (Num)\n" + "VALUES (2)");
 
+		BBDD.cerrar(con);*/
+		
 		BBDD.cerrar(con);
 	}
 
@@ -163,5 +242,17 @@ public class GestorBBDD {
 		if (col.equals("NUMIDS")) {
 			count = Integer.parseInt(valor) + 1;
 		}
+	}
+	
+	public static int obtenerIdTablero(Connection con) {
+	    String sql = "SELECT MAX(id_tablero) AS max_id FROM TABLERO";
+
+	    ArrayList<LinkedHashMap<String, String>> resultado = BBDD.select(con, sql);
+
+	    if (resultado.size() > 0 && resultado.get(0).get("MAX_ID") != null) {
+	        return Integer.parseInt(resultado.get(0).get("MAX_ID")) + 1;
+	    } else {
+	        return 1; // Si no hay tableros todavía
+	    }
 	}
 }

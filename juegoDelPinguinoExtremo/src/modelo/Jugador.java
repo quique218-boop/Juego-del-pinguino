@@ -20,6 +20,14 @@ public abstract class Jugador {
 		this.inventario = inventario;
 		this.objBola = false;
 	}
+	
+	public Jugador() {
+		
+		this.nombre = "prueba";
+		this.color = "rojo puton";
+		this.posicion = 67;
+		this.inventario = new Inventario ();
+	}
 
 	public String getNombre() {
 
@@ -169,7 +177,7 @@ public abstract class Jugador {
 
 	}
 	
-	public boolean objBola() {
+	/*public boolean objBola() {
 		
 		return objBola;
 		
@@ -187,5 +195,6 @@ public abstract class Jugador {
 	public void modoBola(boolean objBola) {
 		this.objBola = objBola;
 	}
-
+*/
+	
 }
