@@ -46,7 +46,6 @@ public class GestorBBDD {
 			}
 		}
 		
-		int id_tablero = obtenerIdTablero(con);
 		
 		ArrayList<Jugador> jugadores = t1.getArrayListJugador();
 		
@@ -114,10 +113,8 @@ public class GestorBBDD {
 		
 		varray += " '"+casillasBBDD.get(49)+"'";
 		
-		String sql = "INSERT INTO TABLERO VALUES("+id_tablero+", "+turnos_tablero+", "+posActual+", ARRAY_CASILLAS("+varray+"), SYSDATE, 1)";
+		String sql = "INSERT INTO TABLERO VALUES("+id_tablero+", "+turnos_tablero+", seq_tablero.NEXTVAL, ARRAY_CASILLAS("+varray+"), SYSDATE, 1)";
 		System.out.println(sql);
-		
-		BBDD.print(con, "SELECT USER FROM dual", new String[]{"USER"});
 
 		
 		BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
@@ -184,7 +181,7 @@ public class GestorBBDD {
 
 		BBDD.cerrar(con);*/
 		
-		BBDD.cerrar(con);
+		
 	}
 
 	public static Tablero cargarTablero(int id) {
@@ -242,17 +239,5 @@ public class GestorBBDD {
 		if (col.equals("NUMIDS")) {
 			count = Integer.parseInt(valor) + 1;
 		}
-	}
-	
-	public static int obtenerIdTablero(Connection con) {
-	    String sql = "SELECT MAX(id_tablero) AS max_id FROM TABLERO";
-
-	    ArrayList<LinkedHashMap<String, String>> resultado = BBDD.select(con, sql);
-
-	    if (resultado.size() > 0 && resultado.get(0).get("MAX_ID") != null) {
-	        return Integer.parseInt(resultado.get(0).get("MAX_ID")) + 1;
-	    } else {
-	        return 1; // Si no hay tableros todavía
-	    }
 	}
 }
