@@ -25,28 +25,7 @@ public class GestorBBDD {
 		Jugador jugador_actual = t1.getJugadorActual();
 
 		ArrayList<Casilla> casillas = t1.getArrayListCasilla();
-
-		int n_peces = t1.getJugador(0).getInventario().getPez().size();
-
-		int n_bolas = t1.getJugador(0).getInventario().getBolas().size();
-
-		int n_dadoR = 0;
-		int n_dadoL = 0;
-
-		for (Dado dado : t1.getJugador(0).getInventario().getDado()) {
-
-			if (dado instanceof DadoRapido) {
-
-				n_dadoR++;
-
-			} else if (dado instanceof DadoLento) {
-
-				n_dadoL++;
-
-			}
-		}
 		
-		int id_tablero = obtenerIdTablero(con);
 		
 		ArrayList<Jugador> jugadores = t1.getArrayListJugador();
 		
@@ -59,7 +38,6 @@ public class GestorBBDD {
 				posActual = i;
 				
 			}
-			
 		}
 		
 		ArrayList<String> casillasBBDD = new ArrayList<>();
@@ -139,6 +117,37 @@ public class GestorBBDD {
 				
 				BBDD.insert(con, sqlJugador);
 				
+				//Hacemos el insert de inventario a la vez que el de jugador
+				
+				int n_peces = t1.getJugador(i).getInventario().getPez().size();
+
+				int n_bolas = t1.getJugador(i).getInventario().getBolas().size();
+
+				int n_dadoR = 0;
+				
+				int n_dadoL = 0;
+
+				for (Dado dado : t1.getJugador(i).getInventario().getDado()) {
+
+					if (dado instanceof DadoRapido) {
+
+						n_dadoR++;
+
+					} else if (dado instanceof DadoLento) {
+
+						n_dadoL++;
+
+					}
+				}
+				
+				String sqlInventario = "INSERT INTO INVENTARIO VALUES(seq_inventario.NEXTVAL, "+ n_peces + ",  "+ n_bolas + ", "+ n_dadoR +
+						", "+ n_dadoL +", seq_jugador.CURRVAL)";
+				
+				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
+				           new String[]{"TOTAL"});
+				
+				BBDD.insert(con, sqlInventario);
+				
 			}
 			else {
 				
@@ -150,72 +159,39 @@ public class GestorBBDD {
 				
 				BBDD.insert(con, sqlJugador);
 				
+				//Hacemos el insert de inventario a la vez que el de jugador
+				
+				int n_peces = t1.getJugador(i).getInventario().getPez().size();
+
+				int n_bolas = t1.getJugador(i).getInventario().getBolas().size();
+
+				int n_dadoR = 0;
+				
+				int n_dadoL = 0;
+
+				for (Dado dado : t1.getJugador(i).getInventario().getDado()) {
+
+					if (dado instanceof DadoRapido) {
+
+						n_dadoR++;
+
+					} else if (dado instanceof DadoLento) {
+
+						n_dadoL++;
+
+					}
+				}
+				
+				String sqlInventario = "INSERT INTO INVENTARIO VALUES(seq_inventario.NEXTVAL, "+ n_peces + ",  "+ n_bolas + ", "+ n_dadoR +
+						", "+ n_dadoL +", seq_jugador.CURRVAL)";
+				
+				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
+				           new String[]{"TOTAL"});
+				
+				BBDD.insert(con, sqlInventario);
+				
 			}
 		}
-		
-		//Terminamos el insert de jugador
-		
-		
-		
-		/*Jugador foca;
-		
-		for(int i = 0; i < t1.getArrayListJugador().size(); i++) {
-			
-			if(t1.getJugador(i) instanceof Foca) {
-				
-				foca = t1.getJugador(i);
-				
-			}
-		}*/
-
-		/*Jugador j1 = t1.getJugador(0);
-
-		Jugador j2 = t1.getJugador(1);
-
-		Jugador j3 = t1.getJugador(2);
-
-		Jugador j4 = t1.getJugador(3);
-
-		Jugador j5 = t1.getJugador(4);
-
-		
-		int pos_j1 = t1.getJugador(0).getPos();
-
-		int pos_j2 = t1.getJugador(1).getPos();
-
-		int pos_j3 = t1.getJugador(2).getPos();
-
-		int pos_j4 = t1.getJugador(3).getPos();
-
-		int pos_j5 = t1.getJugador(4).getPos();
-
-		int pos_foca = t1.getJugador(5).getPos();
-
-		int turno_j1 = 0;
-
-		int turno_j2 = 1;
-		
-		int turno_j3 = 2;
-		
-		int turno_j4 = 3;
-		
-		int turno_foca = 4;
-		*/
-		
-		
-		
-		  /*  String sql = "SELECT MAX(id_tablero) AS max_id FROM TABLERO";
-
-		    ArrayList<LinkedHashMap<String, String>> resultado = BBDD.select(con, sql);
-
-		    
-		
-		
-		BBDD.insert(con, "INSERT INTO testing (Num)\n" + "VALUES (2)");
-
-		BBDD.cerrar(con);*/
-		
-		
 	}
 
 	public static Tablero cargarTablero(int id) {
@@ -275,15 +251,5 @@ public class GestorBBDD {
 		}
 	}
 	
-	public static int obtenerIdTablero(Connection con) {
-	    String sql = "SELECT MAX(id_tablero) AS max_id FROM TABLERO";
 
-	    ArrayList<LinkedHashMap<String, String>> resultado = BBDD.select(con, sql);
-
-	    if (resultado.size() > 0 && resultado.get(0).get("MAX_ID") != null) {
-	        return Integer.parseInt(resultado.get(0).get("MAX_ID")) + 1;
-	    } else {
-	        return 1; 
-	    }
-	}
 }
