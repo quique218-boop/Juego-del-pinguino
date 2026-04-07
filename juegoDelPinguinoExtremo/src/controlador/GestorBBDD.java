@@ -15,38 +15,183 @@ public class GestorBBDD {
 
 	private static int count;
 
-	public static void guardarBBDD(Tablero t1) {
+	public static void guardar(Tablero t1) {
+		
 		con = BBDD.conectarBaseDatos();
+//Iniciamos INSERT de la tabla TABLERO
 
-		/*int TABLERO_TURNOS = t1.getTurnos();
+		int turnos_tablero = t1.getTurnos();
 
-		int TABLERO_JUGADORACTUAL = t1.getjugadorActual();
+		Jugador jugador_actual = t1.getJugadorActual();
 
-		ArrayList<Casilla> TABLERO_CASILLAS = t1.getArrayListCasilla();
-
-		int numeroJugadores = t1.getArrayListJugador().size();
-
-		for (Jugador jugador : t1.getArrayListJugador()) {
-
-			if (jugador instanceof Pinguino) {
-
-				BBDD.insert(con, "INSERT INTO JUGADOR (ID_JUGADOR, FOCA, ID_TABLERO, ID_USUARIO)\n" + "VALUES (" + count + ", \'" + username
-						+ "\', \'" + password + "\')");
+		ArrayList<Casilla> casillas = t1.getArrayListCasilla();
+		
+		
+		ArrayList<Jugador> jugadores = t1.getArrayListJugador();
+		
+		int posActual = 0;
+		
+		for(int i = 0; i < jugadores.size(); i++) {
+			
+			if(jugadores.get(i) == t1.getJugadorActual()) {
 				
-			} else if (jugador instanceof Foca) {
-
+				posActual = i;
+				
 			}
 		}
+		
+		ArrayList<String> casillasBBDD = new ArrayList<>();
+		
+		for(int i = 0; i < casillas.size(); i++) {
+			
+			if(casillas.get(i) instanceof Agujero) {
+				
+				casillasBBDD.add("Agujero");
+				
+			}
+			
+			else if(casillas.get(i) instanceof Evento) {
+				
+				casillasBBDD.add("Evento");
+				
+			}
+			
+			else if(casillas.get(i) instanceof SueloQuebradizo) {
+				
+				casillasBBDD.add("SueloQuebradizo");
+				
+			}
+			
+			else if(casillas.get(i) instanceof Trineo) {
+				
+				casillasBBDD.add("Trineo");
+				
+			}
+			
+			else if(casillas.get(i) instanceof Normal) {
+				
+				casillasBBDD.add("Normal");
+				
+			}
+			
+			else if(casillas.get(i) instanceof Oso) {
+				
+				casillasBBDD.add("Oso");
+				
+			}
+			
+		}
+		
+		String varray = "";
+		
+		for(int i = 0; i < casillasBBDD.size()-1; i++) {
+			
+			 varray+= " '"+casillasBBDD.get(i)+"',";
+			
+		}
+		
+		varray += " '"+casillasBBDD.get(49)+"'";
+		
+		String sqlTablero = "INSERT INTO TABLERO VALUES(seq_tablero.NEXTVAL, "
+		+turnos_tablero+", "+posActual+", ARRAY_CASILLAS("+varray+"), SYSDATE, 1)";
+		
+		System.out.println(sqlTablero);
 
-		ArrayList<String> cols = new ArrayList<>();
+		
+		BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
+		           new String[]{"TOTAL"});
 
-		cols.add("NUMIDS");
+		BBDD.insert(con, sqlTablero); ///Termina el insert de la tabla TABLERO
+		
+		
+		//Hacemos el insert de jugador
+		for(int i = 0; i < t1.getArrayListJugador().size(); i++) {
+			
+			if(t1.getArrayListJugador().get(i) instanceof Foca) {
+				
+				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 1, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
+						", seq_tablero.CURRVAL)";
+				
+				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
+				           new String[]{"TOTAL"});
+				
+				BBDD.insert(con, sqlJugador);
+				
+				//Hacemos el insert de inventario a la vez que el de jugador
+				
+				int n_peces = t1.getJugador(i).getInventario().getPez().size();
 
-		procesamientoSelect(con, "SELECT COUNT(*) AS NUMIDS FROM TABLEROS", cols);
-*/
-		BBDD.insert(con, "INSERT INTO testing (Num)\n" + "VALUES (2)");
+				int n_bolas = t1.getJugador(i).getInventario().getBolas().size();
 
-		BBDD.cerrar(con);
+				int n_dadoR = 0;
+				
+				int n_dadoL = 0;
+
+				for (Dado dado : t1.getJugador(i).getInventario().getDado()) {
+
+					if (dado instanceof DadoRapido) {
+
+						n_dadoR++;
+
+					} else if (dado instanceof DadoLento) {
+
+						n_dadoL++;
+
+					}
+				}
+				
+				String sqlInventario = "INSERT INTO INVENTARIO VALUES(seq_inventario.NEXTVAL, "+ n_peces + ",  "+ n_bolas + ", "+ n_dadoR +
+						", "+ n_dadoL +", seq_jugador.CURRVAL)";
+				
+				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
+				           new String[]{"TOTAL"});
+				
+				BBDD.insert(con, sqlInventario);
+				
+			}
+			else {
+				
+				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 0, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
+						", seq_tablero.CURRVAL)";
+				
+				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
+				           new String[]{"TOTAL"});
+				
+				BBDD.insert(con, sqlJugador);
+				
+				//Hacemos el insert de inventario a la vez que el de jugador
+				
+				int n_peces = t1.getJugador(i).getInventario().getPez().size();
+
+				int n_bolas = t1.getJugador(i).getInventario().getBolas().size();
+
+				int n_dadoR = 0;
+				
+				int n_dadoL = 0;
+
+				for (Dado dado : t1.getJugador(i).getInventario().getDado()) {
+
+					if (dado instanceof DadoRapido) {
+
+						n_dadoR++;
+
+					} else if (dado instanceof DadoLento) {
+
+						n_dadoL++;
+
+					}
+				}
+				
+				String sqlInventario = "INSERT INTO INVENTARIO VALUES(seq_inventario.NEXTVAL, "+ n_peces + ",  "+ n_bolas + ", "+ n_dadoR +
+						", "+ n_dadoL +", seq_jugador.CURRVAL)";
+				
+				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
+				           new String[]{"TOTAL"});
+				
+				BBDD.insert(con, sqlInventario);
+				
+			}
+		}
 	}
 
 	public static Tablero cargarTablero(int id) {
@@ -105,4 +250,6 @@ public class GestorBBDD {
 			count = Integer.parseInt(valor) + 1;
 		}
 	}
+	
+
 }

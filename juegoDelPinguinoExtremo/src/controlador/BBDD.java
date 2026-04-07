@@ -19,7 +19,7 @@ public class BBDD {
 	 *         LA VARIABLE QUE DEVUELVE LA TENÉIS QUE GUARDAR PARA LAS DEMÁS
 	 *         FUNCIONES
 	 */
-	public static Connection conectarBaseDatos(/*Scanner scan*/) {
+	public static Connection conectarBaseDatos() {
 		System.out.println("Intentando conectarse a la base de datos...");
 
 		// 1) Elegir entorno con validación
@@ -37,7 +37,8 @@ public class BBDD {
 			
 			if (entorno.equalsIgnoreCase("centro") || entorno.equalsIgnoreCase("fuera")) {
 				valido = true;
-			} else {
+			} 
+			else {
 				System.out.println("Entrada no válida. Escribe CENTRO o FUERA.");
 			}
 		}
@@ -60,6 +61,8 @@ public class BBDD {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 
 			Connection con = DriverManager.getConnection(url, user, pwd);
+			
+			con.setAutoCommit(true);
 
 			// 4) Comprobar que la conexión es válida (timeout 5 s)
 			if (con.isValid(5)) {

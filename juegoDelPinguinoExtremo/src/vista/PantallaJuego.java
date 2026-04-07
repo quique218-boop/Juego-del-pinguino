@@ -192,6 +192,12 @@ public class PantallaJuego {
 		ActualizarInventarioGUI(jugador);
 	}
 
+
+
+	
+	
+
+
 	@FXML
 	private void handleRapido() {
 
@@ -464,59 +470,75 @@ public class PantallaJuego {
 		ListaEventos.setItems(ListaObservable);
 	}
 
-	private void moveP1(int steps) {
+private void moveP1(int steps) {
+		
+		
+		if(gestorTablero.getPartida().getFinalizada()) {return;}
+			
+			
 
 		// Evita spam del botón
-		dado.setDisable(true);
+	    dado.setDisable(true);
+	    
+	    int jugadorActual = turno;
 
-		int oldPosition = p1Position;
+	    int oldPosition = posiciones[jugadorActual];
 
-		p1Position += steps;
+	    posiciones[jugadorActual] += steps;
 
-		// Bound player
-		if (p1Position >= 50) {
-			p1Position = 49;
-		}
+	    // Bound player
+	    if (posiciones[jugadorActual] >= 50) {
+	    	posiciones[jugadorActual] = 49;
+	    }
 
-		if (p1Position < 0) {
-			p1Position = 0;
-		}
+	    if (posiciones[jugadorActual] < 0) {
+	    	posiciones[jugadorActual] = 0;
+	    }
 
-		// OLD position
-		int oldRow = oldPosition / COLUMNS;
-		int oldCol = oldPosition % COLUMNS;
+	    // OLD position
+	    int oldRow = oldPosition / COLUMNS;
+	    int oldCol = oldPosition % COLUMNS;
 
-		// NEW position
-		int newRow = p1Position / COLUMNS;
-		int newCol = p1Position % COLUMNS;
+	    // NEW position
+	    int newRow = posiciones[jugadorActual] / COLUMNS;
+	    int newCol = posiciones[jugadorActual] % COLUMNS;
 
-		// Cell size (aproximado)
-		double cellWidth = tablero.getWidth() / COLUMNS;
-		double cellHeight = tablero.getHeight() / 10;
+	    // Cell size (aproximado)
+	    double cellWidth = tablero.getWidth() / COLUMNS;
+	    double cellHeight = tablero.getHeight() / 10;
 
-		double dx = (newCol - oldCol) * cellWidth;
-		double dy = (newRow - oldRow) * cellHeight;
+	    double dx = (newCol - oldCol) * cellWidth;
+	    double dy = (newRow - oldRow) * cellHeight;
 
-		TranslateTransition slide = new TranslateTransition(Duration.millis(350), P1);
+	    TranslateTransition slide = new TranslateTransition(Duration.millis(350), jugadores[jugadorActual]);
 
-		slide.setByX(dx);
-		slide.setByY(dy);
+	    slide.setByX(dx);
+	    slide.setByY(dy);
 
-		slide.setOnFinished(e -> {
+	    slide.setOnFinished(e -> {
 
-			// reset translation
-			P1.setTranslateX(0);
-			P1.setTranslateY(0);
+	        // reset translation
+	    	jugadores[jugadorActual].setTranslateX(0);
+	    	jugadores[jugadorActual].setTranslateY(0);
 
-			// set real position in grid
-			GridPane.setRowIndex(P1, newRow);
-			GridPane.setColumnIndex(P1, newCol);
+	        // set real position in grid
+	        GridPane.setRowIndex(jugadores[jugadorActual], newRow);
+	        GridPane.setColumnIndex(jugadores[jugadorActual], newCol);
+	        
+	        turno = (turno + 1) % jugadores.length;
 
-			// volver a activar el botón
-			dado.setDisable(false);
-		});
+	        // Cambiar jugador actual en la lógica
+	        gestorTablero.getPartida().setJugadorActual(
+	            gestorTablero.getPartida().getJugador(turno)
+	            );
 
-		slide.play();
+	        // volver a activar el botón
+	        dado.setDisable(false);
+	    });
+
+	    slide.play();
+	    
+	    
 	}
 
 	public void setGestorPartida(GestorTablero gestorTablero) {

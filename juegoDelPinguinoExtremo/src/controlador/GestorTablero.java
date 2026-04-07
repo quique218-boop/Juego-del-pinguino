@@ -169,7 +169,7 @@ public class GestorTablero {
 
 	public void guardarPartida() {
 
-		// Aquí guardaremos nuestra partida en la BBDD
+		gestorbbdd.guardar(tablero);
 
 	}
 
