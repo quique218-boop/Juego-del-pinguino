@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -75,8 +76,16 @@ public class PantallaJuego {
 
 	private GestorTablero gestorTablero;
 	// ONLY FOR TESTING!!!
-	private int p1Position = 0; // Tracks current position (from 0 to 49 in a 5x10 grid)
 	private static final int COLUMNS = 5;
+	private int p1Position = 0;
+	private int p2Position = 0;
+	private int p3Position = 0;
+	private int p4Position = 0;// Tracks current position (from 0 to 49 in a 5x10 grid)
+	private int turno = 0;
+
+	private ArrayList<Circle> jugadores = new ArrayList<>();
+
+	private int[] posiciones = { p1Position, p2Position, p3Position, p4Position };
 
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random random = new Random();
@@ -113,8 +122,16 @@ public class PantallaJuego {
 
 		// Show board info
 		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
+		
+		for(int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
+			
+			gestorTablero.getPartida().getArrayListJugador().get(i).setTurnoEnArray(i);
+			
+		}
 
 		BorrarFichasSinJugador();
+		
+		P1.getStyleClass().add("current-player");
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
@@ -187,16 +204,10 @@ public class PantallaJuego {
 		dadoResultText.setText("Ha salido: " + resultado);
 
 		// Update the position
-		moveP1(resultado);
+		movePlayers(resultado);
 
 		ActualizarInventarioGUI(jugador);
 	}
-
-
-
-	
-	
-
 
 	@FXML
 	private void handleRapido() {
@@ -211,7 +222,7 @@ public class PantallaJuego {
 
 			AddEventoHistorial("Usando dado rápido ha salido: " + resultado);
 
-			moveP1(resultado);
+			movePlayers(resultado);
 		}
 
 		ActualizarInventarioGUI(pinguino);
@@ -230,7 +241,7 @@ public class PantallaJuego {
 
 			AddEventoHistorial("Usando dado lento ha salido: " + resultado);
 
-			moveP1(resultado);
+			movePlayers(resultado);
 		}
 
 		ActualizarInventarioGUI(pinguino);
@@ -329,6 +340,15 @@ public class PantallaJuego {
 			tablero.getChildren().remove(P3);
 
 		}
+
+		for (Node nodo : tablero.getChildren()) {
+
+			if (nodo instanceof Circle) {
+
+				jugadores.add((Circle) nodo);
+
+			}
+		}
 	}
 
 	private void selecPingu(Jugador objBola) {
@@ -352,21 +372,23 @@ public class PantallaJuego {
 		}
 
 		int distancia = CalcularDistancia(pinguinoAct, objBola);
-		
+
 		pinguinoAct.usarItem(inventario.getBolas().getFirst());
 
 		ActualizarInventarioGUI(pinguinoAct);
 
 		if (CalcularExito(distancia)) {
 
-			objBola.moverPosicion(3); // TODO testing !!! (DEBERIA SER -1)
+			objBola.moverPosicion(-1); // TODO testing !!! (DEBERIA SER -1)
+			
+			movePlayerPenalizacion(-1, objBola);
 
 			AddEventoHistorial("¡¡Has acertado!!");
 
 		} else {
-			
+
 			AddEventoHistorial("Has fallado :(");
-			
+
 		}
 
 	}
@@ -470,76 +492,133 @@ public class PantallaJuego {
 		ListaEventos.setItems(ListaObservable);
 	}
 
-private void moveP1(int steps) {
-		
-		
-		if(gestorTablero.getPartida().getFinalizada()) {return;}
-			
-			
+	private void movePlayers(int steps) {
+
+		if (gestorTablero.getPartida().getFinalizada()) {
+			return;
+		}
 
 		// Evita spam del botón
-	    dado.setDisable(true);
-	    
-	    int jugadorActual = turno;
+		dado.setDisable(true);
 
-	    int oldPosition = posiciones[jugadorActual];
+		int jugadorActual = turno;
 
-	    posiciones[jugadorActual] += steps;
+		int oldPosition = posiciones[jugadorActual];
 
-	    // Bound player
-	    if (posiciones[jugadorActual] >= 50) {
-	    	posiciones[jugadorActual] = 49;
-	    }
+		posiciones[jugadorActual] += steps;
 
-	    if (posiciones[jugadorActual] < 0) {
-	    	posiciones[jugadorActual] = 0;
-	    }
+		// Bound player
+		if (posiciones[jugadorActual] >= 50) {
+			posiciones[jugadorActual] = 49;
+		}
 
-	    // OLD position
-	    int oldRow = oldPosition / COLUMNS;
-	    int oldCol = oldPosition % COLUMNS;
+		// OLD position
+		int oldRow = oldPosition / COLUMNS;
+		int oldCol = oldPosition % COLUMNS;
 
-	    // NEW position
-	    int newRow = posiciones[jugadorActual] / COLUMNS;
-	    int newCol = posiciones[jugadorActual] % COLUMNS;
+		// NEW position
+		int newRow = posiciones[jugadorActual] / COLUMNS;
+		int newCol = posiciones[jugadorActual] % COLUMNS;
 
-	    // Cell size (aproximado)
-	    double cellWidth = tablero.getWidth() / COLUMNS;
-	    double cellHeight = tablero.getHeight() / 10;
+		// Cell size (aproximado)
+		double cellWidth = tablero.getWidth() / COLUMNS;
+		double cellHeight = tablero.getHeight() / 10;
 
-	    double dx = (newCol - oldCol) * cellWidth;
-	    double dy = (newRow - oldRow) * cellHeight;
+		double dx = (newCol - oldCol) * cellWidth;
+		double dy = (newRow - oldRow) * cellHeight;
 
-	    TranslateTransition slide = new TranslateTransition(Duration.millis(350), jugadores[jugadorActual]);
+		TranslateTransition slide = new TranslateTransition(Duration.millis(350), jugadores.get(jugadorActual));
 
-	    slide.setByX(dx);
-	    slide.setByY(dy);
+		slide.setByX(dx);
+		slide.setByY(dy);
 
-	    slide.setOnFinished(e -> {
+		slide.setOnFinished(e -> {
 
-	        // reset translation
-	    	jugadores[jugadorActual].setTranslateX(0);
-	    	jugadores[jugadorActual].setTranslateY(0);
+			// reset translation
+			jugadores.get(jugadorActual).setTranslateX(0);
+			jugadores.get(jugadorActual).setTranslateY(0);
 
-	        // set real position in grid
-	        GridPane.setRowIndex(jugadores[jugadorActual], newRow);
-	        GridPane.setColumnIndex(jugadores[jugadorActual], newCol);
-	        
-	        turno = (turno + 1) % jugadores.length;
+			// set real position in grid
+			GridPane.setRowIndex(jugadores.get(jugadorActual), newRow);
+			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
+			
+			// Cambio de turno
 
-	        // Cambiar jugador actual en la lógica
-	        gestorTablero.getPartida().setJugadorActual(
-	            gestorTablero.getPartida().getJugador(turno)
-	            );
+			turno = (turno + 1) % jugadores.size();
+			
+			int jugadorSiguiente = turno;
+			
+			// Cambiar jugador actual en la lógica
+			gestorTablero.getPartida().setJugadorActual(gestorTablero.getPartida().getJugador(jugadorSiguiente));
+			
+			jugadores.get(jugadorActual).getStyleClass().remove("current-player");
+			
+			jugadores.get(jugadorSiguiente).getStyleClass().add("current-player");
 
-	        // volver a activar el botón
-	        dado.setDisable(false);
-	    });
+			// volver a activar el botón
+			dado.setDisable(false);
+		});
 
-	    slide.play();
-	    
-	    
+		slide.play();
+
 	}
+	
+	private void movePlayerPenalizacion(int penalizacion, Jugador jugadorPenalizado) {
+
+		if (gestorTablero.getPartida().getFinalizada()) {
+			return;
+		}
+
+		// Evita spam del botón
+		dado.setDisable(true);
+
+		int jugadorActual = jugadorPenalizado.getTurnoEnArray();
+
+		int oldPosition = posiciones[jugadorActual];
+
+		posiciones[jugadorActual] += penalizacion;
+
+		if (posiciones[jugadorActual] < 0) {
+			posiciones[jugadorActual] = 0;
+		}
+
+		// OLD position
+		int oldRow = oldPosition / COLUMNS;
+		int oldCol = oldPosition % COLUMNS;
+
+		// NEW position
+		int newRow = posiciones[jugadorActual] / COLUMNS;
+		int newCol = posiciones[jugadorActual] % COLUMNS;
+
+		// Cell size (aproximado)
+		double cellWidth = tablero.getWidth() / COLUMNS;
+		double cellHeight = tablero.getHeight() / 10;
+
+		double dx = (newCol - oldCol) * cellWidth;
+		double dy = (newRow - oldRow) * cellHeight;
+
+		TranslateTransition slide = new TranslateTransition(Duration.millis(350), jugadores.get(jugadorActual));
+
+		slide.setByX(dx);
+		slide.setByY(dy);
+
+		slide.setOnFinished(e -> {
+
+			// reset translation
+			jugadores.get(jugadorActual).setTranslateX(0);
+			jugadores.get(jugadorActual).setTranslateY(0);
+
+			// set real position in grid
+			GridPane.setRowIndex(jugadores.get(jugadorActual), newRow);
+			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
+
+			// volver a activar el botón
+			dado.setDisable(false);
+		});
+
+		slide.play();
+	}
+	
 
 	public void setGestorPartida(GestorTablero gestorTablero) {
 		this.gestorTablero = gestorTablero;
