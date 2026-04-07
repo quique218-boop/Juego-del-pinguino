@@ -10,6 +10,7 @@ public abstract class Jugador {
 	private boolean turnoTerminado;
 	private Inventario inventario;
 	private int deudaTurnos;
+	private int partidasTotales;
 	private boolean objBola;
 
 	public Jugador(String nombre, String color, Inventario inventario) {
@@ -35,6 +36,11 @@ public abstract class Jugador {
 
 		return nombre;
 
+	}
+	
+	public int getPartidasTotales() {
+		
+		return partidasTotales;
 	}
 
 	public void setNombre(String nombre) {

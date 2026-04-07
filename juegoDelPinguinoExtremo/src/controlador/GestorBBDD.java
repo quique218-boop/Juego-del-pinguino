@@ -18,7 +18,8 @@ public class GestorBBDD {
 	public static void guardar(Tablero t1) {
 		
 		con = BBDD.conectarBaseDatos();
-//Iniciamos INSERT de la tabla TABLERO
+
+		//Iniciamos INSERT de la tabla TABLERO
 
 		int turnos_tablero = t1.getTurnos();
 
@@ -105,92 +106,70 @@ public class GestorBBDD {
 		
 		
 		//Hacemos el insert de jugador
+		
 		for(int i = 0; i < t1.getArrayListJugador().size(); i++) {
 			
 			if(t1.getArrayListJugador().get(i) instanceof Foca) {
 				
 				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 1, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
-						", seq_tablero.CURRVAL)";
+						", seq_tablero.CURRVAL, '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
+						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " +   t1.getArrayListJugador().get(i).getPartidasTotales() + ")";
 				
 				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
 				           new String[]{"TOTAL"});
+				
+				System.out.println(sqlJugador);
 				
 				BBDD.insert(con, sqlJugador);
 				
-				//Hacemos el insert de inventario a la vez que el de jugador
-				
-				int n_peces = t1.getJugador(i).getInventario().getPez().size();
-
-				int n_bolas = t1.getJugador(i).getInventario().getBolas().size();
-
-				int n_dadoR = 0;
-				
-				int n_dadoL = 0;
-
-				for (Dado dado : t1.getJugador(i).getInventario().getDado()) {
-
-					if (dado instanceof DadoRapido) {
-
-						n_dadoR++;
-
-					} else if (dado instanceof DadoLento) {
-
-						n_dadoL++;
-
-					}
-				}
-				
-				String sqlInventario = "INSERT INTO INVENTARIO VALUES(seq_inventario.NEXTVAL, "+ n_peces + ",  "+ n_bolas + ", "+ n_dadoR +
-						", "+ n_dadoL +", seq_jugador.CURRVAL)";
-				
-				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
-				           new String[]{"TOTAL"});
-				
-				BBDD.insert(con, sqlInventario);
 				
 			}
+			
 			else {
 				
 				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 0, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
-						", seq_tablero.CURRVAL)";
+						", seq_tablero.CURRVAL, '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
+						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " +   t1.getArrayListJugador().get(i).getPartidasTotales() + ")";		
 				
 				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
 				           new String[]{"TOTAL"});
+				
+				System.out.println(sqlJugador);
 				
 				BBDD.insert(con, sqlJugador);
 				
-				//Hacemos el insert de inventario a la vez que el de jugador
-				
-				int n_peces = t1.getJugador(i).getInventario().getPez().size();
-
-				int n_bolas = t1.getJugador(i).getInventario().getBolas().size();
-
-				int n_dadoR = 0;
-				
-				int n_dadoL = 0;
-
-				for (Dado dado : t1.getJugador(i).getInventario().getDado()) {
-
-					if (dado instanceof DadoRapido) {
-
-						n_dadoR++;
-
-					} else if (dado instanceof DadoLento) {
-
-						n_dadoL++;
-
-					}
-				}
-				
-				String sqlInventario = "INSERT INTO INVENTARIO VALUES(seq_inventario.NEXTVAL, "+ n_peces + ",  "+ n_bolas + ", "+ n_dadoR +
-						", "+ n_dadoL +", seq_jugador.CURRVAL)";
-				
-				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
-				           new String[]{"TOTAL"});
-				
-				BBDD.insert(con, sqlInventario);
-				
 			}
+			
+			//Hacemos el insert de inventario a la vez que el de jugador
+			
+			int n_peces = t1.getJugador(i).getInventario().getPez().size();
+
+			int n_bolas = t1.getJugador(i).getInventario().getBolas().size();
+
+			int n_dadoR = 0;
+			
+			int n_dadoL = 0;
+
+			for (Dado dado : t1.getJugador(i).getInventario().getDado()) {
+
+				if (dado instanceof DadoRapido) {
+
+					n_dadoR++;
+
+				} else if (dado instanceof DadoLento) {
+
+					n_dadoL++;
+
+				}
+			}
+			
+			String sqlInventario = "INSERT INTO INVENTARIO VALUES(seq_inventario.NEXTVAL, "+ n_peces + ",  "+ n_bolas + ", "+ n_dadoR +
+					", "+ n_dadoL +", seq_jugador.CURRVAL)";
+			
+			BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
+			           new String[]{"TOTAL"});
+			
+			BBDD.insert(con, sqlInventario);
 		}
 	}
 
