@@ -204,21 +204,14 @@ public class PantallaJuego {
 		dado.setDisable(true);
 
 		Jugador jugador = (Jugador) gestorTablero.getPartida().getJugadorActual();
-		Jugador jugador2 = (Jugador) gestorTablero.getPartida().getJugador(1);
-
-		System.out.println("Pos pingu2 actual:" + jugador2.getPos());
-
-		System.out.println("Pos pingu previa:" + jugador.getPos());
-
+		
 		int resultado = gestorTablero.tirarDado(jugador);
-
-		System.out.println("Pos pingu actual:" + jugador.getPos());
 
 		// Update the Text
 		dadoResultText.setText("Ha salido: " + resultado);
 
 		// Update the position
-		movePlayers(resultado);
+		movePlayers(resultado, jugador);
 		
 		finalizarTurno.setDisable(false);
 	}
@@ -236,7 +229,7 @@ public class PantallaJuego {
 
 			AddEventoHistorial("Usando dado rápido ha salido: " + resultado);
 
-			movePlayers(resultado);
+			movePlayers(resultado, pinguino);
 		}
 
 		ActualizarInventarioGUI(pinguino);
@@ -255,7 +248,7 @@ public class PantallaJuego {
 
 			AddEventoHistorial("Usando dado lento ha salido: " + resultado);
 
-			movePlayers(resultado);
+			movePlayers(resultado, pinguino);
 		}
 
 		ActualizarInventarioGUI(pinguino);
@@ -400,7 +393,7 @@ public class PantallaJuego {
 
 			objBola.moverPosicion(-1);
 
-			movePlayerPenalizacion(-1, objBola);
+			movePlayers(-1, objBola);
 
 			AddEventoHistorial("¡¡Has acertado!!");
 
@@ -512,13 +505,13 @@ public class PantallaJuego {
 		ListaEventos.setItems(ListaObservable);
 	}
 
-	private void movePlayers(int steps) {
+	private void movePlayers(int steps, Jugador jugador) {
 
 		if (gestorTablero.getPartida().getFinalizada()) {
 			return;
 		}
 
-		int jugadorActual = turno;
+		int jugadorActual = jugador.getTurnoEnArray();
 
 		int oldPosition = posiciones[jugadorActual];
 
@@ -528,55 +521,7 @@ public class PantallaJuego {
 		if (posiciones[jugadorActual] >= 50) {
 			posiciones[jugadorActual] = 49;
 		}
-
-		// OLD position
-		int oldRow = oldPosition / COLUMNS;
-		int oldCol = oldPosition % COLUMNS;
-
-		// NEW position
-		int newRow = posiciones[jugadorActual] / COLUMNS;
-		int newCol = posiciones[jugadorActual] % COLUMNS;
-
-		// Cell size (aproximado)
-		double cellWidth = tablero.getWidth() / COLUMNS;
-		double cellHeight = tablero.getHeight() / 10;
-
-		double dx = (newCol - oldCol) * cellWidth;
-		double dy = (newRow - oldRow) * cellHeight;
-
-		TranslateTransition slide = new TranslateTransition(Duration.millis(350), jugadores.get(jugadorActual));
-
-		slide.setByX(dx);
-		slide.setByY(dy);
-
-		slide.setOnFinished(e -> {
-
-			// reset translation
-			jugadores.get(jugadorActual).setTranslateX(0);
-			jugadores.get(jugadorActual).setTranslateY(0);
-
-			// set real position in grid
-			GridPane.setRowIndex(jugadores.get(jugadorActual), newRow);
-			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
-
-		});
-
-		slide.play();
-
-	}
-
-	private void movePlayerPenalizacion(int penalizacion, Jugador jugadorPenalizado) {
-
-		if (gestorTablero.getPartida().getFinalizada()) {
-			return;
-		}
-
-		int jugadorActual = jugadorPenalizado.getTurnoEnArray();
-
-		int oldPosition = posiciones[jugadorActual];
-
-		posiciones[jugadorActual] += penalizacion;
-
+		
 		if (posiciones[jugadorActual] < 0) {
 			posiciones[jugadorActual] = 0;
 		}
@@ -611,11 +556,10 @@ public class PantallaJuego {
 			GridPane.setRowIndex(jugadores.get(jugadorActual), newRow);
 			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
 
-			// volver a activar el botón
-			dado.setDisable(false);
 		});
 
 		slide.play();
+
 	}
 	
 	public void FinalizarTurno() {
