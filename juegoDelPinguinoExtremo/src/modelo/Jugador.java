@@ -31,6 +31,11 @@ public abstract class Jugador {
 		this.posicion = 67;
 		this.inventario = new Inventario();
 	}
+	
+	public int getPartidasTotales() {
+		
+		return partidasTotales;
+	}
 
 	public String getNombre() {
 
