@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -13,6 +14,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
 import java.util.Random;
 import controlador.GestorTablero;
 import modelo.*;
@@ -40,6 +42,8 @@ public class PantallaJuego {
 	private Button peces;
 	@FXML
 	private Button nieve;
+	@FXML
+	private Button finalizarTurno;
 
 	// Texts
 	@FXML
@@ -64,6 +68,8 @@ public class PantallaJuego {
 	private Circle P3;
 	@FXML
 	private Circle P4;
+	@FXML
+	private Circle FOCA;
 
 	@FXML
 	private ListView<Text> ListaEventos;
@@ -71,11 +77,19 @@ public class PantallaJuego {
 	private ObservableList<Text> ListaObservable = FXCollections.observableArrayList();
 
 	private boolean modoBola = false;
-	
+
 	private GestorTablero gestorTablero;
 	// ONLY FOR TESTING!!!
-	private int p1Position = 0; // Tracks current position (from 0 to 49 in a 5x10 grid)
 	private static final int COLUMNS = 5;
+	private int p1Position = 0;
+	private int p2Position = 0;
+	private int p3Position = 0;
+	private int p4Position = 0;// Tracks current position (from 0 to 49 in a 5x10 grid)
+	private int turno = 0;
+
+	private ArrayList<Circle> jugadores = new ArrayList<>();
+
+	private int[] posiciones = { p1Position, p2Position, p3Position, p4Position };
 
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random random = new Random();
@@ -90,24 +104,44 @@ public class PantallaJuego {
 
 		gestorTablero = new GestorTablero();
 
-		Inventario inventario = new Inventario();
-		
 		gestorTablero.NuevoTablero();
 
-		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", inventario));
+		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", new Inventario()));
 
-		// TEMPORALMENTE DAMOS TODOS LOS OBJETOS AL PRINCIPIO
+		gestorTablero.añadirJugador(new Pinguino("Jugador2", "Verde", new Inventario()));
+
+		gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
+
+		// TEMPORALMENTE DAMOS LOS OBJETOS AL PRINCIPIO
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new DadoLento());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new DadoRapido());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaBolas(new BolaDeNieve());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaPez(new Pez());
-
-		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getJugador(0)));
-
-		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
+		
+		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
+		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
 
 		// Show board info
 		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
+
+		for (int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
+
+			gestorTablero.getPartida().getArrayListJugador().get(i).setTurnoEnArray(i);
+
+		}
+		
+		BorrarFichasSinJugador();
+
+		P1.getStyleClass().add("current-player");
+		
+		finalizarTurno.setDisable(true);
+		
+		ponerTurnoEnArray();
+		
+		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
+
+		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
+
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
@@ -164,29 +198,23 @@ public class PantallaJuego {
 	// Button actions
 	@FXML
 	private void handleDado(ActionEvent event) {
+		
+
+		// Evita spam del botón
+		dado.setDisable(true);
 
 		Jugador jugador = (Jugador) gestorTablero.getPartida().getJugadorActual();
-
-		System.out.println("Pos pingu previa:" + jugador.getPos());
-
+		
 		int resultado = gestorTablero.tirarDado(jugador);
-
-		System.out.println("Pos pingu actual:" + jugador.getPos());
 
 		// Update the Text
 		dadoResultText.setText("Ha salido: " + resultado);
 
 		// Update the position
-		moveP1(resultado);
-
-		ActualizarInventarioGUI(jugador);
+		movePlayers(resultado, jugador);
+		
+		finalizarTurno.setDisable(false);
 	}
-
-
-
-	
-	
-
 
 	@FXML
 	private void handleRapido() {
@@ -201,7 +229,7 @@ public class PantallaJuego {
 
 			AddEventoHistorial("Usando dado rápido ha salido: " + resultado);
 
-			moveP1(resultado);
+			movePlayers(resultado, pinguino);
 		}
 
 		ActualizarInventarioGUI(pinguino);
@@ -220,7 +248,7 @@ public class PantallaJuego {
 
 			AddEventoHistorial("Usando dado lento ha salido: " + resultado);
 
-			moveP1(resultado);
+			movePlayers(resultado, pinguino);
 		}
 
 		ActualizarInventarioGUI(pinguino);
@@ -302,6 +330,38 @@ public class PantallaJuego {
 	private void selecP4() {
 		selecPingu(gestorTablero.getPartida().getJugador(3));
 	}
+	
+	@FXML
+	private void selecFOCA() {
+		selecPingu(gestorTablero.getPartida().getArrayListJugador().getLast());
+	}
+
+	private void BorrarFichasSinJugador() {
+
+		ArrayList<Jugador> listaJugadores = gestorTablero.getPartida().getArrayListJugador();
+
+		if (listaJugadores.size() == 4) {
+
+			tablero.getChildren().remove(P4);
+
+		}
+
+		if (listaJugadores.size() == 3) {
+
+			tablero.getChildren().remove(P4);
+			tablero.getChildren().remove(P3);
+
+		}
+
+		for (Node nodo : tablero.getChildren()) {
+
+			if (nodo instanceof Circle) {
+
+				jugadores.add((Circle) nodo);
+
+			}
+		}
+	}
 
 	private void selecPingu(Jugador objBola) {
 		if (!modoBola) {
@@ -325,8 +385,23 @@ public class PantallaJuego {
 
 		int distancia = CalcularDistancia(pinguinoAct, objBola);
 
-		if (CalcularExito(distancia))
+		pinguinoAct.usarItem(inventario.getBolas().getFirst());
+
+		ActualizarInventarioGUI(pinguinoAct);
+
+		if (CalcularExito(distancia)) {
+
 			objBola.moverPosicion(-1);
+
+			movePlayers(-1, objBola);
+
+			AddEventoHistorial("¡¡Has acertado!!");
+
+		} else {
+
+			AddEventoHistorial("Has fallado :(");
+
+		}
 
 	}
 
@@ -382,6 +457,7 @@ public class PantallaJuego {
 
 		nieve_t.setText("Bolas de nieve: " + bolasNieve);
 
+
 		if (dadoRapido == 0)
 			rapido.setDisable(true);
 		else
@@ -429,75 +505,98 @@ public class PantallaJuego {
 		ListaEventos.setItems(ListaObservable);
 	}
 
-private void moveP1(int steps) {
+	private void movePlayers(int steps, Jugador jugador) {
+
+		if (gestorTablero.getPartida().getFinalizada()) {
+			return;
+		}
+
+		int jugadorActual = jugador.getTurnoEnArray();
+
+		int oldPosition = posiciones[jugadorActual];
+
+		posiciones[jugadorActual] += steps;
+
+		// Bound player
+		if (posiciones[jugadorActual] >= 50) {
+			posiciones[jugadorActual] = 49;
+		}
 		
+		if (posiciones[jugadorActual] < 0) {
+			posiciones[jugadorActual] = 0;
+		}
+
+		// OLD position
+		int oldRow = oldPosition / COLUMNS;
+		int oldCol = oldPosition % COLUMNS;
+
+		// NEW position
+		int newRow = posiciones[jugadorActual] / COLUMNS;
+		int newCol = posiciones[jugadorActual] % COLUMNS;
+
+		// Cell size (aproximado)
+		double cellWidth = tablero.getWidth() / COLUMNS;
+		double cellHeight = tablero.getHeight() / 10;
+
+		double dx = (newCol - oldCol) * cellWidth;
+		double dy = (newRow - oldRow) * cellHeight;
+
+		TranslateTransition slide = new TranslateTransition(Duration.millis(350), jugadores.get(jugadorActual));
+
+		slide.setByX(dx);
+		slide.setByY(dy);
+
+		slide.setOnFinished(e -> {
+
+			// reset translation
+			jugadores.get(jugadorActual).setTranslateX(0);
+			jugadores.get(jugadorActual).setTranslateY(0);
+
+			// set real position in grid
+			GridPane.setRowIndex(jugadores.get(jugadorActual), newRow);
+			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
+
+		});
+
+		slide.play();
+
+	}
+	
+	public void FinalizarTurno() {
+
+		if (!dado.isDisabled())
+			return;
+
+		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
 		
-		if(gestorTablero.getPartida().getFinalizada()) {return;}
+		turno = (turno + 1) % jugadores.size(); // Cambio de turno
+
+		Jugador jugadorSiguiente = gestorTablero.getPartida().getJugador(turno);
+
+		// Cambiar jugador actual en la lógica
+		gestorTablero.getPartida().setJugadorActual(gestorTablero.getPartida().getJugador(turno));
+
+		jugadores.get(jugadorActual.getTurnoEnArray()).getStyleClass().remove("current-player");
+
+		jugadores.get(jugadorSiguiente.getTurnoEnArray()).getStyleClass().add("current-player");
+
+		// volver a activar el botón
+		dado.setDisable(false);
+		
+		// Desactivar finalizar turno
+		finalizarTurno.setDisable(true);
+		
+		ActualizarInventarioGUI(jugadorSiguiente);
+	}
+	
+	public void ponerTurnoEnArray() {
+		
+		for(int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
 			
+			gestorTablero.getPartida().getJugador(i).setTurnoEnArray(i);
 			
-
-		// Evita spam del botón
-	    dado.setDisable(true);
-	    
-	    int jugadorActual = turno;
-
-	    int oldPosition = posiciones[jugadorActual];
-
-	    posiciones[jugadorActual] += steps;
-
-	    // Bound player
-	    if (posiciones[jugadorActual] >= 50) {
-	    	posiciones[jugadorActual] = 49;
-	    }
-
-	    if (posiciones[jugadorActual] < 0) {
-	    	posiciones[jugadorActual] = 0;
-	    }
-
-	    // OLD position
-	    int oldRow = oldPosition / COLUMNS;
-	    int oldCol = oldPosition % COLUMNS;
-
-	    // NEW position
-	    int newRow = posiciones[jugadorActual] / COLUMNS;
-	    int newCol = posiciones[jugadorActual] % COLUMNS;
-
-	    // Cell size (aproximado)
-	    double cellWidth = tablero.getWidth() / COLUMNS;
-	    double cellHeight = tablero.getHeight() / 10;
-
-	    double dx = (newCol - oldCol) * cellWidth;
-	    double dy = (newRow - oldRow) * cellHeight;
-
-	    TranslateTransition slide = new TranslateTransition(Duration.millis(350), jugadores[jugadorActual]);
-
-	    slide.setByX(dx);
-	    slide.setByY(dy);
-
-	    slide.setOnFinished(e -> {
-
-	        // reset translation
-	    	jugadores[jugadorActual].setTranslateX(0);
-	    	jugadores[jugadorActual].setTranslateY(0);
-
-	        // set real position in grid
-	        GridPane.setRowIndex(jugadores[jugadorActual], newRow);
-	        GridPane.setColumnIndex(jugadores[jugadorActual], newCol);
-	        
-	        turno = (turno + 1) % jugadores.length;
-
-	        // Cambiar jugador actual en la lógica
-	        gestorTablero.getPartida().setJugadorActual(
-	            gestorTablero.getPartida().getJugador(turno)
-	            );
-
-	        // volver a activar el botón
-	        dado.setDisable(false);
-	    });
-
-	    slide.play();
-	    
-	    
+		}
+		
 	}
 
 	public void setGestorPartida(GestorTablero gestorTablero) {

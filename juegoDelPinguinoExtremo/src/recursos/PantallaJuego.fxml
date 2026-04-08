@@ -73,16 +73,21 @@
                     <Text styleClass="cell-title" text="Finish" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="9" />
 
                     <!-- Jugadores: fx:id para Controller + id para CSS -->
-                    <Circle id="P1" fx:id="P1" onMouseClicked="#selecP4" radius="14.0" styleClass="player" />
-                    <Circle id="P2" fx:id="P2" onMouseClicked="#selecP3" radius="14.0" styleClass="player">
+                    <Circle id="P1" fx:id="P1" onMouseClicked="#selecP1" radius="14.0" styleClass="player" />
+                    <Circle id="P2" fx:id="P2" onMouseClicked="#selecP2" radius="14.0" styleClass="player">
                         <GridPane.margin><Insets left="34.0" /></GridPane.margin>
                     </Circle>
-                    <Circle id="P3" fx:id="P3" onMouseClicked="#selecP2" radius="14.0" styleClass="player">
+                    <Circle id="P3" fx:id="P3" onMouseClicked="#selecP3" radius="14.0" styleClass="player">
                         <GridPane.margin><Insets left="68.0" /></GridPane.margin>
                     </Circle>
-                    <Circle id="P4" fx:id="P4" onMouseClicked="#selecP1" radius="14.0" styleClass="player">
+                    <Circle id="P4" fx:id="P4" onMouseClicked="#selecP4" radius="14.0" styleClass="player">
                         <GridPane.margin><Insets left="102.0" /></GridPane.margin>
                     </Circle>
+               <Circle id="FOCA" fx:id="FOCA" onMouseClicked="#selecFOCA" radius="10.0" styleClass="foca">
+                  <GridPane.margin>
+                     <Insets left="137.0" />
+                  </GridPane.margin>
+               </Circle>
                 </children>
             </GridPane>
         </StackPane>
@@ -99,6 +104,7 @@
                 <Label styleClass="card-title" text="Dado" />
                 <Text fx:id="dadoResultText" styleClass="big-text" text="Ha salido: -" wrappingWidth="240" />
                 <Button fx:id="dado" maxWidth="Infinity" onAction="#handleDado" styleClass="primary" text="Tirar dado" />
+            <Button fx:id="finalizarTurno" minHeight="16.0" mnemonicParsing="false" onAction="#FinalizarTurno" prefHeight="36.0" prefWidth="123.0" styleClass="danger" text="Finalizar Turno" translateY="55.0" />
             </VBox>
 
             <!-- Tarjeta Objetos -->
