@@ -11,6 +11,7 @@ public abstract class Jugador {
 	private Inventario inventario;
 	private int deudaTurnos;
 	private int partidasTotales;
+	private int turnoEnArray;
 	private boolean objBola;
 
 	public Jugador(String nombre, String color, Inventario inventario) {
@@ -19,28 +20,22 @@ public abstract class Jugador {
 		this.color = color;
 		this.posicion = 0;
 		this.inventario = inventario;
+		this.turnoEnArray = -1;
 		this.objBola = false;
 	}
-	
+
 	public Jugador() {
-		
+
 		this.nombre = "prueba";
 		this.color = "rojo puton";
 		this.posicion = 67;
-		this.inventario = new Inventario ();
+		this.inventario = new Inventario();
 	}
-	
-	
 
 	public String getNombre() {
 
 		return nombre;
 
-	}
-	
-	public int getPartidasTotales() {
-		
-		return partidasTotales;
 	}
 
 	public void setNombre(String nombre) {
@@ -117,6 +112,18 @@ public abstract class Jugador {
 
 	}
 
+	public int getTurnoEnArray() {
+
+		return this.turnoEnArray;
+
+	}
+
+	public void setTurnoEnArray(int turnoEnArray) {
+
+		this.turnoEnArray = turnoEnArray;
+
+	}
+
 	public int contarBolasdeNieve() {
 
 		if (inventario == null)
@@ -184,25 +191,21 @@ public abstract class Jugador {
 			inventario.getDado().remove(item);
 
 	}
-	
-	/*public boolean objBola() {
-		
-		return objBola;
-		
-	}
-	
-	public void modoBola(boolean objBola) {
-		
-		this.objBola = objBola;
-	}
 
-	public boolean objBola() {
-		return objBola;
-	}
+	/*
+	 * public boolean objBola() {
+	 * 
+	 * return objBola;
+	 * 
+	 * }
+	 * 
+	 * public void modoBola(boolean objBola) {
+	 * 
+	 * this.objBola = objBola; }
+	 * 
+	 * public boolean objBola() { return objBola; }
+	 * 
+	 * public void modoBola(boolean objBola) { this.objBola = objBola; }
+	 */
 
-	public void modoBola(boolean objBola) {
-		this.objBola = objBola;
-	}
-*/
-	
 }
