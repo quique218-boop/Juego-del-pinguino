@@ -1,21 +1,28 @@
 package controlador;
 
 import modelo.*;
+
+import java.sql.Array;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class GestorBBDD {
 
 	public static Connection con;
-
-	private static String urlBBDD;
-	private static String username;
-	private static String password;
-
+	
 	private static int count;
 
-	public static void guardar(Tablero t1) {
+	
+	public GestorBBDD() {
+		
+	}
+
+	
+	public void guardar(Tablero t1) {
 		
 		con = BBDD.conectarBaseDatos();
 
@@ -173,22 +180,44 @@ public class GestorBBDD {
 		}
 	}
 
-	public static Tablero cargarTablero(int id) {
+	public Tablero cargarTablero(int indice) {
 		con = BBDD.conectarBaseDatos();
+		
+		ArrayList<LinkedHashMap<String, String>> partida =
+			    BBDD.select(con, "SELECT ID_TABLERO, TURNOS, JUGADOR_ACTUAL, FECHA_INICIO FROM TABLERO WHERE ID_TABLERO = "+indice);
+		
+		LinkedHashMap<String, String> fila = partida.get(0);
 
-		System.out.println("Select");
-		ArrayList<String> cols = new ArrayList<>();
-		cols.add("NACTOR");
-		cols.add("NOMBRE");
-		cols.add("FECHAN");
-		procesamientoSelect(con, "SELECT * FROM ACTOR\n" + "WHERE \"NACTOR\" = " + id, cols);
+		int idTablero = Integer.parseInt(fila.get("ID_TABLERO"));
+		int turnos = Integer.parseInt(fila.get("TURNOS"));
+		String fecha = fila.get("FECHA_INICIO");
+		
+		 System.out.println(idTablero);
+         System.out.println(turnos);
+         System.out.println(fecha);
+		
+		try (Statement st = con.createStatement();
+			     ResultSet rs = st.executeQuery("SELECT CASILLAS FROM TABLERO WHERE ID_TABLERO = " + indice)) {
 
-		BBDD.cerrar(con);
+			    if (rs.next()) {
+			        Array array = rs.getArray("CASILLAS");
+			        Object[] casillas = (Object[]) array.getArray();
+			        for (Object c : casillas) {
+			            
+			        	 String tipo = c.toString();
+			        	 System.out.println(tipo);			            
+			        }
+			    }
 
-		return null;
+			} catch (SQLException e) {
+			    e.printStackTrace();
+			}
+		Tablero	tablero = new Tablero();
+		return tablero;
+		
 	}
 
-	public static void procesamientoSelect(Connection con, String sql, ArrayList<String> columnas) {
+	public  void procesamientoSelect(Connection con, String sql, ArrayList<String> columnas) {
 
 		// Ejecuta el SELECT usando la plantilla BBDD.
 		// Devuelve una lista de filas.
@@ -223,7 +252,7 @@ public class GestorBBDD {
 	 * IMPORTANTE: En un proyecto real usaríamos un objeto directamente en vez de
 	 * variables globales, pero aquí lo hacemos así para simplificar el ejemplo.
 	 */
-	public static void procesarValor(String col, String valor) {
+	public void procesarValor(String col, String valor) {
 
 		if (col.equals("NUMIDS")) {
 			count = Integer.parseInt(valor) + 1;

@@ -7,6 +7,7 @@ public class Tablero {
 
 	private ArrayList<Jugador> listaJugador;
 	private ArrayList<Casilla> listaCasillas;
+	private String fechaInicio;
 	private int turnos;
 	private Jugador jugadorActual;
 	private boolean finalizada;
@@ -33,6 +34,18 @@ public class Tablero {
 
 		return this.listaCasillas.get(posicion);
 
+	}
+	
+	public String getFecha() {
+		
+		return fechaInicio;
+		
+	}
+	
+	public void setFecha(String fecha) {
+		
+		fechaInicio = fecha;
+		
 	}
 	
 	public ArrayList<Jugador> getArrayListJugador() {

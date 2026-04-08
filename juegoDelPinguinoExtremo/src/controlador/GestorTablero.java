@@ -105,6 +105,7 @@ public class GestorTablero {
 						((Foca) tablero.getJugadorActual()).golpearJugador(((Pinguino) tablero.getJugador(i)), tablero);
 
 					}
+					
 				}
 
 			}

@@ -6,8 +6,7 @@ public class testetoBBDD {
 	
 	public static void main(String[] args) {
 		
-		 BBDD bbdd;
-		 GestorBBDD bases;
+		 GestorBBDD bases = new GestorBBDD();
 		 
 		 Tablero tabla;
 		 
@@ -23,7 +22,9 @@ public class testetoBBDD {
 		 tableta.añadirJugador(b);
 		 tableta.añadirJugador(c);
 		 
-		 GestorBBDD.guardar(tableta.getPartida());
+		 bases.guardar(tableta.getPartida());
+		 
+		 bases.cargarTablero(10);
 	}
 
 }
