@@ -99,6 +99,7 @@
                 <Label styleClass="card-title" text="Dado" />
                 <Text fx:id="dadoResultText" styleClass="big-text" text="Ha salido: -" wrappingWidth="240" />
                 <Button fx:id="dado" maxWidth="Infinity" onAction="#handleDado" styleClass="primary" text="Tirar dado" />
+            <Button fx:id="finalizarTurno" minHeight="16.0" mnemonicParsing="false" onAction="#FinalizarTurno" prefHeight="36.0" prefWidth="123.0" styleClass="danger" text="Finalizar Turno" translateY="55.0" />
             </VBox>
 
             <!-- Tarjeta Objetos -->

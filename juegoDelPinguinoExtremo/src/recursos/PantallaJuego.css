@@ -92,6 +92,15 @@
     -fx-background-color: #295fd0;
 }
 
+.button.danger {
+    -fx-background-color: #FF0000;
+    -fx-text-fill: white;
+}
+
+.button.danger:hover {
+    -fx-background-color: #8A0000;
+}
+
 /* SCROLL */
 .objects-scroll {
     -fx-background-color: transparent;

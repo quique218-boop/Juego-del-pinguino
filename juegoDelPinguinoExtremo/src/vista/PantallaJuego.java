@@ -42,6 +42,8 @@ public class PantallaJuego {
 	private Button peces;
 	@FXML
 	private Button nieve;
+	@FXML
+	private Button finalizarTurno;
 
 	// Texts
 	@FXML
@@ -115,6 +117,9 @@ public class PantallaJuego {
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new DadoRapido());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaBolas(new BolaDeNieve());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaPez(new Pez());
+		
+		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
+		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
 
 		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getJugador(0)));
 
@@ -122,16 +127,18 @@ public class PantallaJuego {
 
 		// Show board info
 		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
-		
-		for(int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
-			
+
+		for (int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
+
 			gestorTablero.getPartida().getArrayListJugador().get(i).setTurnoEnArray(i);
-			
+
 		}
 
 		BorrarFichasSinJugador();
-		
+
 		P1.getStyleClass().add("current-player");
+		
+		ponerTurnoEnArray();
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
@@ -205,8 +212,6 @@ public class PantallaJuego {
 
 		// Update the position
 		movePlayers(resultado);
-
-		ActualizarInventarioGUI(jugador);
 	}
 
 	@FXML
@@ -380,7 +385,7 @@ public class PantallaJuego {
 		if (CalcularExito(distancia)) {
 
 			objBola.moverPosicion(-1); // TODO testing !!! (DEBERIA SER -1)
-			
+
 			movePlayerPenalizacion(-1, objBola);
 
 			AddEventoHistorial("¡¡Has acertado!!");
@@ -541,28 +546,13 @@ public class PantallaJuego {
 			// set real position in grid
 			GridPane.setRowIndex(jugadores.get(jugadorActual), newRow);
 			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
-			
-			// Cambio de turno
 
-			turno = (turno + 1) % jugadores.size();
-			
-			int jugadorSiguiente = turno;
-			
-			// Cambiar jugador actual en la lógica
-			gestorTablero.getPartida().setJugadorActual(gestorTablero.getPartida().getJugador(jugadorSiguiente));
-			
-			jugadores.get(jugadorActual).getStyleClass().remove("current-player");
-			
-			jugadores.get(jugadorSiguiente).getStyleClass().add("current-player");
-
-			// volver a activar el botón
-			dado.setDisable(false);
 		});
 
 		slide.play();
 
 	}
-	
+
 	private void movePlayerPenalizacion(int penalizacion, Jugador jugadorPenalizado) {
 
 		if (gestorTablero.getPartida().getFinalizada()) {
@@ -619,6 +609,42 @@ public class PantallaJuego {
 		slide.play();
 	}
 	
+	public void FinalizarTurno() {
+
+		if (!dado.isDisabled())
+			return;
+
+		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
+		
+		// Cambio de turno
+
+		turno = (turno + 1) % jugadores.size();
+
+		Jugador jugadorSiguiente = gestorTablero.getPartida().getJugador(turno);
+
+		// Cambiar jugador actual en la lógica
+		gestorTablero.getPartida().setJugadorActual(gestorTablero.getPartida().getJugador(turno));
+
+		
+		jugadores.get(jugadorActual.getTurnoEnArray()).getStyleClass().remove("current-player");
+
+		jugadores.get(jugadorSiguiente.getTurnoEnArray()).getStyleClass().add("current-player");
+
+		// volver a activar el botón
+		dado.setDisable(false);
+		
+		ActualizarInventarioGUI(jugadorSiguiente);
+	}
+	
+	public void ponerTurnoEnArray() {
+		
+		for(int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
+			
+			gestorTablero.getPartida().getJugador(i).setTurnoEnArray(i);
+			
+		}
+		
+	}
 
 	public void setGestorPartida(GestorTablero gestorTablero) {
 		this.gestorTablero = gestorTablero;
