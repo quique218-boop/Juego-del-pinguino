@@ -68,6 +68,8 @@ public class PantallaJuego {
 	private Circle P3;
 	@FXML
 	private Circle P4;
+	@FXML
+	private Circle FOCA;
 
 	@FXML
 	private ListView<Text> ListaEventos;
@@ -102,17 +104,15 @@ public class PantallaJuego {
 
 		gestorTablero = new GestorTablero();
 
-		Inventario inventario = new Inventario();
-
 		gestorTablero.NuevoTablero();
 
-		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", inventario));
+		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", new Inventario()));
 
-		gestorTablero.añadirJugador(new Pinguino("Jugador2", "Verde", inventario));
+		gestorTablero.añadirJugador(new Pinguino("Jugador2", "Verde", new Inventario()));
 
-		gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", inventario));
+		gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
 
-		// TEMPORALMENTE DAMOS TODOS LOS OBJETOS AL PRINCIPIO
+		// TEMPORALMENTE DAMOS LOS OBJETOS AL PRINCIPIO
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new DadoLento());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new DadoRapido());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaBolas(new BolaDeNieve());
@@ -120,10 +120,6 @@ public class PantallaJuego {
 		
 		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
 		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
-
-		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getJugador(0)));
-
-		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
 
 		// Show board info
 		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
@@ -133,12 +129,19 @@ public class PantallaJuego {
 			gestorTablero.getPartida().getArrayListJugador().get(i).setTurnoEnArray(i);
 
 		}
-
+		
 		BorrarFichasSinJugador();
 
 		P1.getStyleClass().add("current-player");
 		
+		finalizarTurno.setDisable(true);
+		
 		ponerTurnoEnArray();
+		
+		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
+
+		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
+
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
@@ -195,6 +198,10 @@ public class PantallaJuego {
 	// Button actions
 	@FXML
 	private void handleDado(ActionEvent event) {
+		
+
+		// Evita spam del botón
+		dado.setDisable(true);
 
 		Jugador jugador = (Jugador) gestorTablero.getPartida().getJugadorActual();
 		Jugador jugador2 = (Jugador) gestorTablero.getPartida().getJugador(1);
@@ -212,6 +219,8 @@ public class PantallaJuego {
 
 		// Update the position
 		movePlayers(resultado);
+		
+		finalizarTurno.setDisable(false);
 	}
 
 	@FXML
@@ -328,6 +337,11 @@ public class PantallaJuego {
 	private void selecP4() {
 		selecPingu(gestorTablero.getPartida().getJugador(3));
 	}
+	
+	@FXML
+	private void selecFOCA() {
+		selecPingu(gestorTablero.getPartida().getArrayListJugador().getLast());
+	}
 
 	private void BorrarFichasSinJugador() {
 
@@ -384,7 +398,7 @@ public class PantallaJuego {
 
 		if (CalcularExito(distancia)) {
 
-			objBola.moverPosicion(-1); // TODO testing !!! (DEBERIA SER -1)
+			objBola.moverPosicion(-1);
 
 			movePlayerPenalizacion(-1, objBola);
 
@@ -450,6 +464,7 @@ public class PantallaJuego {
 
 		nieve_t.setText("Bolas de nieve: " + bolasNieve);
 
+
 		if (dadoRapido == 0)
 			rapido.setDisable(true);
 		else
@@ -503,9 +518,6 @@ public class PantallaJuego {
 			return;
 		}
 
-		// Evita spam del botón
-		dado.setDisable(true);
-
 		int jugadorActual = turno;
 
 		int oldPosition = posiciones[jugadorActual];
@@ -558,9 +570,6 @@ public class PantallaJuego {
 		if (gestorTablero.getPartida().getFinalizada()) {
 			return;
 		}
-
-		// Evita spam del botón
-		dado.setDisable(true);
 
 		int jugadorActual = jugadorPenalizado.getTurnoEnArray();
 
@@ -616,22 +625,22 @@ public class PantallaJuego {
 
 		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
 		
-		// Cambio de turno
-
-		turno = (turno + 1) % jugadores.size();
+		turno = (turno + 1) % jugadores.size(); // Cambio de turno
 
 		Jugador jugadorSiguiente = gestorTablero.getPartida().getJugador(turno);
 
 		// Cambiar jugador actual en la lógica
 		gestorTablero.getPartida().setJugadorActual(gestorTablero.getPartida().getJugador(turno));
 
-		
 		jugadores.get(jugadorActual.getTurnoEnArray()).getStyleClass().remove("current-player");
 
 		jugadores.get(jugadorSiguiente.getTurnoEnArray()).getStyleClass().add("current-player");
 
 		// volver a activar el botón
 		dado.setDisable(false);
+		
+		// Desactivar finalizar turno
+		finalizarTurno.setDisable(true);
 		
 		ActualizarInventarioGUI(jugadorSiguiente);
 	}

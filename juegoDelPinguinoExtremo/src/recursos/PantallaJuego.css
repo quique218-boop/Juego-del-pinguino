@@ -124,11 +124,22 @@
     -fx-scale-y: 1.05;
 }
 
+.foca {
+    -fx-stroke: red;
+    -fx-stroke-width: 3;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 8, 0.35, 0, 2);
+
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
 /* Colores por ID (robusto en JavaFX 21) */
 #P1 { -fx-fill: #2f6fed; }  /* azul */
 #P2 { -fx-fill: #ef4444; }  /* rojo */
 #P3 { -fx-fill: #22c55e; }  /* verde */
 #P4 { -fx-fill: #facc15; }  /* amarillo */
+#FOCA { -fx-fill: #FF0000; } 
 
 /* Si quieres marcar el jugador activo, añade/quita esta clase desde Java */
 .current-player {

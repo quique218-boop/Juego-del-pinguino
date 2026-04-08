@@ -83,6 +83,11 @@
                     <Circle id="P4" fx:id="P4" onMouseClicked="#selecP4" radius="14.0" styleClass="player">
                         <GridPane.margin><Insets left="102.0" /></GridPane.margin>
                     </Circle>
+               <Circle id="FOCA" fx:id="FOCA" onMouseClicked="#selecFOCA" radius="10.0" styleClass="foca">
+                  <GridPane.margin>
+                     <Insets left="137.0" />
+                  </GridPane.margin>
+               </Circle>
                 </children>
             </GridPane>
         </StackPane>
