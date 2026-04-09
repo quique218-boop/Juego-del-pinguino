@@ -104,6 +104,10 @@ public class PantallaJuego {
 	private final Double e = 2.718281828459045235360d;
 
 	private boolean recursiva = false;
+	
+	// Cell size (aproximado) TODO
+	double cellWidth = tablero.getWidth() / COLUMNS;
+	double cellHeight = tablero.getHeight() / 10;
 
 	@FXML
 	private void initialize() {
@@ -548,10 +552,6 @@ public class PantallaJuego {
 		// NEW position
 		int newRow = posiciones[jugadorActual] / COLUMNS;
 		int newCol = posiciones[jugadorActual] % COLUMNS;
-
-		// Cell size (aproximado)
-		double cellWidth = tablero.getWidth() / COLUMNS;
-		double cellHeight = tablero.getHeight() / 10;
 
 		double dx = (newCol - oldCol) * cellWidth;
 		double dy = (newRow - oldRow) * cellHeight;
