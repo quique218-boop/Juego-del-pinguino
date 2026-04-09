@@ -104,56 +104,52 @@ public class PantallaJuego {
 	private final Double e = 2.718281828459045235360d;
 
 	private boolean recursiva = false;
-	
-	// Cell size (aproximado) TODO
-	double cellWidth = tablero.getWidth() / COLUMNS;
-	double cellHeight = tablero.getHeight() / 10;
+
+	private boolean peligro = false;
 
 	@FXML
 	private void initialize() {
 
+		// UI
 		AddEventoHistorial("¡El juego ha comenzado!");
 
-		gestorTablero = new GestorTablero();
+		P1.getStyleClass().add("current-player"); // Pone el efecto del jugador actual al jugador 1
 
+		finalizarTurno.setDisable(true); // Desactivamos el boton de pasar de turno al principio
+
+		// Creacion gestor tablero y crear un nuevo tablero
+		gestorTablero = new GestorTablero();
 		gestorTablero.NuevoTablero();
 
+		// Pone el texto del tipo de casilla
+		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
+
+		// Añadir jugadores hardcodeados temporalmente
 		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", new Inventario()));
-
 		gestorTablero.añadirJugador(new Pinguino("Jugador2", "Verde", new Inventario()));
-
 		gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
 
+		// Asignar el jugador actual como el primero de la lista (Jugador 1)
+		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
+
+		// Definir el atributo del orden de turno de jugadores
+		ponerTurnoEnArray();
+
+		// Borramos los circulos cuando no hay jugadores para ellos.
+		BorrarFichasSinJugador();
+
 		// TEMPORALMENTE DAMOS LOS OBJETOS AL PRINCIPIO
+		// Jugador 1
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new DadoLento());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new DadoRapido());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaBolas(new BolaDeNieve());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaPez(new Pez());
-
+		// Jugador 2
 		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
 		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
 
-		// Show board info
-		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
-
-		for (int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
-
-			gestorTablero.getPartida().getArrayListJugador().get(i).setTurnoEnArray(i);
-
-		}
-
-		BorrarFichasSinJugador();
-
-		P1.getStyleClass().add("current-player");
-
-		finalizarTurno.setDisable(true);
-
-		ponerTurnoEnArray();
-
-		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
-
+		// Poner el menu acorde al inventario del jugador actual (Jugador 1)
 		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
-
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
@@ -279,40 +275,35 @@ public class PantallaJuego {
 
 		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
-		Inventario inventario = pinguino.getInventario();
+		pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
 
-		Foca foca = null;
+		if (gestorTablero.getPartida().getCasilla(pinguino.getPos()) instanceof Oso) {
 
-		for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
-
-			if (jugador instanceof Foca) {
-
-				foca = (Foca) jugador;
-
-			}
-		}
-
-		if (inventario.getPez().isEmpty()) { // Si la lista no es vacia
-
-			return;
+			peligro = false;
 
 		} else {
 
-			Casilla casillaActual = gestorTablero.getPartida().getCasilla(pinguino.getPos()); // Casilla donde se
-																								// encuentra
+			Foca foca = null;
 
-			if (casillaActual instanceof Oso) {
+			for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
 
-				pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
+				if (jugador instanceof Foca) {
 
-			} else if (pinguino.getPos() == foca.getPos()) { // Si estamos en la misma casilla de foca
+					foca = (Foca) jugador;
 
-				pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
+				}
+			}
+
+			if (pinguino.getPos() == foca.getPos()) { // Si estamos en la misma casilla de foca
 
 				foca.esSobornado();
 
+				peligro = false;
+
 			}
 		}
+
+		peces.setDisable(true);
 
 		ActualizarInventarioGUI(pinguino);
 	}
@@ -487,16 +478,12 @@ public class PantallaJuego {
 		else
 			lento.setDisable(false);
 
-		if (peces == 0)
-			this.peces.setDisable(true);
-		else
-			this.peces.setDisable(false);
-
 		if (bolasNieve == 0)
 			nieve.setDisable(true);
 		else
 			nieve.setDisable(false);
 
+		this.peces.setDisable(true); // TODO TEMPORAL
 	}
 
 	private Dado EncontrarDado(Jugador jugador, boolean Rapido_Lento) { // True == DadoRapido, False == DadoLento
@@ -553,6 +540,10 @@ public class PantallaJuego {
 		int newRow = posiciones[jugadorActual] / COLUMNS;
 		int newCol = posiciones[jugadorActual] % COLUMNS;
 
+		// Calcular tamaño de las casillas
+		double cellWidth = tablero.getWidth() / COLUMNS;
+		double cellHeight = tablero.getHeight() / 10;
+
 		double dx = (newCol - oldCol) * cellWidth;
 		double dy = (newRow - oldRow) * cellHeight;
 
@@ -572,10 +563,9 @@ public class PantallaJuego {
 			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
 
 			if (!recursiva) {
-				caerEnCasilla(jugador);
 				recursiva = true;
+				caerEnCasilla(jugador);
 			} else {
-
 				recursiva = false;
 			}
 
@@ -587,14 +577,47 @@ public class PantallaJuego {
 
 	public void FinalizarTurno() {
 
-		if (!dado.isDisabled())
-			return;
-
 		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
+
+		if (peligro == true) {
+			
+			AddEventoHistorial(jugadorActual.getNombre() + " No le has dado un pez asi que caes al principio");
+			
+			int PosInicial = jugadorActual.getPos();
+
+			System.out.println(jugadorActual.getNombre() + "En posicion inicial " + PosInicial); // TODO DEBUG TEXT
+
+			new Oso().realizarAccion(gestorTablero.getPartida(), jugadorActual);
+
+			int PosFinal = jugadorActual.getPos();
+
+			int movimiento = PosFinal - PosInicial;
+
+			System.out.println(jugadorActual.getNombre() + "movido a posicion final " + PosFinal); // TODO DEBUG TEXT
+
+			movePlayers(movimiento, jugadorActual);
+			
+			peligro = false;
+		}
+
+		Jugador jugadorSiguiente;
 
 		turno = (turno + 1) % jugadores.size(); // Cambio de turno
 
-		Jugador jugadorSiguiente = gestorTablero.getPartida().getJugador(turno);
+		jugadorSiguiente = gestorTablero.getPartida().getJugador(turno);
+
+		while (jugadorSiguiente.getDeudaTurnos() > 0) {
+
+			if (jugadorSiguiente.getDeudaTurnos() > 0) {
+				AddEventoHistorial(jugadorSiguiente.getNombre() + " pierde el turno");
+				jugadorSiguiente.reducirDeudaTurnos();
+			}
+
+			turno = (turno + 1) % jugadores.size(); // Cambio de turno
+
+			jugadorSiguiente = gestorTablero.getPartida().getJugador(turno);
+
+		}
 
 		// Cambiar jugador actual en la lógica
 		gestorTablero.getPartida().setJugadorActual(gestorTablero.getPartida().getJugador(turno));
@@ -625,17 +648,61 @@ public class PantallaJuego {
 			return;
 		}
 
+		AddEventoHistorial(jugador.getNombre() + " ha caido en " + casilla.getClass().getSimpleName());
+
+		if (casilla instanceof Oso) {
+
+			ModoPeligro(jugador);
+			return;
+
+		}
+
 		casilla.realizarAccion(gestorTablero.getPartida(), jugador);
 
 		int PosFinal = jugador.getPos();
 
 		int movimiento = PosFinal - PosInicial;
 
+		if (casilla instanceof Evento) {
+
+			AddEventoHistorial("El evento ha sido: " + ((Evento) casilla).getResultado());
+
+			ActualizarInventarioGUI(jugador);
+
+		} else if (casilla instanceof SueloQuebradizo) {
+
+			AddEventoHistorial("El evento ha sido: " + ((SueloQuebradizo) casilla).getResultado());
+
+			ActualizarInventarioGUI(jugador);
+
+		}
+
+		if (jugador.getDeudaTurnos() > 0)
+			FinalizarTurno();
+
 		System.out.println(jugador.getNombre() + "movido a posicion final " + PosFinal); // TODO DEBUG TEXT
 
-		AddEventoHistorial(jugador.getNombre() + " ha caido en " + casilla.getClass().getSimpleName());
-
 		movePlayers(movimiento, jugador);
+
+	}
+
+	public void ModoPeligro(Jugador jugador) {
+
+		if (jugador.getInventario().getPez().size() <= 0) {
+			peligro = true;
+			return;
+		}
+
+		dado.setDisable(true);
+		rapido.setDisable(true);
+		lento.setDisable(true);
+		nieve.setDisable(true);
+		peces.setDisable(false);
+		finalizarTurno.setDisable(false);
+
+		AddEventoHistorial("Usa pez para salvarte");
+
+		peligro = true;
 
 	}
 
