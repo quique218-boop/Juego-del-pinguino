@@ -180,8 +180,10 @@ public class GestorBBDD {
 		}
 	}
 
-	public Tablero cargarTablero(int indice) {
+	public Tablero  cargarTablero(int indice) {
 		con = BBDD.conectarBaseDatos();
+		
+		//HACEMOS EL SELECT QUE NECESITAMOS DE LA TABLA TABLERO
 		
 		ArrayList<LinkedHashMap<String, String>> partida =
 			    BBDD.select(con, "SELECT ID_TABLERO, TURNOS, JUGADOR_ACTUAL, FECHA_INICIO FROM TABLERO WHERE ID_TABLERO = "+indice);
@@ -189,29 +191,64 @@ public class GestorBBDD {
 		LinkedHashMap<String, String> fila = partida.get(0);
 
 		int idTablero = Integer.parseInt(fila.get("ID_TABLERO"));
-		int turnos = Integer.parseInt(fila.get("TURNOS"));
-		String fecha = fila.get("FECHA_INICIO");
 		
-		 System.out.println(idTablero);
-         System.out.println(turnos);
-         System.out.println(fecha);
+		int turnos = Integer.parseInt(fila.get("TURNOS"));
+		
+		String fecha = fila.get("FECHA_INICIO");
+         
+        ArrayList <Casilla> casilla = new ArrayList <>();
 		
 		try (Statement st = con.createStatement();
+				
 			     ResultSet rs = st.executeQuery("SELECT CASILLAS FROM TABLERO WHERE ID_TABLERO = " + indice)) {
 
 			    if (rs.next()) {
+			    	
 			        Array array = rs.getArray("CASILLAS");
-			        Object[] casillas = (Object[]) array.getArray();
-			        for (Object c : casillas) {
-			            
-			        	 String tipo = c.toString();
-			        	 System.out.println(tipo);			            
+			        
+			        String[] casillas = (String[]) array.getArray();
+			        
+			       
+			        for (int i = 0; i < casillas.length; i++) {
+			        	
+			        	if(casillas[i] == "Normal") {
+							
+							casilla.add(new Normal());
+							
+						}
+						
+						else if(casillas[i] == "Evento") {
+							
+							casilla.add(new Evento());
+							
+						}
+						
+						else if(casillas[i] == "SueloQuebradizo") {
+							
+							casilla.add(new SueloQuebradizo());
+							
+						}
+						
+						else if(casillas[i] == "Trineo") {
+							
+							casilla.add(new Trineo());
+							
+						}
+						
+						else if(casillas[i] == "Oso") {
+							
+							casilla.add(new Oso());
+							
+						}
 			        }
 			    }
 
 			} catch (SQLException e) {
 			    e.printStackTrace();
 			}
+		
+		//TERMINAMOS EL SELECT DE TABLERO
+		
 		Tablero	tablero = new Tablero();
 		return tablero;
 		

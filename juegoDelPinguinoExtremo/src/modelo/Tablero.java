@@ -14,6 +14,16 @@ public class Tablero {
 	private Jugador ganador;
 	
 	Random rand = new Random();
+	
+	public Tablero(ArrayList<Jugador> listaJugador, ArrayList<Casilla> listaCasillas, String fechaInicio, int turnos, Jugador jugadorActual) {
+		
+		this.listaJugador = listaJugador;
+		this.listaCasillas = listaCasillas;
+		this.fechaInicio = fechaInicio;
+		this.turnos = turnos;
+		this.jugadorActual = jugadorActual;
+		
+	}
 
 	public Tablero() {
 
