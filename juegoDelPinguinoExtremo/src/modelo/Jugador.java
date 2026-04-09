@@ -86,8 +86,10 @@ public abstract class Jugador {
 
 	public void moverPosicion(int nDado) {
 
-		this.posicion += nDado; // Sistema de avance del jugador
-
+		this.posicion += nDado;
+			
+		if(this.posicion >= 50) this.posicion = 49;
+		else if(this.posicion < 0) this.posicion = 0;
 	}
 
 	public Inventario getInventario() {
@@ -108,6 +110,10 @@ public abstract class Jugador {
 
 	public void setDeudaTurnos(int deudaTurnos) {
 		this.deudaTurnos = deudaTurnos;
+	}
+	
+	public void reducirDeudaTurnos() {
+		this.deudaTurnos -= 1;
 	}
 
 	public void terminarTurnoSiHayDeuda() {
