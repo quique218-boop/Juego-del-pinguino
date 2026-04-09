@@ -5,15 +5,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import controlador.GestorTablero;
@@ -85,17 +90,20 @@ public class PantallaJuego {
 	private int p2Position = 0;
 	private int p3Position = 0;
 	private int p4Position = 0;// Tracks current position (from 0 to 49 in a 5x10 grid)
+	private int focaPosition = 0;
 	private int turno = 0;
 
 	private ArrayList<Circle> jugadores = new ArrayList<>();
 
-	private int[] posiciones = { p1Position, p2Position, p3Position, p4Position };
+	private int[] posiciones = { p1Position, p2Position, p3Position, p4Position, focaPosition };
 
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random random = new Random();
 
 	private final Double RATIO_DESCENSO_PROBABILIDAD = 0.45d;
 	private final Double e = 2.718281828459045235360d;
+
+	private boolean recursiva = false;
 
 	@FXML
 	private void initialize() {
@@ -117,7 +125,7 @@ public class PantallaJuego {
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new DadoRapido());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaBolas(new BolaDeNieve());
 		gestorTablero.getPartida().getJugador(0).getInventario().addListaPez(new Pez());
-		
+
 		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
 		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
 
@@ -129,15 +137,15 @@ public class PantallaJuego {
 			gestorTablero.getPartida().getArrayListJugador().get(i).setTurnoEnArray(i);
 
 		}
-		
+
 		BorrarFichasSinJugador();
 
 		P1.getStyleClass().add("current-player");
-		
+
 		finalizarTurno.setDisable(true);
-		
+
 		ponerTurnoEnArray();
-		
+
 		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
 
 		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
@@ -173,9 +181,15 @@ public class PantallaJuego {
 
 	// Menu actions
 	@FXML
-	private void handleNewGame() {
+	private void handleNewGame() throws IOException {
 		System.out.println("New game.");
-		// TODO
+
+		Parent root = FXMLLoader.load(getClass().getResource("/recursos/PantallaJuego.fxml"));
+
+		Stage stage = (Stage) P1.getScene().getWindow();
+		stage.setScene(new Scene(root));
+		stage.show();
+
 	}
 
 	@FXML
@@ -198,13 +212,12 @@ public class PantallaJuego {
 	// Button actions
 	@FXML
 	private void handleDado(ActionEvent event) {
-		
 
 		// Evita spam del botón
 		dado.setDisable(true);
 
 		Jugador jugador = (Jugador) gestorTablero.getPartida().getJugadorActual();
-		
+
 		int resultado = gestorTablero.tirarDado(jugador);
 
 		// Update the Text
@@ -212,7 +225,7 @@ public class PantallaJuego {
 
 		// Update the position
 		movePlayers(resultado, jugador);
-		
+
 		finalizarTurno.setDisable(false);
 	}
 
@@ -230,9 +243,11 @@ public class PantallaJuego {
 			AddEventoHistorial("Usando dado rápido ha salido: " + resultado);
 
 			movePlayers(resultado, pinguino);
+
 		}
 
 		ActualizarInventarioGUI(pinguino);
+
 	}
 
 	@FXML
@@ -252,6 +267,7 @@ public class PantallaJuego {
 		}
 
 		ActualizarInventarioGUI(pinguino);
+
 	}
 
 	@FXML
@@ -330,7 +346,7 @@ public class PantallaJuego {
 	private void selecP4() {
 		selecPingu(gestorTablero.getPartida().getJugador(3));
 	}
-	
+
 	@FXML
 	private void selecFOCA() {
 		selecPingu(gestorTablero.getPartida().getArrayListJugador().getLast());
@@ -457,7 +473,6 @@ public class PantallaJuego {
 
 		nieve_t.setText("Bolas de nieve: " + bolasNieve);
 
-
 		if (dadoRapido == 0)
 			rapido.setDisable(true);
 		else
@@ -521,7 +536,7 @@ public class PantallaJuego {
 		if (posiciones[jugadorActual] >= 50) {
 			posiciones[jugadorActual] = 49;
 		}
-		
+
 		if (posiciones[jugadorActual] < 0) {
 			posiciones[jugadorActual] = 0;
 		}
@@ -556,19 +571,27 @@ public class PantallaJuego {
 			GridPane.setRowIndex(jugadores.get(jugadorActual), newRow);
 			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
 
+			if (!recursiva) {
+				caerEnCasilla(jugador);
+				recursiva = true;
+			} else {
+
+				recursiva = false;
+			}
+
 		});
 
 		slide.play();
 
 	}
-	
+
 	public void FinalizarTurno() {
 
 		if (!dado.isDisabled())
 			return;
 
 		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
-		
+
 		turno = (turno + 1) % jugadores.size(); // Cambio de turno
 
 		Jugador jugadorSiguiente = gestorTablero.getPartida().getJugador(turno);
@@ -582,21 +605,47 @@ public class PantallaJuego {
 
 		// volver a activar el botón
 		dado.setDisable(false);
-		
+
 		// Desactivar finalizar turno
 		finalizarTurno.setDisable(true);
-		
+
 		ActualizarInventarioGUI(jugadorSiguiente);
 	}
-	
-	public void ponerTurnoEnArray() {
-		
-		for(int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
-			
-			gestorTablero.getPartida().getJugador(i).setTurnoEnArray(i);
-			
+
+	public void caerEnCasilla(Jugador jugador) {
+
+		int PosInicial = jugador.getPos();
+
+		System.out.println(jugador.getNombre() + "En posicion inicial " + PosInicial); // TODO DEBUG TEXT
+
+		Casilla casilla = gestorTablero.getPartida().getCasilla(PosInicial);
+
+		if (casilla instanceof Normal) {
+			recursiva = false;
+			return;
 		}
-		
+
+		casilla.realizarAccion(gestorTablero.getPartida(), jugador);
+
+		int PosFinal = jugador.getPos();
+
+		int movimiento = PosFinal - PosInicial;
+
+		System.out.println(jugador.getNombre() + "movido a posicion final " + PosFinal); // TODO DEBUG TEXT
+
+		AddEventoHistorial(jugador.getNombre() + " ha caido en " + casilla.getClass().getSimpleName());
+
+		movePlayers(movimiento, jugador);
+
+	}
+
+	public void ponerTurnoEnArray() {
+
+		for (int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
+
+			gestorTablero.getPartida().getJugador(i).setTurnoEnArray(i);
+
+		}
 	}
 
 	public void setGestorPartida(GestorTablero gestorTablero) {
