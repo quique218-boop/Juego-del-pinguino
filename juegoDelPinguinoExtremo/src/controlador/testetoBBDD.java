@@ -24,7 +24,17 @@ public class testetoBBDD {
 		 
 		 bases.guardar(tableta.getPartida());
 		 
-		 bases.cargarTablero(10);
+		Tablero tablero = bases.cargarTablero(11);
+		
+		System.out.println(tablero.getFecha());
+		
+		System.out.println(tablero.getTurnos());
+		
+		System.out.println(tablero.getArrayListJugador().toString());
+
+
+		
+		
 	}
 
 }

@@ -180,7 +180,8 @@ public class GestorBBDD {
 		}
 	}
 
-	public Tablero  cargarTablero(int indice) {
+	public Tablero cargarTablero(int indice) {
+		
 		con = BBDD.conectarBaseDatos();
 		
 		//HACEMOS EL SELECT QUE NECESITAMOS DE LA TABLA TABLERO
@@ -208,36 +209,49 @@ public class GestorBBDD {
 			    	
 			        Array array = rs.getArray("CASILLAS");
 			        
-			        String[] casillas = (String[]) array.getArray();
+			        ArrayList<String> casillas = new ArrayList<>(); 
+			        
+			        Object[] casillaProv = (Object[]) array.getArray();
+
+			        for (Object c : casillaProv) {
+			            String tipo = c.toString();
+			            casillas.add(tipo);
+			        }
 			        
 			       
-			        for (int i = 0; i < casillas.length; i++) {
+			        for (int i = 0; i < casillas.size(); i++) {
 			        	
-			        	if(casillas[i] == "Normal") {
+			        	if(casillas.get(i).equals("Normal")) {
 							
 							casilla.add(new Normal());
 							
 						}
-						
-						else if(casillas[i] == "Evento") {
+			        	
+						else if(casillas.get(i).equals("Evento")) {
 							
 							casilla.add(new Evento());
 							
 						}
+			        	
+						else if(casillas.get(i).equals("Agujero")) {
+							
+							casilla.add(new Agujero());
+							
+						}
 						
-						else if(casillas[i] == "SueloQuebradizo") {
+						else if(casillas.get(i).equals("SueloQuebradizo")) {
 							
 							casilla.add(new SueloQuebradizo());
 							
 						}
 						
-						else if(casillas[i] == "Trineo") {
+						else if(casillas.get(i).equals("Trineo")) {
 							
 							casilla.add(new Trineo());
 							
 						}
 						
-						else if(casillas[i] == "Oso") {
+						else if(casillas.get(i).equals("Oso")) {
 							
 							casilla.add(new Oso());
 							
@@ -270,7 +284,7 @@ public class GestorBBDD {
 			
 			LinkedHashMap<String, String> Objeto = inventario.get(0);
 
-			int num_peces = Integer.parseInt(fila.get("NUM_PECES"));
+			int num_peces = Integer.parseInt(Objeto.get("NUM_PECES"));
 			
 			ArrayList<Pez> peces = new ArrayList<>();
 			
@@ -280,7 +294,7 @@ public class GestorBBDD {
 				
 			}
 			
-			int num_bolas = Integer.parseInt(fila.get("NUM_BOLAS"));
+			int num_bolas = Integer.parseInt(Objeto.get("NUM_BOLAS"));
 			
 			ArrayList<BolaDeNieve> bolas = new ArrayList<>();
 			
@@ -290,7 +304,7 @@ public class GestorBBDD {
 				
 			}
 			
-			int num_dador = Integer.parseInt(fila.get("NUM_DADOR"));
+			int num_dador = Integer.parseInt(Objeto.get("NUM_DADOR"));
 			
 			ArrayList<Dado> dados = new ArrayList<>();
 			
@@ -300,7 +314,7 @@ public class GestorBBDD {
 				
 			}
 			
-			int num_dadoL = Integer.parseInt(fila.get("NUM_DADOL"));
+			int num_dadoL = Integer.parseInt(Objeto.get("NUM_DADOL"));
 			
 			for(int i = 0; i < num_dadoL; i++) {
 				
@@ -356,48 +370,6 @@ public class GestorBBDD {
 		
 		return tablero;
 			
-	}
-
-	public  void procesamientoSelect(Connection con, String sql, ArrayList<String> columnas) {
-
-		// Ejecuta el SELECT usando la plantilla BBDD.
-		// Devuelve una lista de filas.
-		ArrayList<LinkedHashMap<String, String>> filas = BBDD.select(con, sql);
-
-		// Si no hay resultados, informamos al usuario.
-		if (filas.isEmpty()) {
-			System.out.println("No se ha encontrado nada");
-		} else {
-
-			// Recorremos cada fila del resultado del SELECT
-			for (LinkedHashMap<String, String> fila : filas) {
-
-				// Para cada fila recorremos las columnas que queremos leer
-				for (String col : columnas) {
-
-					// Obtenemos el valor de la columna actual
-					String valor = fila.get(col);
-
-					// Si no existe la columna o es null avisamos
-					if (valor == null) {
-						System.out.println("Aviso: la columna '" + col + "' no existe en el SELECT o no tiene valor.");
-					} else {
-						procesarValor(col, valor);
-					}
-				}
-			}
-		}
-	}
-
-	/*
-	 * IMPORTANTE: En un proyecto real usaríamos un objeto directamente en vez de
-	 * variables globales, pero aquí lo hacemos así para simplificar el ejemplo.
-	 */
-	public void procesarValor(String col, String valor) {
-
-		if (col.equals("NUMIDS")) {
-			count = Integer.parseInt(valor) + 1;
-		}
 	}
 	
 
