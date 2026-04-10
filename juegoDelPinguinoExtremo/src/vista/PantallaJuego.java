@@ -21,6 +21,8 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+
+import controlador.GestorBBDD;
 import controlador.GestorTablero;
 import modelo.*;
 
@@ -84,6 +86,7 @@ public class PantallaJuego {
 	private boolean modoBola = false;
 
 	private GestorTablero gestorTablero;
+	private GestorBBDD gestorBBDD;
 	// ONLY FOR TESTING!!!
 	private static final int COLUMNS = 5;
 	private int p1Position = 0;
@@ -117,6 +120,9 @@ public class PantallaJuego {
 
 		finalizarTurno.setDisable(true); // Desactivamos el boton de pasar de turno al principio
 
+		// Creacion gestor Base de datos
+		gestorBBDD = new GestorBBDD();
+		
 		// Creacion gestor tablero y crear un nuevo tablero
 		gestorTablero = new GestorTablero();
 		gestorTablero.NuevoTablero();
@@ -195,7 +201,7 @@ public class PantallaJuego {
 	@FXML
 	private void handleSaveGame() {
 		System.out.println("Saved game.");
-		// TODO
+		gestorBBDD.guardar(gestorTablero.getPartida());
 	}
 
 	@FXML
@@ -273,28 +279,19 @@ public class PantallaJuego {
 	@FXML
 	private void handlePeces() {
 
-		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
 
-		pinguino.usarItem(pinguino.getInventario().getPez().getFirst());
+		jugador.usarItem(jugador.getInventario().getPez().getFirst());
 
-		if (gestorTablero.getPartida().getCasilla(pinguino.getPos()) instanceof Oso) {
+		if (gestorTablero.getPartida().getCasilla(jugador.getPos()) instanceof Oso) {
 
 			peligro = false;
 
-		} else {
+		} else if (!(jugador instanceof Foca)) {
 
-			Foca foca = null;
+			Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
 
-			for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
-
-				if (jugador instanceof Foca) {
-
-					foca = (Foca) jugador;
-
-				}
-			}
-
-			if (pinguino.getPos() == foca.getPos()) { // Si estamos en la misma casilla de foca
+			if (jugador.getPos() == foca.getPos()) { // Si estamos en la misma casilla de foca
 
 				foca.esSobornado();
 
@@ -303,9 +300,7 @@ public class PantallaJuego {
 			}
 		}
 
-		peces.setDisable(true);
-
-		ActualizarInventarioGUI(pinguino);
+		ActualizarInventarioGUI(jugador);
 	}
 
 	@FXML
@@ -355,9 +350,7 @@ public class PantallaJuego {
 
 			tablero.getChildren().remove(P4);
 
-		}
-
-		if (listaJugadores.size() == 3) {
+		} else if (listaJugadores.size() == 3) {
 
 			tablero.getChildren().remove(P4);
 			tablero.getChildren().remove(P3);
@@ -443,7 +436,7 @@ public class PantallaJuego {
 
 		int dadoLento = 0;
 
-		int peces = inventario.getPez().size();
+		int num_peces = inventario.getPez().size();
 
 		int bolasNieve = inventario.getBolas().size();
 
@@ -464,7 +457,7 @@ public class PantallaJuego {
 
 		lento_t.setText("Dado lento: " + dadoLento);
 
-		peces_t.setText("Peces: " + peces);
+		peces_t.setText("Peces: " + num_peces);
 
 		nieve_t.setText("Bolas de nieve: " + bolasNieve);
 
@@ -483,7 +476,7 @@ public class PantallaJuego {
 		else
 			nieve.setDisable(false);
 
-		this.peces.setDisable(true); // TODO TEMPORAL
+		peces.setDisable(true);
 	}
 
 	private Dado EncontrarDado(Jugador jugador, boolean Rapido_Lento) { // True == DadoRapido, False == DadoLento
@@ -580,23 +573,17 @@ public class PantallaJuego {
 		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
 
 		if (peligro == true) {
-			
-			AddEventoHistorial(jugadorActual.getNombre() + " No le has dado un pez asi que caes al principio");
-			
-			int PosInicial = jugadorActual.getPos();
 
-			System.out.println(jugadorActual.getNombre() + "En posicion inicial " + PosInicial); // TODO DEBUG TEXT
+			AddEventoHistorial(jugadorActual.getNombre() + " No le has dado un pez asi que caes al principio");
+
+			int PosInicial = jugadorActual.getPos();
 
 			new Oso().realizarAccion(gestorTablero.getPartida(), jugadorActual);
 
-			int PosFinal = jugadorActual.getPos();
-
-			int movimiento = PosFinal - PosInicial;
-
-			System.out.println(jugadorActual.getNombre() + "movido a posicion final " + PosFinal); // TODO DEBUG TEXT
+			int movimiento = 0 - PosInicial;
 
 			movePlayers(movimiento, jugadorActual);
-			
+
 			peligro = false;
 		}
 
@@ -639,9 +626,16 @@ public class PantallaJuego {
 
 		int PosInicial = jugador.getPos();
 
+		Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
+
 		System.out.println(jugador.getNombre() + "En posicion inicial " + PosInicial); // TODO DEBUG TEXT
 
 		Casilla casilla = gestorTablero.getPartida().getCasilla(PosInicial);
+
+		if (PosInicial == foca.getPos() && jugador != foca) {
+			ModoPeligro(jugador);
+			return;
+		}
 
 		if (casilla instanceof Normal) {
 			recursiva = false;
@@ -690,6 +684,7 @@ public class PantallaJuego {
 
 		if (jugador.getInventario().getPez().size() <= 0) {
 			peligro = true;
+			FinalizarTurno();
 			return;
 		}
 
@@ -700,7 +695,7 @@ public class PantallaJuego {
 		peces.setDisable(false);
 		finalizarTurno.setDisable(false);
 
-		AddEventoHistorial("Usa pez para salvarte");
+		AddEventoHistorial("Usa un pez para salvarte");
 
 		peligro = true;
 
