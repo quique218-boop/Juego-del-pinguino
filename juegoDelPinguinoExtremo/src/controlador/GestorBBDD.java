@@ -55,11 +55,17 @@ public class GestorBBDD {
 			switch (casillas.get(i)) {
 			
 			case Agujero a -> casillasBBDD.add("Agujero");
+			
 			case Evento e -> casillasBBDD.add("Evento");
+			
 			case SueloQuebradizo s -> casillasBBDD.add("SueloQuebradizo");
+			
 			case Trineo t -> casillasBBDD.add("Trineo");
+			
 			case Normal n -> casillasBBDD.add("Normal");
+			
 			case Oso o -> casillasBBDD.add("Oso");
+			
 			default -> throw new IllegalArgumentException("Unexpected value: " + casillas.get(i));
 			
 			
