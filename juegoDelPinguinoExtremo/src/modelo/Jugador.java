@@ -23,6 +23,16 @@ public abstract class Jugador {
 		this.turnoEnArray = -1;
 		this.objBola = false;
 	}
+	
+	public Jugador(int posicion, String nombre, String color, Inventario inventario, int deudaTurnos, int partidasTotales, int turnoEnArray) {
+
+		this.nombre = nombre;
+		this.color = color;
+		this.posicion = posicion;
+		this.inventario = inventario;
+		this.turnoEnArray = turnoEnArray;
+		this.objBola = false;
+	}
 
 	public Jugador() {
 

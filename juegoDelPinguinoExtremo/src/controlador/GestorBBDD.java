@@ -194,6 +194,8 @@ public class GestorBBDD {
 		
 		int turnos = Integer.parseInt(fila.get("TURNOS"));
 		
+		int jugadorActual = Integer.parseInt(fila.get("JUGADOR_ACTUAL"));
+		
 		String fecha = fila.get("FECHA_INICIO");
          
         ArrayList <Casilla> casilla = new ArrayList <>();
@@ -246,12 +248,114 @@ public class GestorBBDD {
 			} catch (SQLException e) {
 			    e.printStackTrace();
 			}
-		
 		//TERMINAMOS EL SELECT DE TABLERO
 		
-		Tablero	tablero = new Tablero();
-		return tablero;
+		//Empezamos el SELECT de jugadores
 		
+		ArrayList<Jugador>jugadores = new ArrayList<>();
+		
+		ArrayList<LinkedHashMap<String, String>> jugador =
+			    BBDD.select(con, "SELECT * FROM JUGADOR WHERE ID_TABLERO = " + indice + " ORDER BY TURNO ASC");
+		
+		for(LinkedHashMap<String, String> entrada : jugador) {
+			
+			int idJugador = Integer.parseInt(entrada.get("ID_JUGADOR"));
+			
+			ArrayList<LinkedHashMap<String, String>> inventario =
+				   
+					BBDD.select(con, "SELECT NUM_PECES, NUM_BOLAS, NUM_DADOR, NUM_DADOL FROM INVENTARIO WHERE ID_JUGADOR = " + idJugador);
+			
+			
+			//Realizamos para cada jugador un SELECT de su inventario
+			
+			LinkedHashMap<String, String> Objeto = inventario.get(0);
+
+			int num_peces = Integer.parseInt(fila.get("NUM_PECES"));
+			
+			ArrayList<Pez> peces = new ArrayList<>();
+			
+			for(int i = 0; i < num_peces; i++) {
+				
+				peces.add(new Pez());
+				
+			}
+			
+			int num_bolas = Integer.parseInt(fila.get("NUM_BOLAS"));
+			
+			ArrayList<BolaDeNieve> bolas = new ArrayList<>();
+			
+			for(int i = 0; i < num_bolas; i++) {
+				
+				bolas.add(new BolaDeNieve());
+				
+			}
+			
+			int num_dador = Integer.parseInt(fila.get("NUM_DADOR"));
+			
+			ArrayList<Dado> dados = new ArrayList<>();
+			
+			for(int i = 0; i < num_dador; i++) {
+				
+				dados.add(new DadoRapido());
+				
+			}
+			
+			int num_dadoL = Integer.parseInt(fila.get("NUM_DADOL"));
+			
+			for(int i = 0; i < num_dadoL; i++) {
+				
+				dados.add(new DadoLento());
+				
+			}
+			
+			Inventario inventarios = new Inventario(dados, peces, bolas);
+			
+			//terminamos el SELECT de inventario
+			
+			int foca = Integer.parseInt(entrada.get("FOCA"));
+			
+			if(foca == 1) {
+				int posicion = Integer.parseInt(entrada.get("POSICION"));
+				int turno = Integer.parseInt(entrada.get("TURNO"));
+				String nombre = entrada.get("NOMBRE");
+				String color = entrada.get("COLOR");
+				int turnoPerdido = Integer.parseInt(entrada.get("TURNOSPERDIDOS"));
+				int partidasJugadas = Integer.parseInt(entrada.get("PARTIDASJUGADAS"));
+				
+				Foca nuevo = new Foca(posicion, nombre, color, inventarios, turnoPerdido, partidasJugadas, turno);
+				
+				jugadores.add(nuevo);
+
+			}
+			
+			else {
+				
+				int posicion = Integer.parseInt(entrada.get("POSICION"));
+				int turno = Integer.parseInt(entrada.get("TURNO"));
+				String nombre = entrada.get("NOMBRE");
+				String color = entrada.get("COLOR");
+				int turnoPerdido = Integer.parseInt(entrada.get("TURNOSPERDIDOS"));
+				int partidasJugadas = Integer.parseInt(entrada.get("PARTIDASJUGADAS"));
+				
+				Pinguino nuevo = new Pinguino(posicion, nombre, color, inventarios, turnoPerdido, partidasJugadas, turno);
+				
+				jugadores.add(nuevo);
+				
+			}
+
+		}
+		
+		//Terminamos el SELECT de Jugador; Ya tenemos el ArrayList DE Jugadores con sus respectivos inventarios
+
+		
+		Jugador jugActual = jugadores.get(jugadorActual);
+		
+		
+		Tablero	tablero = new Tablero(jugadores, casilla, fecha, turnos, jugActual);
+		
+		
+		return tablero;
+			
 	}
 
 	public  void procesamientoSelect(Connection con, String sql, ArrayList<String> columnas) {
