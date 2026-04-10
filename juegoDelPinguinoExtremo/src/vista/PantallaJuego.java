@@ -384,7 +384,7 @@ public class PantallaJuego {
 
 		if (inventario.getBolas().isEmpty()) {
 			return;
-		} else if (objBola == null || objBola == pinguinoAct) {
+		} else if (objBola == null || objBola == pinguinoAct || objBola.getPos() == 0) {
 			return;
 		}
 
