@@ -8,7 +8,7 @@ public class testetoBBDD {
 		
 		 GestorBBDD bases = new GestorBBDD();
 		 
-		 Tablero tabla;
+		Tablero tabla;
 		 
 		 GestorTablero tableta = new GestorTablero();
 		 
@@ -24,17 +24,24 @@ public class testetoBBDD {
 		 
 		 bases.guardar(tableta.getPartida());
 		 
-		Tablero tablero = bases.cargarTablero(11);
+		/*Tablero tablero = bases.cargarTablero(1);
 		
 		System.out.println(tablero.getFecha());
 		
 		System.out.println(tablero.getTurnos());
 		
 		System.out.println(tablero.getArrayListJugador().toString());
-
-
 		
-		
+		for (int i = 0; i < tablero.getArrayListCasilla().size(); i++) {
+			
+			System.out.println(tablero.getArrayListCasilla().get(i));
+			
+			if(i % 5 == 0 && i != 0) {
+				
+				System.out.println();
+				
+			}
+		}*/
+	
 	}
-
 }
