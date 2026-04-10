@@ -221,41 +221,33 @@ public class GestorBBDD {
 			       
 			        for (int i = 0; i < casillas.size(); i++) {
 			        	
-			        	if(casillas.get(i).equals("Normal")) {
-							
-							casilla.add(new Normal());
-							
-						}
+			        	switch (casillas.get(i)) {
 			        	
-						else if(casillas.get(i).equals("Evento")) {
-							
-							casilla.add(new Evento());
-							
-						}
+			        	case "Normal":
+			        		casilla.add(new Normal());
+			        		break;
 			        	
-						else if(casillas.get(i).equals("Agujero")) {
-							
-							casilla.add(new Agujero());
-							
-						}
-						
-						else if(casillas.get(i).equals("SueloQuebradizo")) {
-							
-							casilla.add(new SueloQuebradizo());
-							
-						}
-						
-						else if(casillas.get(i).equals("Trineo")) {
-							
-							casilla.add(new Trineo());
-							
-						}
-						
-						else if(casillas.get(i).equals("Oso")) {
-							
-							casilla.add(new Oso());
-							
-						}
+			        	case "Evento":
+			        		casilla.add(new Evento());
+			        		break;
+			        	
+			        	case "Agujero":
+			        		casilla.add(new Agujero());
+			        		break;
+			        		
+			        	case "SueloQuebradizo":
+			        		casilla.add(new SueloQuebradizo());
+			        		break;
+			        		
+			        	case "Trineo":
+			        		casilla.add(new Trineo());
+			        		break;
+			        		
+			        	case "Oso":
+			        		casilla.add(new Oso());
+			        		break;
+
+			        	}
 			        }
 			    }
 
