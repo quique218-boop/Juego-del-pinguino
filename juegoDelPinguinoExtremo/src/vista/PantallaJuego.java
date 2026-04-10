@@ -103,7 +103,7 @@ public class PantallaJuego {
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random random = new Random();
 
-	private final Double RATIO_DESCENSO_PROBABILIDAD = 0.45d;
+	private final Double RATIO_DESCENSO_PROBABILIDAD = 0.39d;
 	private final Double e = 2.718281828459045235360d;
 
 	private boolean recursiva = false;
@@ -122,7 +122,7 @@ public class PantallaJuego {
 
 		// Creacion gestor Base de datos
 		gestorBBDD = new GestorBBDD();
-		
+
 		// Creacion gestor tablero y crear un nuevo tablero
 		gestorTablero = new GestorTablero();
 		gestorTablero.NuevoTablero();
@@ -300,7 +300,8 @@ public class PantallaJuego {
 			}
 		}
 
-		ActualizarInventarioGUI(jugador);
+		AddEventoHistorial(jugador.getNombre() + " le has dado un pez");
+		FinalizarTurno();
 	}
 
 	@FXML
@@ -574,7 +575,7 @@ public class PantallaJuego {
 
 		if (peligro == true) {
 
-			AddEventoHistorial(jugadorActual.getNombre() + " No le has dado un pez asi que caes al principio");
+			AddEventoHistorial(jugadorActual.getNombre() + " no le has dado un pez asi que caes al principio");
 
 			int PosInicial = jugadorActual.getPos();
 
@@ -628,14 +629,46 @@ public class PantallaJuego {
 
 		Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
 
-		System.out.println(jugador.getNombre() + "En posicion inicial " + PosInicial); // TODO DEBUG TEXT
+		ArrayList<Jugador> jugadoresEnCasilla = EncontrarJugadoresEnCasilla(jugador);
 
-		Casilla casilla = gestorTablero.getPartida().getCasilla(PosInicial);
-
-		if (PosInicial == foca.getPos() && jugador != foca) {
+		if (PosInicial == foca.getPos() && jugador != foca) { // Si caes donde la foca y no eres la foca
 			ModoPeligro(jugador);
 			return;
+
+		} else if (!(jugador instanceof Foca) && jugadoresEnCasilla.size() != 0) {
+
+			Pinguino guerrero = (Pinguino) jugador;
+
+			Pinguino guerrero2 = (Pinguino) jugadoresEnCasilla.getFirst();
+
+			int posicionInicial1 = guerrero.getPos();
+			int posicionInicial2 = guerrero2.getPos();
+
+			guerrero.gestionarBatalla(guerrero2);
+			
+			ActualizarInventarioGUI(jugador);
+
+			int posicionFinal1 = guerrero.getPos();
+			int posicionFinal2 = guerrero2.getPos();
+
+			if (posicionInicial1 == posicionFinal1) {
+
+				int movimiento = posicionFinal2 - posicionInicial2;
+
+				movePlayers(movimiento, guerrero2);
+
+			} else if (posicionInicial2 == posicionFinal2) {
+
+				int movimiento = posicionFinal1 - posicionInicial1;
+
+				movePlayers(movimiento, guerrero);
+
+			}
+			
+			return;
 		}
+
+		Casilla casilla = gestorTablero.getPartida().getCasilla(PosInicial);
 
 		if (casilla instanceof Normal) {
 			recursiva = false;
@@ -674,10 +707,25 @@ public class PantallaJuego {
 		if (jugador.getDeudaTurnos() > 0)
 			FinalizarTurno();
 
-		System.out.println(jugador.getNombre() + "movido a posicion final " + PosFinal); // TODO DEBUG TEXT
-
 		movePlayers(movimiento, jugador);
+	}
 
+	public ArrayList<Jugador> EncontrarJugadoresEnCasilla(Jugador jugador) {
+
+		int PosicionBusqueda = jugador.getPos();
+
+		ArrayList<Jugador> PackJugadores = new ArrayList<>();
+
+		for (Jugador jugadores : gestorTablero.getPartida().getArrayListJugador()) {
+
+			if (PosicionBusqueda == jugadores.getPos() && jugador != jugadores) {
+
+				PackJugadores.add(jugadores);
+
+			}
+		}
+
+		return PackJugadores;
 	}
 
 	public void ModoPeligro(Jugador jugador) {
@@ -695,7 +743,7 @@ public class PantallaJuego {
 		peces.setDisable(false);
 		finalizarTurno.setDisable(false);
 
-		AddEventoHistorial("Usa un pez para salvarte");
+		AddEventoHistorial(jugador.getNombre() + "usa un pez para salvarte");
 
 		peligro = true;
 
