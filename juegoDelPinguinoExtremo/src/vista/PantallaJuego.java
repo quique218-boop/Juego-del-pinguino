@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -173,6 +174,7 @@ public class PantallaJuego {
 				Text texto = new Text(tipo);
 				texto.setUserData(TAG_CASILLA_TEXT);
 				texto.getStyleClass().add("cell-type");
+				GridPane.setHalignment(texto, HPos.CENTER);
 
 				int row = i / COLUMNS;
 				int col = i % COLUMNS;

@@ -23,6 +23,8 @@ public class Menu {
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
+            stage.setX(200);
+            stage.setY(40);
             stage.show();
 
         } catch (Exception e) {
