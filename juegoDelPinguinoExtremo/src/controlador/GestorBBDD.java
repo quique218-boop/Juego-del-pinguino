@@ -339,10 +339,27 @@ public class GestorBBDD {
 		Jugador jugActual = jugadores.get(jugadorActual);
 		
 		
-		Tablero	tablero = new Tablero(jugadores, casilla, fecha, turnos, jugActual);
+		Tablero	tablero = new Tablero(jugadores, casilla, fecha, turnos, jugActual, idTablero);
 		
 		
 		return tablero;
+			
+	}
+	
+	public void actualizarTablero(Tablero tablero) {
+		
+		con = BBDD.conectarBaseDatos();
+
+		BBDD.update(con, "DELETE FROM INVENTARIO WHERE ID_JUGADOR IN (SELECT ID_JUGADOR FROM JUGADOR WHERE ID_TABLERO = " + tablero.getId() + ")");
+	    
+	    BBDD.update(con, "DELETE FROM JUGADOR WHERE ID_TABLERO = " + tablero.getId());
+	    
+	    BBDD.update(con, "DELETE FROM TABLERO WHERE ID_TABLERO = " + tablero.getId());
+
+
+	    guardar(tablero);
+
+	    BBDD.cerrar(con);
 			
 	}
 	
