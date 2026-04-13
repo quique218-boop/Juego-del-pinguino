@@ -283,6 +283,8 @@ public class PantallaJuego {
 
 		jugador.usarItem(jugador.getInventario().getPez().getFirst());
 
+		efectos_de_sonido.sonidoPez();
+		
 		if (gestorTablero.getPartida().getCasilla(jugador.getPos()) instanceof Oso) {
 
 			peligro = false;
@@ -306,7 +308,7 @@ public class PantallaJuego {
 
 	@FXML
 	private void handleNieve() { // Seleccionamos el estado del juego
-
+		
 		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
 		Inventario inventario = pinguino.getInventario();
@@ -372,6 +374,7 @@ public class PantallaJuego {
 		if (!modoBola) {
 			return;
 		}
+		
 		tirarBola(objBola);
 		modoBola = false;
 	}
@@ -388,6 +391,8 @@ public class PantallaJuego {
 			return;
 		}
 
+		efectos_de_sonido.sonidoBola();
+		
 		int distancia = CalcularDistancia(pinguinoAct, objBola);
 
 		pinguinoAct.usarItem(inventario.getBolas().getFirst());
@@ -579,6 +584,8 @@ public class PantallaJuego {
 
 			int PosInicial = jugadorActual.getPos();
 
+			efectos_de_sonido.sonidoMuerte();
+			
 			new Oso().realizarAccion(gestorTablero.getPartida(), jugadorActual);
 
 			int movimiento = 0 - PosInicial;

@@ -28,6 +28,13 @@ public class efectos_de_sonido {
         
         cargar("trineo", "/recursos/Trineo.mp3");
         
+        cargar("muerte", "/recursos/Death.mp3");
+        
+        cargar("hielo", "/recursos/Hielo.mp3");
+        
+        cargar("evento", "/recursos/Evento.mp3");
+        
+        cargar("perdida", "/recursos/Perdida.mp3");
     }
 
     private static void cargar(String nombre, String ruta) {
@@ -123,6 +130,29 @@ public class efectos_de_sonido {
     public static void sonidoTrineo() {
     	
     	reproducir("trineo");
+    	
+    }
+    
+    public static void sonidoMuerte() {
+    	
+    	reproducir("muerte");
+    }
+    
+    public static void sonidoHielo() {
+    	
+    	reproducir("hielo");
+    	
+    }
+    
+    public static void sonidoEvento() {
+    	
+    	reproducir("evento");
+    	
+    }
+    
+    public static void sonidoPerdida() {
+    	
+    	reproducir("perdida");
     	
     }
 }

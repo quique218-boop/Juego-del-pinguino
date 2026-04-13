@@ -15,6 +15,8 @@ public class Foca extends Jugador {
 
 	public void aplastarJugador(Pinguino jugador) {
 
+		efectos_de_sonido.sonidoFoca();
+		
 		jugador.getInventario().RobarInventario(); // La foca roba la mitad del inventario del jugador
 
 	}

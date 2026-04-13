@@ -34,6 +34,7 @@ public class Dado extends Item {
 	}
 
 	public int tirarDado() {
+		efectos_de_sonido.sonidoDados();
 		return rand.nextInt((max - min) + 1) + min;
 
 	}

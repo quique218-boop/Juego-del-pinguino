@@ -15,10 +15,15 @@ public class SueloQuebradizo extends Casilla {
 
 		if (numeroItemsTotal > 5) {
 
+			efectos_de_sonido.sonidoHielo();
+			
 			this.resultado = "Volver al inicio";
 
+			efectos_de_sonido.sonidoMuerte();
+			
 			jugador.setPos(0);
 
+			
 		} else if (numeroItemsTotal > 0 && numeroItemsTotal <= 5) {
 
 			this.resultado = "Perder un turno";

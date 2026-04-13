@@ -14,6 +14,7 @@ public class Trineo extends Casilla {
 			if (tablero.getCasilla(i) instanceof Trineo) {
 				jugador.setPos(i);
 				encontrado = true;
+				efectos_de_sonido.sonidoTrineo();
 			}
 		}
 	}
