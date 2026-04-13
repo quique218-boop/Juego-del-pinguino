@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Tablero {
-
+	
+	private int idTablero;
 	private ArrayList<Jugador> listaJugador;
 	private ArrayList<Casilla> listaCasillas;
 	private String fechaInicio;
@@ -15,8 +16,9 @@ public class Tablero {
 	
 	Random rand = new Random();
 	
-	public Tablero(ArrayList<Jugador> listaJugador, ArrayList<Casilla> listaCasillas, String fechaInicio, int turnos, Jugador jugadorActual) {
+	public Tablero(ArrayList<Jugador> listaJugador, ArrayList<Casilla> listaCasillas, String fechaInicio, int turnos, Jugador jugadorActual, int idTablero) {
 		
+		this.idTablero = idTablero;
 		this.listaJugador = listaJugador;
 		this.listaCasillas = listaCasillas;
 		this.fechaInicio = fechaInicio;
@@ -26,6 +28,8 @@ public class Tablero {
 	}
 
 	public Tablero() {
+		
+		idTablero = -1;
 
 		listaJugador = new ArrayList<>();
 
@@ -33,6 +37,14 @@ public class Tablero {
 		
 		turnos = 0;
 
+	}
+	
+	public int getId() {
+		return this.idTablero;
+	}
+	
+	public void setId(int idTablero) {
+		this.idTablero = idTablero;
 	}
 
 	public Jugador getJugador(int posicion) {
