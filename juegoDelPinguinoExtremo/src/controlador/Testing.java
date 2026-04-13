@@ -20,7 +20,7 @@ public class Testing extends Application {
 		stage.setTitle("Login");
 		stage.setScene(scene);
 
-		stage.initStyle(StageStyle.DECORATED);
+		stage.initStyle(StageStyle.UNIFIED);
 		
 		stage.getIcons().add(new Image("/recursos/pinguino.png"));
 		
