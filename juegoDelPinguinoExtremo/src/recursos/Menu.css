@@ -1,0 +1,47 @@
+.root {
+    -fx-font-family: "System";
+    -fx-background-color: #f6f7fb;
+}
+
+.NuevaPartida {
+	
+	-fx-text-fill: #F5F5F5;
+	-fx-background-color: radial-gradient(radius 180%, #00AB23, derive(#00AB23, -5%), derive(#00AB23, 5%));
+	-fx-effect: dropshadow(gaussian, rgba(0,171,35,0.45), 8, 0.35, 0, 2);
+	
+}
+
+.NuevaPartida:hover {
+	
+	-fx-background-color: radial-gradient(radius 180%, #00AB23, derive(#00AB23, -30%), derive(#00AB23, 30%));
+	-fx-effect: none;
+
+}
+
+.CargarPartida {
+	
+	-fx-text-fill: #F5F5F5;
+	-fx-background-color: radial-gradient(radius 180%, #007ECC, derive(#007ECC, -5%), derive(#007ECC, 5%));
+	-fx-effect: dropshadow(gaussian, rgba(0,126,204,0.45), 8, 0.35, 0, 2);
+}
+
+.CargarPartida:hover {
+	
+	-fx-background-color: radial-gradient(radius 180%, #007ECC, derive(#007ECC, -30%), derive(#007ECC, 30%));
+	-fx-effect: none;
+
+}
+
+.Salir {
+	
+	-fx-text-fill: #F5F5F5;
+	-fx-background-color: radial-gradient(radius 180%, #A80000, derive(#A80000, -5%), derive(#A80000, 5%));
+	-fx-effect: dropshadow(gaussian, rgba(168,0,0,0.45), 8, 0.35, 0, 2);
+}
+
+.Salir:hover {
+	
+	-fx-background-color: radial-gradient(radius 180%, #A80000, derive(#A80000, -30%), derive(#A80000, 30%));
+	-fx-effect: none;
+
+}

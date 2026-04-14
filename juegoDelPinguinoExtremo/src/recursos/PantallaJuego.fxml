@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -42,10 +43,10 @@
     <center>
         <StackPane>
             <padding>
-                <Insets bottom="20" left="20" right="20" top="20" />
+                <Insets bottom="20.0" left="16.0" top="20.0" />
             </padding>
 
-            <GridPane fx:id="tablero" gridLinesVisible="true" prefHeight="520.0" styleClass="board">
+            <GridPane fx:id="tablero" gridLinesVisible="true" maxHeight="800.0" maxWidth="600.0" minHeight="800.0" minWidth="600.0" prefHeight="800.0" prefWidth="800.0" styleClass="board">
                 <columnConstraints>
                     <ColumnConstraints percentWidth="20.0" />
                     <ColumnConstraints percentWidth="20.0" />
@@ -55,9 +56,9 @@
                 </columnConstraints>
 
                 <rowConstraints>
-                    <RowConstraints percentHeight="10.0" />
-                    <RowConstraints percentHeight="10.0" />
-                    <RowConstraints percentHeight="10.0" />
+                    <RowConstraints maxHeight="98.0" minHeight="20.0" percentHeight="10.0" prefHeight="35.0" />
+                    <RowConstraints maxHeight="91.0" minHeight="0.0" percentHeight="10.0" prefHeight="39.0" />
+                    <RowConstraints maxHeight="43.0" minHeight="7.0" percentHeight="10.0" prefHeight="7.0" />
                     <RowConstraints percentHeight="10.0" />
                     <RowConstraints percentHeight="10.0" />
                     <RowConstraints percentHeight="10.0" />
@@ -69,91 +70,96 @@
 
                 <children>
                     <!-- Esquinas -->
-                    <Text styleClass="cell-title" text="Start" />
-                    <Text styleClass="cell-title" text="Finish" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="9" />
+                    <Text styleClass="cell-title" text="Start" textAlignment="JUSTIFY" GridPane.halignment="CENTER" />
+                    <Text styleClass="cell-title" text="Finish" textAlignment="JUSTIFY" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
 
                     <!-- Jugadores: fx:id para Controller + id para CSS -->
-                    <Circle id="P1" fx:id="P1" onMouseClicked="#selecP1" radius="14.0" styleClass="player" />
+                    <Circle id="P1" fx:id="P1" onMouseClicked="#selecP1" radius="14.0" styleClass="player">
+                  <GridPane.margin>
+                     <Insets bottom="40.0" left="5.0" />
+                  </GridPane.margin></Circle>
                     <Circle id="P2" fx:id="P2" onMouseClicked="#selecP2" radius="14.0" styleClass="player">
-                        <GridPane.margin><Insets left="34.0" /></GridPane.margin>
+                        <GridPane.margin><Insets bottom="40.0" left="75.0" /></GridPane.margin>
                     </Circle>
                     <Circle id="P3" fx:id="P3" onMouseClicked="#selecP3" radius="14.0" styleClass="player">
-                        <GridPane.margin><Insets left="68.0" /></GridPane.margin>
+                        <GridPane.margin><Insets bottom="-40.0" left="5.0" /></GridPane.margin>
                     </Circle>
                     <Circle id="P4" fx:id="P4" onMouseClicked="#selecP4" radius="14.0" styleClass="player">
-                        <GridPane.margin><Insets left="102.0" /></GridPane.margin>
+                        <GridPane.margin><Insets bottom="-40.0" left="75.0" /></GridPane.margin>
                     </Circle>
                <Circle id="FOCA" fx:id="FOCA" onMouseClicked="#selecFOCA" radius="10.0" styleClass="foca">
                   <GridPane.margin>
-                     <Insets left="137.0" />
+                     <Insets left="45.0" />
                   </GridPane.margin>
                </Circle>
                 </children>
+            <rotationAxis>
+               <Point3D />
+            </rotationAxis>
             </GridPane>
         </StackPane>
     </center>
-
-    <bottom>
-        <HBox spacing="16" styleClass="bottom-bar">
+   <right>
+        <HBox alignment="CENTER" spacing="16" styleClass="bottom-bar" BorderPane.alignment="CENTER">
             <padding>
-                <Insets bottom="16" left="16" right="16" top="16" />
+                <Insets bottom="20.0" left="16.0" right="16.0" top="20.0" />
             </padding>
 
-            <!-- Tarjeta Dado -->
-            <VBox prefWidth="280" spacing="10" styleClass="card">
-                <Label styleClass="card-title" text="Dado" />
+                           <!-- Tarjeta Dado -->
+            <VBox maxHeight="280.0" prefWidth="280" spacing="10" styleClass="card">
+                <Label styleClass="card-title" text="Dado" textFill="WHITE" />
                 <Text fx:id="dadoResultText" styleClass="big-text" text="Ha salido: -" wrappingWidth="240" />
                 <Button fx:id="dado" maxWidth="Infinity" onAction="#handleDado" styleClass="primary" text="Tirar dado" />
             <Button fx:id="finalizarTurno" minHeight="16.0" mnemonicParsing="false" onAction="#FinalizarTurno" prefHeight="36.0" prefWidth="123.0" styleClass="danger" text="Finalizar Turno" translateY="55.0" />
             </VBox>
 
-            <!-- Tarjeta Objetos -->
-            <VBox spacing="10" styleClass="card" HBox.hgrow="ALWAYS">
-                <Label styleClass="card-title" text="Objetos" />
+                           <!-- Tarjeta Objetos -->
+            <VBox maxHeight="280.0" spacing="10" styleClass="card" HBox.hgrow="ALWAYS">
+                <Label styleClass="card-title" text="Objetos" textFill="WHITE" />
 
-                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="objects-scroll" vbarPolicy="AS_NEEDED">
+                               <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="objects-scroll" vbarPolicy="AS_NEEDED">
                     <content>
                         <VBox spacing="10">
                             <padding>
                                 <Insets bottom="6" left="6" right="6" top="6" />
                             </padding>
 
-                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="row">
+                                           <HBox alignment="CENTER_LEFT" spacing="10" styleClass="row">
                                 <Text fx:id="rapido_t" styleClass="stat" text="Dado rápido: 0" />
                                 <Region HBox.hgrow="ALWAYS" />
                                 <Button fx:id="rapido" onAction="#handleRapido" text="Usar" />
                             </HBox>
 
-                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="row">
+                                           <HBox alignment="CENTER_LEFT" spacing="10" styleClass="row">
                                 <Text fx:id="lento_t" styleClass="stat" text="Dado lento: 0" />
                                 <Region HBox.hgrow="ALWAYS" />
                                 <Button fx:id="lento" onAction="#handleLento" text="Usar" />
                             </HBox>
 
-                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="row">
+                                           <HBox alignment="CENTER_LEFT" spacing="10" styleClass="row">
                                 <Text fx:id="peces_t" styleClass="stat" text="Peces: 0" />
                                 <Region HBox.hgrow="ALWAYS" />
                                 <Button fx:id="peces" onAction="#handlePeces" text="Usar" />
                             </HBox>
 
-                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="row">
+                                           <HBox alignment="CENTER_LEFT" spacing="10" styleClass="row">
                                 <Text fx:id="nieve_t" styleClass="stat" text="Bolas de nieve: 0" />
                                 <Region HBox.hgrow="ALWAYS" />
                                 <Button fx:id="nieve" onAction="#handleNieve" text="Usar" />
                             </HBox>
 
-                        </VBox>
+                                       </VBox>
                     </content>
                 </ScrollPane>
             </VBox>
 
-            <!-- Tarjeta Eventos -->
+                           <!-- Tarjeta Eventos -->
             <VBox prefWidth="320" spacing="10" styleClass="card">
-                <Label styleClass="card-title" text="Eventos" />
-            <ListView fx:id="ListaEventos" prefHeight="200.0" prefWidth="200.0" />
+                <Label styleClass="card-title" text="Eventos" textFill="WHITE" />
+            <ListView fx:id="ListaEventos" focusTraversable="false" prefWidth="290.0" styleClass="ListaEventos" VBox.vgrow="ALWAYS" />
             </VBox>
 
-        </HBox>
-    </bottom>
+                 </HBox>
+   </right>
 
 </BorderPane>
