@@ -1,6 +1,7 @@
 .root {
     -fx-font-family: "System";
     -fx-background-color: #f6f7fb;
+    -fx-background-image: url("/recursos/Artico.jpg");
 }
 
 /* MENU */
@@ -15,9 +16,6 @@
     -fx-background-radius: 14.0;
     -fx-background-color: radial-gradient(radius 150.0%, #0BBDE3AA, derive(#0BBDE3AA, -20.0%), derive(#0B90E3, 30.0%));
     -fx-padding: 14.0;
-    -fx-border-color: #e6e7ee;
-    -fx-border-radius: 14.0;
-
     -fx-effect: dropshadow(gaussian, rgba(0.0,0.0,0.0,0.1), 14.0, 0.15, 0.0, 2.0);
 }
 
@@ -46,9 +44,6 @@
     -fx-background-color: radial-gradient(radius 180.0%, #0B61E3, derive(#0B61E3, -20.0%), derive(#0B61E3, 30.0%));
     -fx-background-radius: 14.0;
     -fx-padding: 14.0;
-    -fx-border-color: #e6e7ee;
-    -fx-border-radius: 14.0;
-
     -fx-effect: dropshadow(gaussian, rgba(0.0,0.0,0.0,0.1), 14.0, 0.15, 0.0, 2.0);
 }
 
@@ -69,6 +64,10 @@
 	-fx-fill: #F5F5F5; 
     -fx-font-size: 15.0px;
     -fx-opacity: 0.95;
+}
+
+.ListaEventos {
+	-fx-padding: 0px;
 }
 
 .ListaEventos .list-cell:even {
