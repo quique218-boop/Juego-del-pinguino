@@ -21,10 +21,12 @@ public class Foca extends Jugador {
 
 	}
 
-	public void golpearJugador(Pinguino jugador, Tablero tablero) {
+	public int golpearJugador(Pinguino jugador, Tablero tablero) {
 
 		if (this.getPos() == jugador.getPos())
 			new Agujero().realizarAccion(tablero, jugador);
+		
+		return jugador.getPos();
 
 	}
 

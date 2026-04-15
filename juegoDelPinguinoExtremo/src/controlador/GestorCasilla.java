@@ -1,28 +1,45 @@
 package controlador;
 
+import java.util.ArrayList;
+
 import modelo.*;
 
 public class GestorCasilla {
 
 	public GestorCasilla() {
-		
+
 	}
-	
-	public void ejecutarCasilla(Tablero partida, Pinguino jugador, Casilla casilla) {
+
+	public ArrayList<Integer> ejecutarCasilla(Tablero partida, Jugador jugador) {
 		
-		partida.getCasilla(jugador.getPos());
+		ArrayList<Integer> Posiciones = new ArrayList<>();
+		Casilla casilla;
+		int oldPos;
+		int newPos;
+
+		do {
+			casilla = partida.getCasilla(jugador.getPos());
+
+			oldPos = jugador.getPos();
+
+			casilla.realizarAccion(partida, jugador);
+
+			newPos = jugador.getPos();
+			
+			Posiciones.add(newPos);
+			
+		} while (oldPos != newPos);
 		
-		casilla.realizarAccion(partida, jugador);
-		
+		return Posiciones;
 	}
-	
+
 	public void comprobarFinTurno(Tablero partida) {
-		
-		if(!partida.getFinalizada()) { 
-			
-			partida.setFinalizada(true); 
-			
+
+		if (!partida.getFinalizada()) {
+
+			partida.setFinalizada(true);
+
 		}
-		
+
 	}
 }

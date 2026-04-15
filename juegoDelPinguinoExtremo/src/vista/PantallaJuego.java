@@ -233,6 +233,8 @@ public class PantallaJuego {
 
 		// Update the position
 		movePlayers(resultado, jugador);
+		
+		gestorTablero.procesarTurnoJugador(jugador);
 
 		finalizarTurno.setDisable(false);
 	}
@@ -563,13 +565,6 @@ public class PantallaJuego {
 			GridPane.setRowIndex(jugadores.get(jugadorActual), newRow);
 			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
 
-			if (!recursiva) {
-				recursiva = true;
-				caerEnCasilla(jugador);
-			} else {
-				recursiva = false;
-			}
-
 		});
 
 		slide.play();
@@ -630,111 +625,6 @@ public class PantallaJuego {
 		finalizarTurno.setDisable(true);
 
 		ActualizarInventarioGUI(jugadorSiguiente);
-	}
-
-	public void caerEnCasilla(Jugador jugador) {
-
-		int PosInicial = jugador.getPos();
-
-		Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
-
-		ArrayList<Jugador> jugadoresEnCasilla = EncontrarJugadoresEnCasilla(jugador);
-
-		if (PosInicial == foca.getPos() && jugador != foca) { // Si caes donde la foca y no eres la foca
-			ModoPeligro(jugador);
-			return;
-
-		} else if (!(jugador instanceof Foca) && jugadoresEnCasilla.size() != 0) {
-
-			Pinguino guerrero = (Pinguino) jugador;
-
-			Pinguino guerrero2 = (Pinguino) jugadoresEnCasilla.getFirst();
-
-			int posicionInicial1 = guerrero.getPos();
-			int posicionInicial2 = guerrero2.getPos();
-
-			guerrero.gestionarBatalla(guerrero2);
-			
-			ActualizarInventarioGUI(jugador);
-
-			int posicionFinal1 = guerrero.getPos();
-			int posicionFinal2 = guerrero2.getPos();
-
-			if (posicionInicial1 == posicionFinal1) {
-
-				int movimiento = posicionFinal2 - posicionInicial2;
-
-				movePlayers(movimiento, guerrero2);
-
-			} else if (posicionInicial2 == posicionFinal2) {
-
-				int movimiento = posicionFinal1 - posicionInicial1;
-
-				movePlayers(movimiento, guerrero);
-
-			}
-			
-			return;
-		}
-
-		Casilla casilla = gestorTablero.getPartida().getCasilla(PosInicial);
-
-		if (casilla instanceof Normal) {
-			recursiva = false;
-			return;
-		}
-
-		AddEventoHistorial(jugador.getNombre() + " ha caido en " + casilla.getClass().getSimpleName());
-
-		if (casilla instanceof Oso) {
-
-			ModoPeligro(jugador);
-			return;
-
-		}
-
-		casilla.realizarAccion(gestorTablero.getPartida(), jugador);
-
-		int PosFinal = jugador.getPos();
-
-		int movimiento = PosFinal - PosInicial;
-
-		if (casilla instanceof Evento) {
-
-			AddEventoHistorial("El evento ha sido: " + ((Evento) casilla).getResultado());
-
-			ActualizarInventarioGUI(jugador);
-
-		} else if (casilla instanceof SueloQuebradizo) {
-
-			AddEventoHistorial("El evento ha sido: " + ((SueloQuebradizo) casilla).getResultado());
-
-			ActualizarInventarioGUI(jugador);
-
-		}
-
-		if (jugador.getDeudaTurnos() > 0)
-			FinalizarTurno();
-
-		movePlayers(movimiento, jugador);
-	}
-
-	public ArrayList<Jugador> EncontrarJugadoresEnCasilla(Jugador jugador) {
-
-		int PosicionBusqueda = jugador.getPos();
-
-		ArrayList<Jugador> PackJugadores = new ArrayList<>();
-
-		for (Jugador jugadores : gestorTablero.getPartida().getArrayListJugador()) {
-
-			if (PosicionBusqueda == jugadores.getPos() && jugador != jugadores) {
-
-				PackJugadores.add(jugadores);
-
-			}
-		}
-
-		return PackJugadores;
 	}
 
 	public void ModoPeligro(Jugador jugador) {
