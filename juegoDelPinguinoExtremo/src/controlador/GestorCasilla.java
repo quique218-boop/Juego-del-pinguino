@@ -26,7 +26,7 @@ public class GestorCasilla {
 
 			newPos = jugador.getPos();
 			
-			Posiciones.add(newPos);
+			if(oldPos != newPos) Posiciones.add(newPos);
 			
 		} while (oldPos != newPos);
 		

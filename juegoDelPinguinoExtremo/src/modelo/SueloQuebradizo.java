@@ -35,6 +35,8 @@ public class SueloQuebradizo extends Casilla {
 			this.resultado = "Nada";
 
 		}
+		
+		System.out.println(this.resultado);
 	}
 
 	public String getResultado() {

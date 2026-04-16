@@ -141,24 +141,20 @@ public class GestorTablero {
 
 	}
 
-	public HashMap<String, Integer> procesarTurnoJugador(Jugador jugador) {
+	public HashMap<String, ArrayList<Integer>> procesarTurnoJugador(Jugador jugador) {
 
-		HashMap<String, Integer> listaPosiciones = new HashMap<>();
+		HashMap<String, ArrayList<Integer>> listaPosiciones = new HashMap<>();
 
 		ArrayList<Integer> Posiciones = new ArrayList<>();
 
 		Posiciones = gestorcasilla.ejecutarCasilla(this.tablero, jugador);
 
-		for (int i = 0; i < Posiciones.size(); i++) {
-
-			listaPosiciones.put(jugador.getNombre() + "_" + i, Posiciones.get(i));
-
-		}
-
 		ArrayList<Jugador> listaJugadoresEnCasilla = BuscarJugadoresEnCasilla(jugador);
 
-		if (listaJugadoresEnCasilla.size() == 0)
+		if (listaJugadoresEnCasilla.size() == 0) {
+			listaPosiciones.put(jugador.getNombre(), Posiciones);
 			return listaPosiciones;
+		}
 
 		if (jugador instanceof Foca) {
 
@@ -177,8 +173,7 @@ public class GestorTablero {
 
 				if (inventarioPinguino.getPez().size() == 0) {
 
-					listaPosiciones.put(pinguino.getNombre() + "_" + "1",
-							jugadorFoca.golpearJugador(pinguino, tablero));
+					Posiciones.add(jugadorFoca.golpearJugador(pinguino, tablero));
 
 				} else {
 
@@ -219,14 +214,19 @@ public class GestorTablero {
 				return listaPosiciones;
 			} else if (PosFinalPinguino1 != PosInicialPinguino1) {
 
-				listaPosiciones.put(pinguino1.getNombre() + "_" + listaPosiciones.size(), PosFinalPinguino1);
+				Posiciones.add(PosFinalPinguino1);
 
 			} else if (PosFinalPinguino2 != PosInicialPinguino2) {
+				
+				ArrayList<Integer> PosicionesJugador2  = new ArrayList<Integer>();
+				PosicionesJugador2.add(PosFinalPinguino2);
+				
+				listaPosiciones.put(pinguino2.getNombre(), PosicionesJugador2) ;
 
-				listaPosiciones.put(pinguino2.getNombre() + "_" + "1", PosFinalPinguino2);
-
-			}	
+			}
 		}
+
+		listaPosiciones.put(jugador.getNombre(), Posiciones);
 		
 		return listaPosiciones;
 	}

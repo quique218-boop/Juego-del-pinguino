@@ -21,6 +21,8 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 
 import controlador.GestorBBDD;
@@ -106,8 +108,6 @@ public class PantallaJuego {
 
 	private final Double RATIO_DESCENSO_PROBABILIDAD = 0.39d;
 	private final Double e = 2.718281828459045235360d;
-
-	private boolean recursiva = false;
 
 	private boolean peligro = false;
 
@@ -233,8 +233,47 @@ public class PantallaJuego {
 
 		// Update the position
 		movePlayers(resultado, jugador);
-		
-		gestorTablero.procesarTurnoJugador(jugador);
+
+		int posInicial = jugador.getPos();
+
+		HashMap<String, ArrayList<Integer>> listaPosiciones = gestorTablero.procesarTurnoJugador(jugador);
+
+		ArrayList<Integer> PosicionesJugador = listaPosiciones.get(jugador.getNombre());
+
+		for (int posicionNueva : PosicionesJugador) {
+
+			int movimiento = posicionNueva - posInicial;
+
+			posInicial += posicionNueva;
+
+			movePlayers(movimiento, jugador);
+		}
+
+		listaPosiciones.remove(jugador.getNombre());
+
+		if (listaPosiciones.size() != 0) {
+
+			ArrayList<Integer> PosicionesJugador2 = null;
+
+			Jugador jugador2 = null;
+
+			for (Jugador jugador2Buscar : gestorTablero.getPartida().getArrayListJugador()) {
+				try {
+					PosicionesJugador2 = listaPosiciones.get(jugador2Buscar.getNombre());
+					jugador2 = jugador2Buscar;
+				} catch (Exception e) {
+					System.out.println("Hashmap no tiene ese jugador");
+				}
+			}
+
+			for (int Posicion2 : PosicionesJugador2) {
+
+				int movimiento = Posicion2 - jugador2.getPos();
+
+				movePlayers(movimiento, jugador2);
+			}
+
+		}
 
 		finalizarTurno.setDisable(false);
 	}
@@ -288,7 +327,7 @@ public class PantallaJuego {
 		jugador.usarItem(jugador.getInventario().getPez().getFirst());
 
 		efectos_de_sonido.sonidoPez();
-		
+
 		if (gestorTablero.getPartida().getCasilla(jugador.getPos()) instanceof Oso) {
 
 			peligro = false;
@@ -312,7 +351,7 @@ public class PantallaJuego {
 
 	@FXML
 	private void handleNieve() { // Seleccionamos el estado del juego
-		
+
 		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
 		Inventario inventario = pinguino.getInventario();
@@ -378,7 +417,7 @@ public class PantallaJuego {
 		if (!modoBola) {
 			return;
 		}
-		
+
 		tirarBola(objBola);
 		modoBola = false;
 	}
@@ -396,7 +435,7 @@ public class PantallaJuego {
 		}
 
 		efectos_de_sonido.sonidoBola();
-		
+
 		int distancia = CalcularDistancia(pinguinoAct, objBola);
 
 		pinguinoAct.usarItem(inventario.getBolas().getFirst());
@@ -582,7 +621,7 @@ public class PantallaJuego {
 			int PosInicial = jugadorActual.getPos();
 
 			efectos_de_sonido.sonidoMuerte();
-			
+
 			new Oso().realizarAccion(gestorTablero.getPartida(), jugadorActual);
 
 			int movimiento = 0 - PosInicial;

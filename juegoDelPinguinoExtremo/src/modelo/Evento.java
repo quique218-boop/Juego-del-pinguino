@@ -27,6 +27,7 @@ public class Evento extends Casilla {
 
 			jugador.anadirItem(new Pez());
 
+			System.out.println(this.resultado);
 			break;
 
 		case "BNeu":
@@ -42,7 +43,7 @@ public class Evento extends Casilla {
 				jugador.anadirItem(new BolaDeNieve());
 
 			}
-
+			System.out.println(this.resultado);
 			break;
 
 		case "Dado":
@@ -64,7 +65,7 @@ public class Evento extends Casilla {
 				jugador.anadirItem(new DadoRapido());
 
 			}
-
+			System.out.println(this.resultado);
 			break;
 
 		case "PerderTurno":
@@ -74,7 +75,7 @@ public class Evento extends Casilla {
 			this.resultado = "Perder un turno";
 
 			jugador.setDeudaTurnos(1);
-
+			System.out.println(this.resultado);
 			break;
 
 		case "PerderObjeto":
@@ -90,7 +91,7 @@ public class Evento extends Casilla {
 				this.resultado += "has perdido bola de nieve";
 
 				jugador.getInventario().getBolas().removeFirst();
-
+				System.out.println(this.resultado);
 				break;
 			}
 
@@ -101,7 +102,7 @@ public class Evento extends Casilla {
 				this.resultado += "has perdido un pez";
 
 				jugador.getInventario().getPez().removeFirst();
-
+				System.out.println(this.resultado);
 				break;
 			}
 
@@ -112,7 +113,7 @@ public class Evento extends Casilla {
 				this.resultado += "has perdido un dado";
 
 				jugador.getInventario().getDado().remove(rand.nextInt(jugador.getInventario().getDado().size()));
-
+				System.out.println(this.resultado);
 				break;
 			}
 
@@ -121,7 +122,7 @@ public class Evento extends Casilla {
 				System.out.println("Borrar inventario fuera de rango");
 
 			}
-
+			System.out.println(this.resultado);
 			break;
 
 		case "Motos":
@@ -131,7 +132,7 @@ public class Evento extends Casilla {
 			this.resultado = "Motos de nieve";
 
 			new Trineo().realizarAccion(tablero, jugador);
-
+			System.out.println(this.resultado);
 			break;
 		}
 	}
