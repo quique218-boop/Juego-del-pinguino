@@ -188,46 +188,48 @@ public class GestorTablero {
 			Random rand = new Random();
 			Jugador jugadorEnCasilla;
 
-			do {
+			if (listaJugadoresEnCasilla.size() != 0) {
+				do {
 
-				int i = rand.nextInt(listaJugadoresEnCasilla.size());
+					int i = rand.nextInt(listaJugadoresEnCasilla.size());
 
-				jugadorEnCasilla = listaJugadoresEnCasilla.get(i);
+					jugadorEnCasilla = listaJugadoresEnCasilla.get(i);
 
-				if (jugadorEnCasilla instanceof Foca)
-					listaJugadoresEnCasilla.remove(i);
+					if (jugadorEnCasilla instanceof Foca)
+						listaJugadoresEnCasilla.remove(i);
 
-			} while (jugadorEnCasilla instanceof Foca);
+				} while (jugadorEnCasilla instanceof Foca);
 
-			Pinguino pinguino1 = (Pinguino) jugador;
-			Pinguino pinguino2 = (Pinguino) jugadorEnCasilla;
+				Pinguino pinguino1 = (Pinguino) jugador;
+				Pinguino pinguino2 = (Pinguino) jugadorEnCasilla;
 
-			int PosInicialPinguino1 = pinguino1.getPos();
-			int PosInicialPinguino2 = pinguino2.getPos();
+				int PosInicialPinguino1 = pinguino1.getPos();
+				int PosInicialPinguino2 = pinguino2.getPos();
 
-			pinguino1.gestionarBatalla(pinguino2);
+				pinguino1.gestionarBatalla(pinguino2);
 
-			int PosFinalPinguino1 = pinguino1.getPos();
-			int PosFinalPinguino2 = pinguino2.getPos();
+				int PosFinalPinguino1 = pinguino1.getPos();
+				int PosFinalPinguino2 = pinguino2.getPos();
 
-			if (PosFinalPinguino1 == PosFinalPinguino2) {
-				return listaPosiciones;
-			} else if (PosFinalPinguino1 != PosInicialPinguino1) {
+				if (PosFinalPinguino1 == PosFinalPinguino2) {
+					return listaPosiciones;
+				} else if (PosFinalPinguino1 != PosInicialPinguino1) {
 
-				Posiciones.add(PosFinalPinguino1);
+					Posiciones.add(PosFinalPinguino1);
 
-			} else if (PosFinalPinguino2 != PosInicialPinguino2) {
-				
-				ArrayList<Integer> PosicionesJugador2  = new ArrayList<Integer>();
-				PosicionesJugador2.add(PosFinalPinguino2);
-				
-				listaPosiciones.put(pinguino2.getNombre(), PosicionesJugador2) ;
+				} else if (PosFinalPinguino2 != PosInicialPinguino2) {
 
+					ArrayList<Integer> PosicionesJugador2 = new ArrayList<Integer>();
+					PosicionesJugador2.add(PosFinalPinguino2);
+
+					listaPosiciones.put(pinguino2.getNombre(), PosicionesJugador2);
+
+				}
 			}
 		}
-
-		listaPosiciones.put(jugador.getNombre(), Posiciones);
 		
+		listaPosiciones.put(jugador.getNombre(), Posiciones);
+
 		return listaPosiciones;
 	}
 

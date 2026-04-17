@@ -1,5 +1,8 @@
 package vista;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -234,6 +237,10 @@ public class PantallaJuego {
 		// Update the position
 		movePlayers(resultado, jugador);
 
+		finalizarTurno.setDisable(false);
+	}
+
+	private void movimiento(Jugador jugador) {
 		int posInicial = jugador.getPos();
 
 		HashMap<String, ArrayList<Integer>> listaPosiciones = gestorTablero.procesarTurnoJugador(jugador);
@@ -244,7 +251,7 @@ public class PantallaJuego {
 
 			int movimiento = posicionNueva - posInicial;
 
-			posInicial += posicionNueva;
+			posInicial += movimiento;
 
 			movePlayers(movimiento, jugador);
 		}
@@ -274,8 +281,6 @@ public class PantallaJuego {
 			}
 
 		}
-
-		finalizarTurno.setDisable(false);
 	}
 
 	@FXML
@@ -553,6 +558,74 @@ public class PantallaJuego {
 		ListaEventos.setItems(ListaObservable);
 	}
 
+	private void animacionMoverJugadores(ArrayList<Integer> Posiciones, Jugador jugador) {
+
+		if (gestorTablero.getPartida().getFinalizada()) {
+			return;
+		}
+
+		Timeline timeline = new Timeline();
+
+		int jugadorActual = jugador.getTurnoEnArray();
+
+		int lastRow = 0;
+		int lastCol = 0;
+		
+		for (int posicion : Posiciones) {
+
+			int oldPosition = posiciones[jugadorActual];
+
+			int movimiento = posicion - oldPosition;
+
+			posiciones[jugadorActual] += movimiento;
+
+			// Bound player
+			if (posiciones[jugadorActual] >= 50) {
+				posiciones[jugadorActual] = 49;
+			}
+
+			if (posiciones[jugadorActual] < 0) {
+				posiciones[jugadorActual] = 0;
+			}
+
+			// OLD position
+			int oldRow = oldPosition / COLUMNS;
+			int oldCol = oldPosition % COLUMNS;
+
+			// NEW position
+			int newRow = posiciones[jugadorActual] / COLUMNS;
+			int newCol = posiciones[jugadorActual] % COLUMNS;
+
+			// Calcular tamaño de las casillas
+			double cellWidth = tablero.getWidth() / COLUMNS;
+			double cellHeight = tablero.getHeight() / 10;
+
+			double dx = (newCol - oldCol) * cellWidth;
+			double dy = (newRow - oldRow) * cellHeight;
+
+			timeline.getKeyFrames()
+					.add(new KeyFrame(Duration.millis(350),
+							new KeyValue(jugadores.get(jugadorActual).translateXProperty(), dx),
+							new KeyValue(jugadores.get(jugadorActual).translateYProperty(), dy)));
+			newRow = lastRow;
+			newCol = lastCol;
+		}
+
+		timeline.setOnFinished(e -> {
+
+			// reset translation
+			jugadores.get(jugadorActual).setTranslateX(0);
+			jugadores.get(jugadorActual).setTranslateY(0);
+
+			// set real position in grid
+			GridPane.setRowIndex(jugadores.get(jugadorActual), lastRow);
+			GridPane.setColumnIndex(jugadores.get(jugadorActual), lastCol);
+		});
+
+		timeline.play();
+
+	}
+
 	private void movePlayers(int steps, Jugador jugador) {
 
 		if (gestorTablero.getPartida().getFinalizada()) {
@@ -603,7 +676,6 @@ public class PantallaJuego {
 			// set real position in grid
 			GridPane.setRowIndex(jugadores.get(jugadorActual), newRow);
 			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
-
 		});
 
 		slide.play();
