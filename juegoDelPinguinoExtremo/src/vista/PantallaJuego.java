@@ -111,9 +111,19 @@ public class PantallaJuego {
 
 	private boolean peligro = false;
 
+	private static boolean sonidosInicializados = false;
+
+  
+        
+
 	@FXML
 	private void initialize() {
 
+		if (!sonidosInicializados) {
+            efectos_de_sonido.init();
+            sonidosInicializados = true;
+        }
+		
 		// UI
 		AddEventoHistorial("¡El juego ha comenzado!");
 
