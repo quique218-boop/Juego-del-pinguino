@@ -1,7 +1,9 @@
 package vista;
 
+import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -109,8 +111,11 @@ public class PantallaJuego {
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random random = new Random();
 
-	private final Double RATIO_DESCENSO_PROBABILIDAD = 0.39d;
-	private final Double e = 2.718281828459045235360d;
+	private final double RATIO_DESCENSO_PROBABILIDAD = 0.39d;
+	private final double e = 2.718281828459045235360d;
+
+	private final int cellWidth = 120;
+	private final int cellHeight = 80;
 
 	private boolean peligro = false;
 
@@ -234,53 +239,50 @@ public class PantallaJuego {
 		// Update the Text
 		dadoResultText.setText("Ha salido: " + resultado);
 
+		ArrayList<Integer> test = new ArrayList<Integer>();
+
+		test.add(resultado);
+		test.add(2);
+		test.add(2);
+		test.add(2);
+
 		// Update the position
-		movePlayers(resultado, jugador);
+		animacionMoverJugadores(test, jugador);
+
+		System.out.println(jugador.getNombre() + " " + jugador.getPos());
+
+		// movimiento(jugador);
 
 		finalizarTurno.setDisable(false);
 	}
 
 	private void movimiento(Jugador jugador) {
-		int posInicial = jugador.getPos();
 
 		HashMap<String, ArrayList<Integer>> listaPosiciones = gestorTablero.procesarTurnoJugador(jugador);
 
 		ArrayList<Integer> PosicionesJugador = listaPosiciones.get(jugador.getNombre());
 
-		for (int posicionNueva : PosicionesJugador) {
-
-			int movimiento = posicionNueva - posInicial;
-
-			posInicial += movimiento;
-
-			movePlayers(movimiento, jugador);
-		}
+		animacionMoverJugadores(PosicionesJugador, jugador);
 
 		listaPosiciones.remove(jugador.getNombre());
 
-		if (listaPosiciones.size() != 0) {
-
-			ArrayList<Integer> PosicionesJugador2 = null;
-
-			Jugador jugador2 = null;
-
-			for (Jugador jugador2Buscar : gestorTablero.getPartida().getArrayListJugador()) {
-				try {
-					PosicionesJugador2 = listaPosiciones.get(jugador2Buscar.getNombre());
-					jugador2 = jugador2Buscar;
-				} catch (Exception e) {
-					System.out.println("Hashmap no tiene ese jugador");
-				}
-			}
-
-			for (int Posicion2 : PosicionesJugador2) {
-
-				int movimiento = Posicion2 - jugador2.getPos();
-
-				movePlayers(movimiento, jugador2);
-			}
-
-		}
+		/*
+		 * if (listaPosiciones.size() != 0) {
+		 * 
+		 * ArrayList<Integer> PosicionesJugador2 = null;
+		 * 
+		 * Jugador jugador2 = null;
+		 * 
+		 * for (Jugador jugador2Buscar :
+		 * gestorTablero.getPartida().getArrayListJugador()) { try { PosicionesJugador2
+		 * = listaPosiciones.get(jugador2Buscar.getNombre()); jugador2 = jugador2Buscar;
+		 * } catch (Exception e) { System.out.println("Hashmap no tiene ese jugador"); }
+		 * }
+		 * 
+		 * animacionMoverJugadores(PosicionesJugador2, jugador2);
+		 * 
+		 * }
+		 */
 	}
 
 	@FXML
@@ -565,20 +567,24 @@ public class PantallaJuego {
 		}
 
 		Timeline timeline = new Timeline();
-
+		
+		timeline.setRate(0.5);
+		
 		int jugadorActual = jugador.getTurnoEnArray();
 
-		int lastRow = 0;
-		int lastCol = 0;
-		
-		for (int posicion : Posiciones) {
+		int dxTotal = 0;
+		int dyTotal = 0;
+
+		Interpolator interpolador = Interpolator.EASE_BOTH;
+
+		for (int i = 0; i < Posiciones.size(); i++) {
 
 			int oldPosition = posiciones[jugadorActual];
 
-			int movimiento = posicion - oldPosition;
+			// int movimiento = posicion - oldPosition;
 
-			posiciones[jugadorActual] += movimiento;
-
+			// posiciones[jugadorActual] += movimiento;
+			posiciones[jugadorActual] += Posiciones.get(i);
 			// Bound player
 			if (posiciones[jugadorActual] >= 50) {
 				posiciones[jugadorActual] = 49;
@@ -596,19 +602,25 @@ public class PantallaJuego {
 			int newRow = posiciones[jugadorActual] / COLUMNS;
 			int newCol = posiciones[jugadorActual] % COLUMNS;
 
-			// Calcular tamaño de las casillas
-			double cellWidth = tablero.getWidth() / COLUMNS;
-			double cellHeight = tablero.getHeight() / 10;
+			dxTotal += (newCol - oldCol) * cellWidth;
+			dyTotal += (newRow - oldRow) * cellHeight;
 
-			double dx = (newCol - oldCol) * cellWidth;
-			double dy = (newRow - oldRow) * cellHeight;
+			if (i == 0) {
+				timeline.getKeyFrames()
+						.add(new KeyFrame(Duration.ZERO,
+								new KeyValue(jugadores.get(jugadorActual).translateXProperty(), 0),
+								new KeyValue(jugadores.get(jugadorActual).translateYProperty(), 0)));
 
-			timeline.getKeyFrames()
-					.add(new KeyFrame(Duration.millis(350),
-							new KeyValue(jugadores.get(jugadorActual).translateXProperty(), dx),
-							new KeyValue(jugadores.get(jugadorActual).translateYProperty(), dy)));
-			newRow = lastRow;
-			newCol = lastCol;
+				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700),
+						new KeyValue(jugadores.get(jugadorActual).translateXProperty(), dxTotal, interpolador),
+						new KeyValue(jugadores.get(jugadorActual).translateYProperty(), dyTotal, interpolador)));
+
+			} else {
+				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)),
+						new KeyValue(jugadores.get(jugadorActual).translateXProperty(), dxTotal, interpolador),
+						new KeyValue(jugadores.get(jugadorActual).translateYProperty(), dyTotal, interpolador)));
+
+			}
 		}
 
 		timeline.setOnFinished(e -> {
@@ -618,8 +630,8 @@ public class PantallaJuego {
 			jugadores.get(jugadorActual).setTranslateY(0);
 
 			// set real position in grid
-			GridPane.setRowIndex(jugadores.get(jugadorActual), lastRow);
-			GridPane.setColumnIndex(jugadores.get(jugadorActual), lastCol);
+			GridPane.setRowIndex(jugadores.get(jugadorActual), posiciones[jugadorActual] / COLUMNS);
+			GridPane.setColumnIndex(jugadores.get(jugadorActual), posiciones[jugadorActual] % COLUMNS);
 		});
 
 		timeline.play();
@@ -654,10 +666,6 @@ public class PantallaJuego {
 		// NEW position
 		int newRow = posiciones[jugadorActual] / COLUMNS;
 		int newCol = posiciones[jugadorActual] % COLUMNS;
-
-		// Calcular tamaño de las casillas
-		double cellWidth = tablero.getWidth() / COLUMNS;
-		double cellHeight = tablero.getHeight() / 10;
 
 		double dx = (newCol - oldCol) * cellWidth;
 		double dy = (newRow - oldRow) * cellHeight;

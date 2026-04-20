@@ -149,14 +149,14 @@ public class GestorTablero {
 
 		Posiciones = gestorcasilla.ejecutarCasilla(this.tablero, jugador);
 
-		ArrayList<Jugador> listaJugadoresEnCasilla = BuscarJugadoresEnCasilla(jugador);
+		//ArrayList<Jugador> listaJugadoresEnCasilla = BuscarJugadoresEnCasilla(jugador);
 
-		if (listaJugadoresEnCasilla.size() == 0) {
+		//if (listaJugadoresEnCasilla.size() == 0) {
 			listaPosiciones.put(jugador.getNombre(), Posiciones);
 			return listaPosiciones;
-		}
+		//}
 
-		if (jugador instanceof Foca) {
+		/*if (jugador instanceof Foca) {
 
 			Foca jugadorFoca = (Foca) jugador;
 
@@ -230,7 +230,7 @@ public class GestorTablero {
 		
 		listaPosiciones.put(jugador.getNombre(), Posiciones);
 
-		return listaPosiciones;
+		return listaPosiciones;*/
 	}
 
 	private ArrayList<Jugador> BuscarJugadoresEnCasilla(Jugador jugador) {

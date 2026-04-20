@@ -11,25 +11,23 @@ public class GestorCasilla {
 	}
 
 	public ArrayList<Integer> ejecutarCasilla(Tablero partida, Jugador jugador) {
-		
+
 		ArrayList<Integer> Posiciones = new ArrayList<>();
 		Casilla casilla;
 		int oldPos;
 		int newPos;
 
-		do {
-			casilla = partida.getCasilla(jugador.getPos());
+		casilla = partida.getCasilla(jugador.getPos());
 
-			oldPos = jugador.getPos();
+		oldPos = jugador.getPos();
 
-			casilla.realizarAccion(partida, jugador);
+		casilla.realizarAccion(partida, jugador);
 
-			newPos = jugador.getPos();
-			
-			if(oldPos != newPos) Posiciones.add(newPos);
-			
-		} while (oldPos != newPos);
-		
+		newPos = jugador.getPos();
+
+		if (oldPos != newPos)
+			Posiciones.add(newPos);
+
 		return Posiciones;
 	}
 

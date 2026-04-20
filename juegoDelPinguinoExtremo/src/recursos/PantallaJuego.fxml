@@ -76,13 +76,13 @@
                     <!-- Jugadores: fx:id para Controller + id para CSS -->
                     <Circle id="P1" fx:id="P1" onMouseClicked="#selecP1" radius="14.0" styleClass="player">
                   <GridPane.margin>
-                     <Insets bottom="40.0" left="5.0" />
+                     <Insets bottom="40.0" left="7.0" />
                   </GridPane.margin></Circle>
                     <Circle id="P2" fx:id="P2" onMouseClicked="#selecP2" radius="14.0" styleClass="player">
                         <GridPane.margin><Insets bottom="40.0" left="75.0" /></GridPane.margin>
                     </Circle>
                     <Circle id="P3" fx:id="P3" onMouseClicked="#selecP3" radius="14.0" styleClass="player">
-                        <GridPane.margin><Insets bottom="-40.0" left="5.0" /></GridPane.margin>
+                        <GridPane.margin><Insets bottom="-40.0" left="7.0" /></GridPane.margin>
                     </Circle>
                     <Circle id="P4" fx:id="P4" onMouseClicked="#selecP4" radius="14.0" styleClass="player">
                         <GridPane.margin><Insets bottom="-40.0" left="75.0" /></GridPane.margin>
