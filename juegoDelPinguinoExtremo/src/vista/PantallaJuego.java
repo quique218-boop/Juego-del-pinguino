@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 
 import controlador.GestorBBDD;
 import controlador.GestorTablero;
@@ -116,6 +117,8 @@ public class PantallaJuego {
 
 	private final int cellWidth = 120;
 	private final int cellHeight = 80;
+	private final Interpolator interpolador = Interpolator.EASE_BOTH; // Relentiza al inicio y final para un poco mas de
+																		// visibilidad
 
 	private boolean peligro = false;
 
@@ -123,7 +126,7 @@ public class PantallaJuego {
 	private void initialize() {
 
 		// UI
-		AddEventoHistorial("¡El juego ha comenzado!");
+		AddEventoHistorial("¡El juego ha comenzadoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!");
 
 		P1.getStyleClass().add("current-player"); // Pone el efecto del jugador actual al jugador 1
 
@@ -165,6 +168,7 @@ public class PantallaJuego {
 
 		// Poner el menu acorde al inventario del jugador actual (Jugador 1)
 		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
+
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
@@ -234,26 +238,58 @@ public class PantallaJuego {
 
 		Jugador jugador = (Jugador) gestorTablero.getPartida().getJugadorActual();
 
+		int oldPos = jugador.getPos();
+
 		int resultado = gestorTablero.tirarDado(jugador);
 
 		// Update the Text
 		dadoResultText.setText("Ha salido: " + resultado);
 
-		ArrayList<Integer> test = new ArrayList<Integer>();
+		int movimiento = oldPos + resultado;
 
-		test.add(resultado);
-		test.add(2);
-		test.add(2);
-		test.add(2);
-
-		// Update the position
-		animacionMoverJugadores(test, jugador);
+		ProcesarMovimiento(gestorTablero.procesarTurnoJugador(jugador), movimiento);
 
 		System.out.println(jugador.getNombre() + " " + jugador.getPos());
 
-		// movimiento(jugador);
-
 		finalizarTurno.setDisable(false);
+	}
+
+	private void ProcesarMovimiento(HashMap<String, ArrayList<Integer>> posicionesConJugador, int movimiento) {
+
+		Jugador jugadorActual = gestorTablero.getPartida().getJugadorActual();
+
+		Jugador jugador2 = null;
+		Jugador jugador = null;
+
+		posicionesConJugador.get(jugadorActual.getNombre()).add(0, movimiento);
+
+		for (int i = 0; i < posicionesConJugador.size(); i++) {
+
+			ArrayList<Integer> listaPosiciones = new ArrayList<>();
+
+			if (i == 0) {
+				jugador = jugadorActual;
+			} else {
+				for (Jugador jugadorBusqueda : gestorTablero.getPartida().getArrayListJugador()) {
+					if (posicionesConJugador.keySet().contains(jugadorBusqueda.getNombre())
+							&& jugadorBusqueda != jugadorActual) {
+						jugador = jugador2;
+					} else {
+						return;
+					}
+				}
+			}
+
+			if (jugador == null) {
+
+				System.err.println("JUGADOR ES NULL EN PROCESAR MOVIMIENTO");
+				return;
+			} else {
+				listaPosiciones = posicionesConJugador.get(jugador.getNombre());
+
+				animacionMoverJugadores(listaPosiciones, jugador);
+			}
+		}
 	}
 
 	private void movimiento(Jugador jugador) {
@@ -554,8 +590,9 @@ public class PantallaJuego {
 
 		Text texto = new Text(evento);
 		texto.getStyleClass().add("events");
-
+		
 		ListaObservable.add(0, texto);
+		ListaEventos.setMaxWidth(20);
 
 		ListaEventos.setItems(ListaObservable);
 	}
@@ -567,24 +604,22 @@ public class PantallaJuego {
 		}
 
 		Timeline timeline = new Timeline();
-		
-		timeline.setRate(0.5);
-		
+
+		timeline.setRate(0.5); // Velocidad reducida para mayor visibilidad
+
 		int jugadorActual = jugador.getTurnoEnArray();
 
 		int dxTotal = 0;
 		int dyTotal = 0;
 
-		Interpolator interpolador = Interpolator.EASE_BOTH;
-
 		for (int i = 0; i < Posiciones.size(); i++) {
 
 			int oldPosition = posiciones[jugadorActual];
 
-			// int movimiento = posicion - oldPosition;
+			int movimiento = Posiciones.get(i) - oldPosition;
 
-			// posiciones[jugadorActual] += movimiento;
-			posiciones[jugadorActual] += Posiciones.get(i);
+			posiciones[jugadorActual] += movimiento;
+
 			// Bound player
 			if (posiciones[jugadorActual] >= 50) {
 				posiciones[jugadorActual] = 49;
