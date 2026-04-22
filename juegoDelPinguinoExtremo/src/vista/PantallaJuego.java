@@ -16,12 +16,14 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -126,7 +128,40 @@ public class PantallaJuego {
 	private void initialize() {
 
 		// UI
-		AddEventoHistorial("¡El juego ha comenzadoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!");
+
+		// Añadir la funcionalidad al texto de cambiar de linea al llegar al final
+
+		/*
+		 * Cambiar la creación de celdas a una personalizada Como parámetro se crea un
+		 * callback con input de ListView y output es ListCell. Entonces crea la llamada
+		 * donde se sobreescribe la función de la celda de updateItem. Simplemente se
+		 * añade que el ítem tenga la función de cambio de línea a la longitud
+		 * especificada.
+		 */
+
+		ListaEventos.setCellFactory(new Callback<ListView<Text>, ListCell<Text>>() {
+			@Override
+			public ListCell<Text> call(ListView<Text> list) {
+				final ListCell<Text> cell = new ListCell<Text>() {
+					@Override
+					protected void updateItem(Text item, boolean empty) {
+						super.updateItem(item, empty);
+
+						if (empty || item == null) {
+							setText(null);
+							setGraphic(null);
+						} else {
+							item.setWrappingWidth(ListaEventos.getPrefWidth() - 20);
+							setGraphic(item);
+						}
+					}
+				};
+
+				return cell;
+			}
+		});
+
+		AddEventoHistorial("¡El juego ha comenzado!");
 
 		P1.getStyleClass().add("current-player"); // Pone el efecto del jugador actual al jugador 1
 
@@ -261,7 +296,15 @@ public class PantallaJuego {
 		Jugador jugador2 = null;
 		Jugador jugador = null;
 
-		posicionesConJugador.get(jugadorActual.getNombre()).add(0, movimiento);
+	//	if (posicionesConJugador != null) {
+			posicionesConJugador.get(jugadorActual.getNombre()).add(0, movimiento);
+/*		} else {
+			ArrayList<Integer> soloMovimiento = new ArrayList<>();
+
+			soloMovimiento.add(movimiento);
+
+			animacionMoverJugadores(soloMovimiento, jugador);
+		}*/
 
 		for (int i = 0; i < posicionesConJugador.size(); i++) {
 
@@ -590,9 +633,8 @@ public class PantallaJuego {
 
 		Text texto = new Text(evento);
 		texto.getStyleClass().add("events");
-		
+
 		ListaObservable.add(0, texto);
-		ListaEventos.setMaxWidth(20);
 
 		ListaEventos.setItems(ListaObservable);
 	}

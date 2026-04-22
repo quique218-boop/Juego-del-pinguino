@@ -147,90 +147,182 @@ public class GestorTablero {
 
 		ArrayList<Integer> Posiciones = new ArrayList<>();
 
-		Posiciones = gestorcasilla.ejecutarCasilla(this.tablero, jugador);
+		Posiciones.addAll(gestorcasilla.ejecutarCasilla(this.tablero, jugador));
 
-		//ArrayList<Jugador> listaJugadoresEnCasilla = BuscarJugadoresEnCasilla(jugador);
+		if (Posiciones.isEmpty())
+			System.out.println("POSICIONES ES EMPTY");
 
-		//if (listaJugadoresEnCasilla.size() == 0) {
+		int oldPos;
+		int newPos;
+
+		do {
+
+			oldPos = jugador.getPos();
+
+			ArrayList<Jugador> listaJugadoresEnCasilla = BuscarJugadoresEnCasilla(jugador);
+
+			if (listaJugadoresEnCasilla.size() == 0) {
+				System.out.println("NO HAY NADIE EN  CASILLA");
+				listaPosiciones.put(jugador.getNombre(), Posiciones);
+				return listaPosiciones;
+			}
+
+			if (jugador instanceof Foca) {
+
+				Foca jugadorFoca = (Foca) jugador;
+
+				ArrayList<Pinguino> listaPinguinosEnCasilla = new ArrayList<>();
+
+				// Convertir el arraylist a arraylist de pinguinos ya que la foca es el jugador
+
+				for (Jugador pinguino : listaJugadoresEnCasilla) {
+					listaPinguinosEnCasilla.add((Pinguino) pinguino);
+				}
+
+				for (Pinguino pinguino : listaPinguinosEnCasilla) {
+
+					Inventario inventarioPinguino = pinguino.getInventario();
+
+					if (inventarioPinguino.getPez().size() == 0) {
+
+						ArrayList<Integer> PosicionesJugador2 = new ArrayList<Integer>();
+
+						PosicionesJugador2.add(jugadorFoca.golpearJugador(pinguino, tablero));
+
+						listaPosiciones.put(pinguino.getNombre(), PosicionesJugador2);
+
+					} else {
+
+						pinguino.usarItem(inventarioPinguino.getPez().getFirst());
+						jugadorFoca.esSobornado();
+
+						listaPosiciones.put(jugador.getNombre(), Posiciones);
+						return listaPosiciones;
+
+					}
+
+					listaPosiciones.put(jugador.getNombre(), Posiciones);
+
+					newPos = jugador.getPos();
+				}
+			} else {
+
+				Random rand = new Random();
+				Jugador jugadorEnCasilla;
+
+				if (listaJugadoresEnCasilla.size() != 0) {
+					do {
+
+						int i = rand.nextInt(listaJugadoresEnCasilla.size());
+
+						jugadorEnCasilla = listaJugadoresEnCasilla.get(i);
+
+						if (jugadorEnCasilla instanceof Foca)
+							listaJugadoresEnCasilla.remove(i);
+
+					} while (jugadorEnCasilla instanceof Foca);
+
+					Pinguino pinguino1 = (Pinguino) jugador;
+					Pinguino pinguino2 = (Pinguino) jugadorEnCasilla;
+
+					int PosInicialPinguino1 = pinguino1.getPos();
+					int PosInicialPinguino2 = pinguino2.getPos();
+
+					pinguino1.gestionarBatalla(pinguino2);
+
+					int PosFinalPinguino1 = pinguino1.getPos();
+					int PosFinalPinguino2 = pinguino2.getPos();
+
+					// TODO  no se que he hecho
+					
+					if (PosFinalPinguino1 == PosFinalPinguino2) {
+						return listaPosiciones;
+					} else if (PosFinalPinguino1 != PosInicialPinguino1) {
+
+						Posiciones.add(PosFinalPinguino1);
+
+						HashMap<String, ArrayList<Integer>> movimientoRecursivo = procesarTurnoJugador(pinguino1);
+
+						if (movimientoRecursivo.keySet().contains(pinguino1.getNombre())) {
+
+							Posiciones.addAll(movimientoRecursivo.get(pinguino1.getNombre()));
+
+							listaPosiciones.put(pinguino1.getNombre(), Posiciones);
+						}
+
+						if (movimientoRecursivo.keySet().contains(pinguino2.getNombre())) {
+
+							ArrayList<Integer> PosicionesJugador2 = new ArrayList<Integer>();
+
+							PosicionesJugador2.addAll(movimientoRecursivo.get(pinguino2.getNombre()));
+
+							listaPosiciones.put(pinguino2.getNombre(), PosicionesJugador2);
+
+						} else if (!movimientoRecursivo.keySet().contains(pinguino1.getNombre())) {
+
+							for (Jugador jugador3 : listaJugadoresEnCasilla) {
+
+								if (movimientoRecursivo.keySet().contains(jugador3.getNombre())) {
+
+									ArrayList<Integer> PosicionesJugador3 = new ArrayList<Integer>();
+
+									PosicionesJugador3.addAll(movimientoRecursivo.get(jugador3.getNombre()));
+
+									listaPosiciones.put(jugador3.getNombre(), PosicionesJugador3);
+								}
+							}
+						}
+					} else if (PosFinalPinguino2 != PosInicialPinguino2) {
+
+						ArrayList<Integer> PosicionesJugador2 = new ArrayList<Integer>();
+						PosicionesJugador2.add(PosFinalPinguino2);
+
+						listaPosiciones.put(pinguino2.getNombre(), PosicionesJugador2);
+
+						Posiciones.add(PosFinalPinguino1);
+
+						HashMap<String, ArrayList<Integer>> movimientoRecursivo = procesarTurnoJugador(pinguino1);
+
+						if (movimientoRecursivo.keySet().contains(pinguino1.getNombre())) {
+
+							Posiciones.addAll(movimientoRecursivo.get(pinguino1.getNombre()));
+
+							listaPosiciones.put(pinguino1.getNombre(), Posiciones);
+						}
+
+						if (movimientoRecursivo.keySet().contains(pinguino2.getNombre())) {
+
+							ArrayList<Integer> PosicionesJugador2 = new ArrayList<Integer>();
+
+							PosicionesJugador2.addAll(movimientoRecursivo.get(pinguino2.getNombre()));
+
+							listaPosiciones.put(pinguino2.getNombre(), PosicionesJugador2);
+
+						} else if (!movimientoRecursivo.keySet().contains(pinguino1.getNombre())) {
+
+							for (Jugador jugador3 : listaJugadoresEnCasilla) {
+
+								if (movimientoRecursivo.keySet().contains(jugador3.getNombre())) {
+
+									ArrayList<Integer> PosicionesJugador3 = new ArrayList<Integer>();
+
+									PosicionesJugador3.addAll(movimientoRecursivo.get(jugador3.getNombre()));
+
+									listaPosiciones.put(jugador3.getNombre(), PosicionesJugador3);
+								}
+							}
+						}
+					}
+				}
+			}
+
 			listaPosiciones.put(jugador.getNombre(), Posiciones);
-			return listaPosiciones;
-		//}
 
-		/*if (jugador instanceof Foca) {
+			newPos = jugador.getPos();
 
-			Foca jugadorFoca = (Foca) jugador;
+		} while (oldPos != newPos);
 
-			ArrayList<Pinguino> listaPinguinosEnCasilla = new ArrayList<>();
-
-			// Convertir el arraylist a arraylist de pinguinos ya que la foca es el jugador
-			for (Jugador pinguino : listaJugadoresEnCasilla) {
-				listaPinguinosEnCasilla.add((Pinguino) pinguino);
-			}
-
-			for (Pinguino pinguino : listaPinguinosEnCasilla) {
-
-				Inventario inventarioPinguino = pinguino.getInventario();
-
-				if (inventarioPinguino.getPez().size() == 0) {
-
-					Posiciones.add(jugadorFoca.golpearJugador(pinguino, tablero));
-
-				} else {
-
-					pinguino.usarItem(inventarioPinguino.getPez().getFirst());
-					jugadorFoca.esSobornado();
-					return listaPosiciones;
-
-				}
-			}
-		} else {
-
-			Random rand = new Random();
-			Jugador jugadorEnCasilla;
-
-			if (listaJugadoresEnCasilla.size() != 0) {
-				do {
-
-					int i = rand.nextInt(listaJugadoresEnCasilla.size());
-
-					jugadorEnCasilla = listaJugadoresEnCasilla.get(i);
-
-					if (jugadorEnCasilla instanceof Foca)
-						listaJugadoresEnCasilla.remove(i);
-
-				} while (jugadorEnCasilla instanceof Foca);
-
-				Pinguino pinguino1 = (Pinguino) jugador;
-				Pinguino pinguino2 = (Pinguino) jugadorEnCasilla;
-
-				int PosInicialPinguino1 = pinguino1.getPos();
-				int PosInicialPinguino2 = pinguino2.getPos();
-
-				pinguino1.gestionarBatalla(pinguino2);
-
-				int PosFinalPinguino1 = pinguino1.getPos();
-				int PosFinalPinguino2 = pinguino2.getPos();
-
-				if (PosFinalPinguino1 == PosFinalPinguino2) {
-					return listaPosiciones;
-				} else if (PosFinalPinguino1 != PosInicialPinguino1) {
-
-					Posiciones.add(PosFinalPinguino1);
-
-				} else if (PosFinalPinguino2 != PosInicialPinguino2) {
-
-					ArrayList<Integer> PosicionesJugador2 = new ArrayList<Integer>();
-					PosicionesJugador2.add(PosFinalPinguino2);
-
-					listaPosiciones.put(pinguino2.getNombre(), PosicionesJugador2);
-
-				}
-			}
-		}
-		
-		listaPosiciones.put(jugador.getNombre(), Posiciones);
-
-		return listaPosiciones;*/
+		return listaPosiciones;
 	}
 
 	private ArrayList<Jugador> BuscarJugadoresEnCasilla(Jugador jugador) {
