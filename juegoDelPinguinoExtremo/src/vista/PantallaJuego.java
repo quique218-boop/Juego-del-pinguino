@@ -3,7 +3,6 @@ package vista;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
-import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -29,9 +28,7 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Random;
-import java.util.Set;
 
 import controlador.GestorBBDD;
 import controlador.GestorTablero;
@@ -113,15 +110,12 @@ public class PantallaJuego {
 
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random random = new Random();
-
 	private final double RATIO_DESCENSO_PROBABILIDAD = 0.39d;
 	private final double e = 2.718281828459045235360d;
-
 	private final int cellWidth = 120;
 	private final int cellHeight = 80;
-	private final Interpolator interpolador = Interpolator.EASE_BOTH; // Relentiza al inicio y final para un poco mas de
-																		// visibilidad
-
+	// Relentiza al inicio y final para un poco mas de visibilidad
+	private final Interpolator interpolador = Interpolator.EASE_BOTH;
 	private boolean viajando = false;
 	private boolean peligro = false;
 
