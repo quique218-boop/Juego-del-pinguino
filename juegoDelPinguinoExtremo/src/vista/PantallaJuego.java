@@ -127,7 +127,7 @@ public class PantallaJuego {
 
 	@FXML
 	private void initialize() {
-		
+
 		// UI
 
 		// Añadir la funcionalidad al texto de cambiar de linea al llegar al final
@@ -294,7 +294,6 @@ public class PantallaJuego {
 
 		Jugador jugadorActual = gestorTablero.getPartida().getJugadorActual();
 
-		Jugador jugador2 = null;
 		Jugador jugador = null;
 
 		posicionesConJugador.get(jugadorActual.getNombre()).add(0, movimiento);
@@ -309,9 +308,7 @@ public class PantallaJuego {
 				for (Jugador jugadorBusqueda : gestorTablero.getPartida().getArrayListJugador()) {
 					if (posicionesConJugador.keySet().contains(jugadorBusqueda.getNombre())
 							&& jugadorBusqueda != jugadorActual) {
-						jugador = jugador2;
-					} else {
-						return; // TODO return sale del todo, deberia???
+						jugador = jugadorBusqueda;
 					}
 				}
 			}
@@ -706,18 +703,11 @@ public class PantallaJuego {
 		}
 
 		case Evento e -> {
-			
+
 			if (e.getResultado() == "Motos de nieve")
 				viajandoToggle();
 
 			AddEventoHistorial("El evento ha sido: " + e.getResultado());
-		}
-
-		case SueloQuebradizo s -> {
-			if (!viajando)
-				AddEventoHistorial(s.getResultado());
-
-			viajandoToggle();
 		}
 
 		case Trineo t -> {
@@ -727,12 +717,14 @@ public class PantallaJuego {
 			viajandoToggle();
 		}
 
+		case SueloQuebradizo s -> AddEventoHistorial(s.getResultado());
+
 		case Oso o -> AddEventoHistorial(jugador.getNombre() + " ha sido atacado por un oso");
 
 		default -> throw new IllegalArgumentException("Unexpected value: " + casillaActual);
 
 		}
-		
+
 		ActualizarInventarioGUI(jugador);
 	}
 
