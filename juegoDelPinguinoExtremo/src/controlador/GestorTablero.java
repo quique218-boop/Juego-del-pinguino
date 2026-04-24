@@ -155,6 +155,8 @@ public class GestorTablero {
 		int oldPos;
 		int newPos;
 
+		HashMap<String, ArrayList<Integer>> movimientoRecursivo = null;
+
 		do {
 
 			oldPos = jugador.getPos();
@@ -190,6 +192,8 @@ public class GestorTablero {
 						PosicionesJugador2.add(jugadorFoca.golpearJugador(pinguino, tablero));
 
 						listaPosiciones.put(pinguino.getNombre(), PosicionesJugador2);
+
+						movimientoRecursivo = procesarTurnoJugador(jugadorFoca);
 
 					} else {
 
@@ -233,90 +237,26 @@ public class GestorTablero {
 					int PosFinalPinguino1 = pinguino1.getPos();
 					int PosFinalPinguino2 = pinguino2.getPos();
 
-					// TODO  no se que he hecho
-					
 					if (PosFinalPinguino1 == PosFinalPinguino2) {
 						return listaPosiciones;
-					} else if (PosFinalPinguino1 != PosInicialPinguino1) {
+					} else {
 
-						Posiciones.add(PosFinalPinguino1);
-
-						HashMap<String, ArrayList<Integer>> movimientoRecursivo = procesarTurnoJugador(pinguino1);
-
-						if (movimientoRecursivo.keySet().contains(pinguino1.getNombre())) {
-
-							Posiciones.addAll(movimientoRecursivo.get(pinguino1.getNombre()));
-
-							listaPosiciones.put(pinguino1.getNombre(), Posiciones);
+						if (PosFinalPinguino1 != PosInicialPinguino1) {
+							Posiciones.add(PosFinalPinguino1);
+						} else if (PosFinalPinguino2 != PosInicialPinguino2) {
+							Posiciones.add(PosFinalPinguino2);
 						}
 
-						if (movimientoRecursivo.keySet().contains(pinguino2.getNombre())) {
-
-							ArrayList<Integer> PosicionesJugador2 = new ArrayList<Integer>();
-
-							PosicionesJugador2.addAll(movimientoRecursivo.get(pinguino2.getNombre()));
-
-							listaPosiciones.put(pinguino2.getNombre(), PosicionesJugador2);
-
-						} else if (!movimientoRecursivo.keySet().contains(pinguino1.getNombre())) {
-
-							for (Jugador jugador3 : listaJugadoresEnCasilla) {
-
-								if (movimientoRecursivo.keySet().contains(jugador3.getNombre())) {
-
-									ArrayList<Integer> PosicionesJugador3 = new ArrayList<Integer>();
-
-									PosicionesJugador3.addAll(movimientoRecursivo.get(jugador3.getNombre()));
-
-									listaPosiciones.put(jugador3.getNombre(), PosicionesJugador3);
-								}
-							}
-						}
-					} else if (PosFinalPinguino2 != PosInicialPinguino2) {
-
-						ArrayList<Integer> PosicionesJugador2 = new ArrayList<Integer>();
-						PosicionesJugador2.add(PosFinalPinguino2);
-
-						listaPosiciones.put(pinguino2.getNombre(), PosicionesJugador2);
-
-						Posiciones.add(PosFinalPinguino1);
-
-						HashMap<String, ArrayList<Integer>> movimientoRecursivo = procesarTurnoJugador(pinguino1);
-
-						if (movimientoRecursivo.keySet().contains(pinguino1.getNombre())) {
-
-							Posiciones.addAll(movimientoRecursivo.get(pinguino1.getNombre()));
-
-							listaPosiciones.put(pinguino1.getNombre(), Posiciones);
-						}
-
-						if (movimientoRecursivo.keySet().contains(pinguino2.getNombre())) {
-
-							ArrayList<Integer> PosicionesJugador2 = new ArrayList<Integer>();
-
-							PosicionesJugador2.addAll(movimientoRecursivo.get(pinguino2.getNombre()));
-
-							listaPosiciones.put(pinguino2.getNombre(), PosicionesJugador2);
-
-						} else if (!movimientoRecursivo.keySet().contains(pinguino1.getNombre())) {
-
-							for (Jugador jugador3 : listaJugadoresEnCasilla) {
-
-								if (movimientoRecursivo.keySet().contains(jugador3.getNombre())) {
-
-									ArrayList<Integer> PosicionesJugador3 = new ArrayList<Integer>();
-
-									PosicionesJugador3.addAll(movimientoRecursivo.get(jugador3.getNombre()));
-
-									listaPosiciones.put(jugador3.getNombre(), PosicionesJugador3);
-								}
-							}
-						}
+						movimientoRecursivo = procesarTurnoJugador(pinguino1);
 					}
 				}
 			}
 
 			listaPosiciones.put(jugador.getNombre(), Posiciones);
+
+			if (movimientoRecursivo != null) {
+				listaPosiciones.putAll(movimientoRecursivo);
+			}
 
 			newPos = jugador.getPos();
 

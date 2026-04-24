@@ -122,6 +122,7 @@ public class PantallaJuego {
 	private final Interpolator interpolador = Interpolator.EASE_BOTH; // Relentiza al inicio y final para un poco mas de
 																		// visibilidad
 
+	private boolean viajando = false;
 	private boolean peligro = false;
 
 	@FXML
@@ -296,15 +297,7 @@ public class PantallaJuego {
 		Jugador jugador2 = null;
 		Jugador jugador = null;
 
-	//	if (posicionesConJugador != null) {
-			posicionesConJugador.get(jugadorActual.getNombre()).add(0, movimiento);
-/*		} else {
-			ArrayList<Integer> soloMovimiento = new ArrayList<>();
-
-			soloMovimiento.add(movimiento);
-
-			animacionMoverJugadores(soloMovimiento, jugador);
-		}*/
+		posicionesConJugador.get(jugadorActual.getNombre()).add(0, movimiento);
 
 		for (int i = 0; i < posicionesConJugador.size(); i++) {
 
@@ -333,35 +326,6 @@ public class PantallaJuego {
 				animacionMoverJugadores(listaPosiciones, jugador);
 			}
 		}
-	}
-
-	private void movimiento(Jugador jugador) {
-
-		HashMap<String, ArrayList<Integer>> listaPosiciones = gestorTablero.procesarTurnoJugador(jugador);
-
-		ArrayList<Integer> PosicionesJugador = listaPosiciones.get(jugador.getNombre());
-
-		animacionMoverJugadores(PosicionesJugador, jugador);
-
-		listaPosiciones.remove(jugador.getNombre());
-
-		/*
-		 * if (listaPosiciones.size() != 0) {
-		 * 
-		 * ArrayList<Integer> PosicionesJugador2 = null;
-		 * 
-		 * Jugador jugador2 = null;
-		 * 
-		 * for (Jugador jugador2Buscar :
-		 * gestorTablero.getPartida().getArrayListJugador()) { try { PosicionesJugador2
-		 * = listaPosiciones.get(jugador2Buscar.getNombre()); jugador2 = jugador2Buscar;
-		 * } catch (Exception e) { System.out.println("Hashmap no tiene ese jugador"); }
-		 * }
-		 * 
-		 * animacionMoverJugadores(PosicionesJugador2, jugador2);
-		 * 
-		 * }
-		 */
 	}
 
 	@FXML
@@ -692,11 +656,21 @@ public class PantallaJuego {
 						new KeyValue(jugadores.get(jugadorActual).translateXProperty(), dxTotal, interpolador),
 						new KeyValue(jugadores.get(jugadorActual).translateYProperty(), dyTotal, interpolador)));
 
+				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700), e -> {
+
+					MostrarEventosEnKeyFrame(posiciones[jugadorActual], jugador);
+
+				}));
+
 			} else {
 				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)),
 						new KeyValue(jugadores.get(jugadorActual).translateXProperty(), dxTotal, interpolador),
 						new KeyValue(jugadores.get(jugadorActual).translateYProperty(), dyTotal, interpolador)));
 
+				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)), e -> {
+
+					MostrarEventosEnKeyFrame(posiciones[jugadorActual], jugador);
+				}));
 			}
 		}
 
@@ -713,6 +687,58 @@ public class PantallaJuego {
 
 		timeline.play();
 
+	}
+
+	private void MostrarEventosEnKeyFrame(int posicionJugador, Jugador jugador) {
+
+		Casilla casillaActual = gestorTablero.getPartida().getCasilla(posicionJugador);
+
+		if (casillaActual instanceof Normal)
+			return;
+
+		switch (casillaActual) {
+
+		case Agujero a -> {
+			if (!viajando)
+				AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
+
+			viajandoToggle();
+		}
+
+		case Evento e -> {
+			
+			if (e.getResultado() == "Motos de nieve")
+				viajandoToggle();
+
+			AddEventoHistorial("El evento ha sido: " + e.getResultado());
+		}
+
+		case SueloQuebradizo s -> {
+			if (!viajando)
+				AddEventoHistorial(s.getResultado());
+
+			viajandoToggle();
+		}
+
+		case Trineo t -> {
+			if (!viajando)
+				AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
+
+			viajandoToggle();
+		}
+
+		case Oso o -> AddEventoHistorial(jugador.getNombre() + " ha sido atacado por un oso");
+
+		default -> throw new IllegalArgumentException("Unexpected value: " + casillaActual);
+
+		}
+		
+		ActualizarInventarioGUI(jugador);
+	}
+
+	private void viajandoToggle() {
+
+		viajando = (viajando) ? false : true;
 	}
 
 	private void movePlayers(int steps, Jugador jugador) {
