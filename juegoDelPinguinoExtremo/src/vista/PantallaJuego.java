@@ -127,7 +127,7 @@ public class PantallaJuego {
 
 	@FXML
 	private void initialize() {
-
+		
 		// UI
 
 		// Añadir la funcionalidad al texto de cambiar de linea al llegar al final
@@ -311,7 +311,7 @@ public class PantallaJuego {
 							&& jugadorBusqueda != jugadorActual) {
 						jugador = jugador2;
 					} else {
-						return;
+						return; // TODO return sale del todo, deberia???
 					}
 				}
 			}

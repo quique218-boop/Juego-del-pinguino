@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.Set;
 
 import modelo.*;
 
@@ -193,8 +194,6 @@ public class GestorTablero {
 
 						listaPosiciones.put(pinguino.getNombre(), PosicionesJugador2);
 
-						movimientoRecursivo = procesarTurnoJugador(jugadorFoca);
-
 					} else {
 
 						pinguino.usarItem(inventarioPinguino.getPez().getFirst());
@@ -216,6 +215,13 @@ public class GestorTablero {
 
 				if (listaJugadoresEnCasilla.size() != 0) {
 					do {
+
+						if (listaJugadoresEnCasilla.size() == 0) {
+							
+							listaPosiciones.put(jugador.getNombre(), Posiciones);
+
+							return listaPosiciones;
+						}
 
 						int i = rand.nextInt(listaJugadoresEnCasilla.size());
 
@@ -239,24 +245,19 @@ public class GestorTablero {
 
 					if (PosFinalPinguino1 == PosFinalPinguino2) {
 						return listaPosiciones;
-					} else {
+					} else if (PosFinalPinguino1 != PosInicialPinguino1) {
+						Posiciones.add(PosFinalPinguino1);
+					} else if (PosFinalPinguino2 != PosInicialPinguino2) {
+						ArrayList<Integer> PosicionesJugador2 = new ArrayList<Integer>();
 
-						if (PosFinalPinguino1 != PosInicialPinguino1) {
-							Posiciones.add(PosFinalPinguino1);
-						} else if (PosFinalPinguino2 != PosInicialPinguino2) {
-							Posiciones.add(PosFinalPinguino2);
-						}
+						PosicionesJugador2.add(PosFinalPinguino2);
 
-						movimientoRecursivo = procesarTurnoJugador(pinguino1);
+						listaPosiciones.put(pinguino2.getNombre(), PosicionesJugador2);
 					}
 				}
 			}
 
 			listaPosiciones.put(jugador.getNombre(), Posiciones);
-
-			if (movimientoRecursivo != null) {
-				listaPosiciones.putAll(movimientoRecursivo);
-			}
 
 			newPos = jugador.getPos();
 
