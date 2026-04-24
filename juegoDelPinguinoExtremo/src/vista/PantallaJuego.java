@@ -54,8 +54,6 @@ public class PantallaJuego {
 	@FXML
 	private Button lento;
 	@FXML
-	private Button peces;
-	@FXML
 	private Button nieve;
 	@FXML
 	private Button finalizarTurno;
@@ -360,7 +358,7 @@ public class PantallaJuego {
 
 	}
 
-	@FXML
+	/*@FXML
 	private void handlePeces() {
 
 		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
@@ -388,7 +386,7 @@ public class PantallaJuego {
 
 		AddEventoHistorial(jugador.getNombre() + " le has dado un pez");
 		FinalizarTurno();
-	}
+	}*/
 
 	@FXML
 	private void handleNieve() { // Seleccionamos el estado del juego
@@ -565,8 +563,6 @@ public class PantallaJuego {
 			nieve.setDisable(true);
 		else
 			nieve.setDisable(false);
-
-		peces.setDisable(true);
 	}
 
 	private Dado EncontrarDado(Jugador jugador, boolean Rapido_Lento) { // True == DadoRapido, False == DadoLento
@@ -847,7 +843,6 @@ public class PantallaJuego {
 		rapido.setDisable(true);
 		lento.setDisable(true);
 		nieve.setDisable(true);
-		peces.setDisable(false);
 		finalizarTurno.setDisable(false);
 
 		AddEventoHistorial(jugador.getNombre() + "usa un pez para salvarte");

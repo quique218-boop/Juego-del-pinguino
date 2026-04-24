@@ -137,15 +137,14 @@
                             </HBox>
 
                                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="row">
-                                <Text fx:id="peces_t" styleClass="stat" text="Peces: 0" />
-                                <Region HBox.hgrow="ALWAYS" />
-                                <Button fx:id="peces" onAction="#handlePeces" text="Usar" />
-                            </HBox>
-
-                                           <HBox alignment="CENTER_LEFT" spacing="10" styleClass="row">
                                 <Text fx:id="nieve_t" styleClass="stat" text="Bolas de nieve: 0" />
                                 <Region HBox.hgrow="ALWAYS" />
                                 <Button fx:id="nieve" onAction="#handleNieve" text="Usar" />
+                            </HBox>
+
+                                              <HBox alignment="CENTER_LEFT" spacing="10" styleClass="row">
+                                <Text fx:id="peces_t" styleClass="stat" text="Peces: 0" />
+                                <Region prefWidth="112.0" HBox.hgrow="ALWAYS" />
                             </HBox>
 
                                        </VBox>
