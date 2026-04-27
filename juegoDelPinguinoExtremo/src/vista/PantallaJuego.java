@@ -115,7 +115,6 @@ public class PantallaJuego {
 	// Relentiza al inicio y final para un poco mas de visibilidad
 	private final Interpolator interpolador = Interpolator.EASE_BOTH;
 	private boolean viajando = false;
-	private boolean peligro = false;
 
 	@FXML
 	private void initialize() {
@@ -282,39 +281,8 @@ public class PantallaJuego {
 		finalizarTurno.setDisable(false);
 	}
 
-	private void ProcesarMovimiento(HashMap<String, ArrayList<Integer>> posicionesConJugador, int movimiento) {
+	private void ProcesarMovimiento(ArrayList<PairMovimiento> posicionesConJugador, int movimiento) {
 
-		Jugador jugadorActual = gestorTablero.getPartida().getJugadorActual();
-
-		Jugador jugador = null;
-
-		posicionesConJugador.get(jugadorActual.getNombre()).add(0, movimiento);
-
-		for (int i = 0; i < posicionesConJugador.size(); i++) {
-
-			ArrayList<Integer> listaPosiciones = new ArrayList<>();
-
-			if (i == 0) {
-				jugador = jugadorActual;
-			} else {
-				for (Jugador jugadorBusqueda : gestorTablero.getPartida().getArrayListJugador()) {
-					if (posicionesConJugador.keySet().contains(jugadorBusqueda.getNombre())
-							&& jugadorBusqueda != jugadorActual) {
-						jugador = jugadorBusqueda;
-					}
-				}
-			}
-
-			if (jugador == null) {
-
-				System.err.println("JUGADOR ES NULL EN PROCESAR MOVIMIENTO");
-				return;
-			} else {
-				listaPosiciones = posicionesConJugador.get(jugador.getNombre());
-
-				animacionMoverJugadores(listaPosiciones, jugador);
-			}
-		}
 	}
 
 	@FXML
@@ -357,36 +325,6 @@ public class PantallaJuego {
 		ActualizarInventarioGUI(pinguino);
 
 	}
-
-	/*@FXML
-	private void handlePeces() {
-
-		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
-
-		jugador.usarItem(jugador.getInventario().getPez().getFirst());
-
-		efectos_de_sonido.sonidoPez();
-
-		if (gestorTablero.getPartida().getCasilla(jugador.getPos()) instanceof Oso) {
-
-			peligro = false;
-
-		} else if (!(jugador instanceof Foca)) {
-
-			Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
-
-			if (jugador.getPos() == foca.getPos()) { // Si estamos en la misma casilla de foca
-
-				foca.esSobornado();
-
-				peligro = false;
-
-			}
-		}
-
-		AddEventoHistorial(jugador.getNombre() + " le has dado un pez");
-		FinalizarTurno();
-	}*/
 
 	@FXML
 	private void handleNieve() { // Seleccionamos el estado del juego
@@ -590,36 +528,60 @@ public class PantallaJuego {
 		ListaEventos.setItems(ListaObservable);
 	}
 
-	private void animacionMoverJugadores(ArrayList<Integer> Posiciones, Jugador jugador) {
+	private void animacionMoverJugadores(ArrayList<PairMovimiento> listaMovimientos, int movimientoInput, Jugador objBola) {
 
 		if (gestorTablero.getPartida().getFinalizada()) {
 			return;
 		}
 
+		if (objBola != null) {
+			int pos = objBola.getPos() + movimientoInput;
+
+			listaMovimientos.add(0, new PairMovimiento(objBola.getNombre(), pos));
+		} else {
+			Jugador jugador = gestorTablero.getPartida().getJugadorActual();
+
+			int pos = jugador.getPos() + movimientoInput;
+
+			listaMovimientos.add(0, new PairMovimiento(jugador.getNombre(), pos));
+		}
+
+		Jugador jugadorActual = null;
+		
 		Timeline timeline = new Timeline();
 
 		timeline.setRate(0.5); // Velocidad reducida para mayor visibilidad
 
-		int jugadorActual = jugador.getTurnoEnArray();
+		int[] dxTotal = { 0, 0, 0, 0, 0 };
+		int[] dyTotal = { 0, 0, 0, 0, 0 };
 
-		int dxTotal = 0;
-		int dyTotal = 0;
+		for (int i = 0; i < listaMovimientos.size(); i++) {
 
-		for (int i = 0; i < Posiciones.size(); i++) {
+			PairMovimiento jugadorYMovimiento = listaMovimientos.get(i);
 
-			int oldPosition = posiciones[jugadorActual];
+			
 
-			int movimiento = Posiciones.get(i) - oldPosition;
+			for (int j = 0; jugadorActual == null; j++) {
 
-			posiciones[jugadorActual] += movimiento;
-
-			// Bound player
-			if (posiciones[jugadorActual] >= 50) {
-				posiciones[jugadorActual] = 49;
+				jugadorActual = gestorTablero.getPartida().getJugador(j)
+						.devolverSiNombreCoincide(jugadorYMovimiento.jugador);
 			}
 
-			if (posiciones[jugadorActual] < 0) {
-				posiciones[jugadorActual] = 0;
+			int jugadorActualIndice = jugadorActual.getTurnoEnArray();
+
+			int oldPosition = posiciones[jugadorActualIndice];
+
+			int movimiento = jugadorYMovimiento.posicion - oldPosition;
+
+			posiciones[jugadorActualIndice] += movimiento;
+
+			// Bound player
+			if (posiciones[jugadorActualIndice] >= 50) {
+				posiciones[jugadorActualIndice] = 49;
+			}
+
+			if (posiciones[jugadorActualIndice] < 0) {
+				posiciones[jugadorActualIndice] = 0;
 			}
 
 			// OLD position
@@ -627,61 +589,71 @@ public class PantallaJuego {
 			int oldCol = oldPosition % COLUMNS;
 
 			// NEW position
-			int newRow = posiciones[jugadorActual] / COLUMNS;
-			int newCol = posiciones[jugadorActual] % COLUMNS;
+			int newRow = posiciones[jugadorActualIndice] / COLUMNS;
+			int newCol = posiciones[jugadorActualIndice] % COLUMNS;
 
-			dxTotal += (newCol - oldCol) * cellWidth;
-			dyTotal += (newRow - oldRow) * cellHeight;
+			dxTotal[jugadorActualIndice] += (newCol - oldCol) * cellWidth;
+			dyTotal[jugadorActualIndice] += (newRow - oldRow) * cellHeight;
 
 			if (i == 0) {
 				timeline.getKeyFrames()
 						.add(new KeyFrame(Duration.ZERO,
-								new KeyValue(jugadores.get(jugadorActual).translateXProperty(), 0),
-								new KeyValue(jugadores.get(jugadorActual).translateYProperty(), 0)));
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(), 0),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(), 0)));
 
-				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700),
-						new KeyValue(jugadores.get(jugadorActual).translateXProperty(), dxTotal, interpolador),
-						new KeyValue(jugadores.get(jugadorActual).translateYProperty(), dyTotal, interpolador)));
+				timeline.getKeyFrames()
+						.add(new KeyFrame(Duration.millis(700),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
+										dxTotal[jugadorActualIndice], interpolador),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
+										dyTotal[jugadorActualIndice], interpolador)));
 
 				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700), e -> {
 
-					MostrarEventosEnKeyFrame(posiciones[jugadorActual], jugador);
+					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorActual);
 
 				}));
 
 			} else {
-				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)),
-						new KeyValue(jugadores.get(jugadorActual).translateXProperty(), dxTotal, interpolador),
-						new KeyValue(jugadores.get(jugadorActual).translateYProperty(), dyTotal, interpolador)));
+				timeline.getKeyFrames()
+						.add(new KeyFrame(Duration.millis(700 * (i + 1)),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
+										dxTotal[jugadorActualIndice], interpolador),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
+										dyTotal[jugadorActualIndice], interpolador)));
 
 				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)), e -> {
 
-					MostrarEventosEnKeyFrame(posiciones[jugadorActual], jugador);
+					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorActual);
 				}));
 			}
 		}
 
 		timeline.setOnFinished(e -> {
 
-			// reset translation
-			jugadores.get(jugadorActual).setTranslateX(0);
-			jugadores.get(jugadorActual).setTranslateY(0);
+			for (int i = 0; i < jugadores.size(); i++) {
+				// reset translation
+				jugadores.get(i).setTranslateX(0);
+				jugadores.get(i).setTranslateY(0);
 
-			// set real position in grid
-			GridPane.setRowIndex(jugadores.get(jugadorActual), posiciones[jugadorActual] / COLUMNS);
-			GridPane.setColumnIndex(jugadores.get(jugadorActual), posiciones[jugadorActual] % COLUMNS);
+				// set real position in grid
+				GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
+				GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
+			}
 		});
 
 		timeline.play();
-
 	}
 
 	private void MostrarEventosEnKeyFrame(int posicionJugador, Jugador jugador) {
 
 		Casilla casillaActual = gestorTablero.getPartida().getCasilla(posicionJugador);
 
-		if (casillaActual instanceof Normal)
+		if (casillaActual instanceof Normal) {
+			if (posicionJugador == 0)
+				viajando = false;
 			return;
+		}
 
 		switch (casillaActual) {
 
@@ -779,23 +751,6 @@ public class PantallaJuego {
 
 		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
 
-		if (peligro == true) {
-
-			AddEventoHistorial(jugadorActual.getNombre() + " no le has dado un pez asi que caes al principio");
-
-			int PosInicial = jugadorActual.getPos();
-
-			efectos_de_sonido.sonidoMuerte();
-
-			new Oso().realizarAccion(gestorTablero.getPartida(), jugadorActual);
-
-			int movimiento = 0 - PosInicial;
-
-			movePlayers(movimiento, jugadorActual);
-
-			peligro = false;
-		}
-
 		Jugador jugadorSiguiente;
 
 		turno = (turno + 1) % jugadores.size(); // Cambio de turno
@@ -829,26 +784,6 @@ public class PantallaJuego {
 		finalizarTurno.setDisable(true);
 
 		ActualizarInventarioGUI(jugadorSiguiente);
-	}
-
-	public void ModoPeligro(Jugador jugador) {
-
-		if (jugador.getInventario().getPez().size() <= 0) {
-			peligro = true;
-			FinalizarTurno();
-			return;
-		}
-
-		dado.setDisable(true);
-		rapido.setDisable(true);
-		lento.setDisable(true);
-		nieve.setDisable(true);
-		finalizarTurno.setDisable(false);
-
-		AddEventoHistorial(jugador.getNombre() + "usa un pez para salvarte");
-
-		peligro = true;
-
 	}
 
 	public void ponerTurnoEnArray() {
