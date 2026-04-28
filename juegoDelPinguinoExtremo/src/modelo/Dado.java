@@ -11,7 +11,7 @@ public class Dado extends Item {
 
 	public Dado() {
 
-		this.max = 10;
+		this.max = 1;
 
 		this.min = 1;
 

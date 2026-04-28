@@ -28,6 +28,7 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 
 import controlador.GestorBBDD;
@@ -275,8 +276,6 @@ public class PantallaJuego {
 		animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
 
 		System.out.println(jugador.getNombre() + " " + jugador.getPos());
-
-		finalizarTurno.setDisable(false);
 	}
 
 	@FXML
@@ -296,8 +295,6 @@ public class PantallaJuego {
 
 			AddEventoHistorial("Usando dado rápido ha salido: " + resultado);
 		}
-
-		ActualizarInventarioGUI(jugador);
 	}
 
 	@FXML
@@ -317,8 +314,6 @@ public class PantallaJuego {
 
 			AddEventoHistorial("Usando dado lento ha salido: " + resultado);
 		}
-
-		ActualizarInventarioGUI(jugador);
 	}
 
 	private int[] ProcesarDado(Jugador jugador, Dado dado) {
@@ -550,6 +545,11 @@ public class PantallaJuego {
 		if (gestorTablero.getPartida().getFinalizada())
 			return;
 
+		finalizarTurno.setDisable(true);
+		rapido.setDisable(true);
+		lento.setDisable(true);
+		nieve.setDisable(true);
+
 		listaMovimientos.add(0, new PairMovimiento(jugador.getNombre(), PosFinalDado));
 
 		Timeline timeline = new Timeline();
@@ -633,7 +633,7 @@ public class PantallaJuego {
 					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorEvento);
 				}));
 			}
-			
+
 			jugadorActual = null;
 		}
 
@@ -648,6 +648,10 @@ public class PantallaJuego {
 				GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
 				GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
 			}
+
+			finalizarTurno.setDisable(false);
+			
+			ActualizarInventarioGUI(jugador);
 		});
 
 		timeline.play();
@@ -656,12 +660,6 @@ public class PantallaJuego {
 	private void MostrarEventosEnKeyFrame(int posicionJugador, Jugador jugador) {
 
 		Casilla casillaActual = gestorTablero.getPartida().getCasilla(posicionJugador);
-
-		if (casillaActual instanceof Normal) {
-			if (posicionJugador == 0)
-				viajando = false;
-			return;
-		}
 
 		switch (casillaActual) {
 
@@ -676,8 +674,10 @@ public class PantallaJuego {
 
 			if (e.getResultado() == "Motos de nieve")
 				viajandoToggle();
+			else if (e.getResultado() == "Perder un turno")
+				FinalizarTurno();
 
-			AddEventoHistorial("El evento ha sido: " + e.getResultado());
+			AddEventoHistorial(jugador.getNombre() + " ha caido en un evento y el evento ha sido: " + e.getResultado());
 		}
 
 		case Trineo t -> {
@@ -687,9 +687,25 @@ public class PantallaJuego {
 			viajandoToggle();
 		}
 
-		case SueloQuebradizo s -> AddEventoHistorial(s.getResultado());
+		case SueloQuebradizo s -> {
 
-		case Oso o -> AddEventoHistorial(jugador.getNombre() + " ha sido atacado por un oso");
+			AddEventoHistorial(s.getResultado());
+
+			if (s.getResultado() == "El suelo se ha partido un poco y te has quedado atascado")
+				FinalizarTurno();
+		}
+
+		case Oso o -> {
+			if (posicionJugador == 0) {
+				AddEventoHistorial(jugador.getNombre() + " ha sido atacado por un oso");
+			} else {
+				AddEventoHistorial(jugador.getNombre() + " ha usado un pez para evitar ser atacado por un oso");
+			}
+		}
+
+		case Normal n -> {
+			return;
+		}
 
 		default -> throw new IllegalArgumentException("Unexpected value: " + casillaActual);
 
@@ -732,9 +748,6 @@ public class PantallaJuego {
 		jugadores.get(jugadorActual.getTurnoEnArray()).getStyleClass().remove("current-player");
 
 		jugadores.get(jugadorSiguiente.getTurnoEnArray()).getStyleClass().add("current-player");
-
-		// volver a activar el botón
-		dado.setDisable(false);
 
 		// Desactivar finalizar turno
 		finalizarTurno.setDisable(true);

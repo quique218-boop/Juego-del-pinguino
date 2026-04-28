@@ -161,7 +161,7 @@ public class Tablero {
 		
 		ArrayList<Casilla> tablero = new ArrayList<>();
 		
-		tablero.add(new Normal());
+		tablero.add(new Agujero());
 		
 		for(int i = 0; i < 48; i++) {
 			
