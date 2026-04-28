@@ -363,5 +363,27 @@ public class GestorBBDD {
 			
 	}
 	
+	public static boolean validarUsuario(Usuario usuario) {
+	    
+	    Connection con = BBDD.conectarBaseDatos();
+	    
+	    String sql = "SELECT mi_funcion('" + usuario.getNombre() + "', '" + usuario.getContraseña() + "') AS RES FROM dual";
+	    
+	    ArrayList<LinkedHashMap<String, String>> res = BBDD.select(con, sql);
+	    
+	    BBDD.cerrar(con);
+	    
+	    if (res.get(0).get("RES").toUpperCase() == "s") {
+	    	
+	        return true;
+	    }
+	    
+	    else {return false;
+	    
+	    }
+	    
+
+	}
+	
 
 }

@@ -12,7 +12,8 @@ public abstract class Jugador {
 	private int deudaTurnos;
 	private int partidasTotales;
 	private int turnoEnArray;
-	private boolean objBola;
+	private Usuario usuario;
+	
 
 	public Jugador(String nombre, String color, Inventario inventario) {
 
@@ -21,17 +22,18 @@ public abstract class Jugador {
 		this.posicion = 0;
 		this.inventario = inventario;
 		this.turnoEnArray = -1;
-		this.objBola = false;
+		
 	}
 	
-	public Jugador(int posicion, String nombre, String color, Inventario inventario, int deudaTurnos, int partidasTotales, int turnoEnArray) {
+	public Jugador(int posicion, String nombre, String color, Inventario inventario, int deudaTurnos, int partidasTotales, int turnoEnArray, Usuario usuario) {
 
 		this.nombre = nombre;
 		this.color = color;
 		this.posicion = posicion;
 		this.inventario = inventario;
 		this.turnoEnArray = turnoEnArray;
-		this.objBola = false;
+		this.usuario = usuario;
+		
 	}
 
 	public Jugador() {
@@ -212,21 +214,5 @@ public abstract class Jugador {
 			inventario.getDado().remove(item);
 
 	}
-
-	/*
-	 * public boolean objBola() {
-	 * 
-	 * return objBola;
-	 * 
-	 * }
-	 * 
-	 * public void modoBola(boolean objBola) {
-	 * 
-	 * this.objBola = objBola; }
-	 * 
-	 * public boolean objBola() { return objBola; }
-	 * 
-	 * public void modoBola(boolean objBola) { this.objBola = objBola; }
-	 */
 
 }
