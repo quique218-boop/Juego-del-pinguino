@@ -614,11 +614,12 @@ public class PantallaJuego {
 								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
 										dyTotal[jugadorActualIndice], interpolador)));
 
-				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700), e -> {
+				if (listaMovimientos.size() == 1)
+					timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700), e -> {
 
-					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorEvento);
+						MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorEvento);
 
-				}));
+					}));
 
 			} else {
 				timeline.getKeyFrames()
@@ -650,21 +651,44 @@ public class PantallaJuego {
 			}
 
 			finalizarTurno.setDisable(false);
-			
+
 			ActualizarInventarioGUI(jugador);
 		});
 
 		timeline.play();
 	}
 
-	private void MostrarEventosEnKeyFrame(int posicionJugador, Jugador jugador) {
+	private void MostrarEventosEnKeyFrame(ArrayList<PairMovimiento> listaMovimientos, int posicionJugador,
+			Jugador jugador) {
 
 		Casilla casillaActual = gestorTablero.getPartida().getCasilla(posicionJugador);
+
+		int posicionAnterior = -1;
+
+		for (int i = 0; i < listaMovimientos.size(); i++) {
+			if (listaMovimientos.get(i).posicion == posicionJugador) {
+				if (listaMovimientos.size() != 1) {
+					for (int j = i - 1; j >= 0; i--) {
+						if (listaMovimientos.get(j).jugador.equals(jugador.getNombre())) {
+							posicionAnterior = listaMovimientos.get(i - 1).posicion;
+						}
+					}
+					
+					if (posicionAnterior == -1)
+						posicionAnterior = posicionJugador;
+
+				} else {
+					posicionAnterior = posicionJugador;
+				}
+			}
+		}
 
 		switch (casillaActual) {
 
 		case Agujero a -> {
-			if (!viajando)
+			if (posicionJugador == 0)
+				AddEventoHistorial(jugador.getNombre() + " ha caido hasta el inicio");
+			else if (!viajando)
 				AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
 
 			viajandoToggle();
@@ -751,6 +775,7 @@ public class PantallaJuego {
 
 		// Desactivar finalizar turno
 		finalizarTurno.setDisable(true);
+		dado.setDisable(false);
 
 		ActualizarInventarioGUI(jugadorSiguiente);
 	}
