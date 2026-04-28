@@ -115,7 +115,6 @@ public class PantallaJuego {
 	private final int cellHeight = 80;
 	// Relentiza al inicio y final para un poco mas de visibilidad
 	private final Interpolator interpolador = Interpolator.EASE_BOTH;
-	private boolean viajando = false;
 
 	@FXML
 	private void initialize() {
@@ -617,7 +616,7 @@ public class PantallaJuego {
 				if (listaMovimientos.size() == 1)
 					timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700), e -> {
 
-						MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorEvento);
+						MostrarEventosEnKeyFrame(listaMovimientos,posiciones[jugadorActualIndice], jugadorEvento);
 
 					}));
 
@@ -631,7 +630,7 @@ public class PantallaJuego {
 
 				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)), e -> {
 
-					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorEvento);
+					MostrarEventosEnKeyFrame(listaMovimientos,posiciones[jugadorActualIndice], jugadorEvento);
 				}));
 			}
 
@@ -673,7 +672,7 @@ public class PantallaJuego {
 							posicionAnterior = listaMovimientos.get(i - 1).posicion;
 						}
 					}
-					
+
 					if (posicionAnterior == -1)
 						posicionAnterior = posicionJugador;
 
@@ -683,32 +682,29 @@ public class PantallaJuego {
 			}
 		}
 
+		Casilla casillaAnterior = gestorTablero.getPartida().getCasilla(posicionAnterior);
+
 		switch (casillaActual) {
 
 		case Agujero a -> {
-			if (posicionJugador == 0)
+			if (posicionJugador == 0 && posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
 				AddEventoHistorial(jugador.getNombre() + " ha caido hasta el inicio");
-			else if (!viajando)
+			else if (posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
 				AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
 
-			viajandoToggle();
 		}
 
 		case Evento e -> {
 
-			if (e.getResultado() == "Motos de nieve")
-				viajandoToggle();
-			else if (e.getResultado() == "Perder un turno")
+			if (e.getResultado() == "Perder un turno")
 				FinalizarTurno();
 
 			AddEventoHistorial(jugador.getNombre() + " ha caido en un evento y el evento ha sido: " + e.getResultado());
 		}
 
 		case Trineo t -> {
-			if (!viajando)
+			if (posicionJugador != posicionAnterior && casillaAnterior instanceof Trineo)
 				AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
-
-			viajandoToggle();
 		}
 
 		case SueloQuebradizo s -> {
@@ -736,11 +732,6 @@ public class PantallaJuego {
 		}
 
 		ActualizarInventarioGUI(jugador);
-	}
-
-	private void viajandoToggle() {
-
-		viajando = (viajando) ? false : true;
 	}
 
 	public void FinalizarTurno() {
