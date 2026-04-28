@@ -68,13 +68,16 @@
 
 .ListaEventos {
 	-fx-padding: 0px;
+
 }
 
 .ListaEventos .list-cell:even {
 	-fx-background-color: #639DF7;
+
 }
 .ListaEventos .list-cell:odd {
 	-fx-background-color: #639DF7;
+
 }
 
 .events {

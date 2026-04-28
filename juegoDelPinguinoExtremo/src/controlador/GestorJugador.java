@@ -1,10 +1,17 @@
 package controlador;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import modelo.*;
 
 public class GestorJugador {
 
-	public GestorJugador() {
+	Tablero tablero;
+
+	public GestorJugador(Tablero tablero) {
+
+		this.tablero = tablero;
 
 	}
 
@@ -46,7 +53,7 @@ public class GestorJugador {
 
 	public void jugadorSeMueve(Jugador jugador, int pasos) {
 
-		if (jugador == null)
+		if (jugador == null && this.tablero == null)
 			return;
 
 		jugador.moverPosicion(pasos);

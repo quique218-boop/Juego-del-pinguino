@@ -2,7 +2,8 @@ package modelo;
 
 public class Agujero extends Casilla {
 
-	public Agujero() {}
+	public Agujero() {
+	}
 
 	@Override
 	public void realizarAccion(Tablero tablero, Jugador jugador) {
@@ -17,5 +18,8 @@ public class Agujero extends Casilla {
 				encontrado = true;
 			}
 		}
+
+		if (encontrado == false)
+			jugador.setPos(0);
 	}
 }
