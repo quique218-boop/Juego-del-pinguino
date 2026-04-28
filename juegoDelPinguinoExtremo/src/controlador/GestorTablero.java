@@ -146,20 +146,15 @@ public class GestorTablero {
 		posiciones.addAll(gestorcasilla.ejecutarCasilla(this.tablero, jugador));
 
 		if (!posiciones.isEmpty()) {
-
 			for (int posicion : posiciones) {
 				jugadorYMovimientos.add(new PairMovimiento(jugador.getNombre(), posicion));
-			}
-
-			for (int i = 0; i < posiciones.size(); i++) {
-				posiciones.remove(i);
 			}
 		}
 
 		int oldPos;
 		int newPos;
 
-		ArrayList<PairMovimiento> movimientoRecursivo = null;
+		// ArrayList<PairMovimiento> movimientoRecursivo = null;
 
 		do {
 
@@ -232,15 +227,15 @@ public class GestorTablero {
 				int PosFinalPinguino2 = pinguino2.getPos();
 
 				if (PosFinalPinguino1 == PosFinalPinguino2) {
-
+					System.out.println("EMPATE");
 					return jugadorYMovimientos;
 
 				} else if (PosFinalPinguino1 != PosInicialPinguino1) {
-
+					System.out.println("HA GANADO JUGADOR 1");
 					jugadorYMovimientos.add(new PairMovimiento(pinguino1.getNombre(), PosFinalPinguino1));
 
 				} else if (PosFinalPinguino2 != PosInicialPinguino2) {
-
+					System.out.println("HA GANADO JUGADOR 2");
 					jugadorYMovimientos.add(new PairMovimiento(pinguino2.getNombre(), PosFinalPinguino2));
 				}
 			}

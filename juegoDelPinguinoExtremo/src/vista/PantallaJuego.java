@@ -265,73 +265,90 @@ public class PantallaJuego {
 
 		Jugador jugador = (Jugador) gestorTablero.getPartida().getJugadorActual();
 
-		int oldPos = jugador.getPos();
-
-		int resultado = gestorTablero.tirarDado(jugador);
+		int[] resultadoYPosFinalDado = ProcesarDado(jugador, null);
+		int resultado = resultadoYPosFinalDado[0];
+		int PosFinalDado = resultadoYPosFinalDado[1];
 
 		// Update the Text
 		dadoResultText.setText("Ha salido: " + resultado);
 
-		int movimiento = oldPos + resultado;
-
-		ProcesarMovimiento(gestorTablero.procesarTurnoJugador(jugador), movimiento);
+		animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
 
 		System.out.println(jugador.getNombre() + " " + jugador.getPos());
 
 		finalizarTurno.setDisable(false);
 	}
 
-	private void ProcesarMovimiento(ArrayList<PairMovimiento> posicionesConJugador, int movimiento) {
-
-	}
-
 	@FXML
 	private void handleRapido() {
 
-		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
 
-		DadoRapido dadoRapido = (DadoRapido) EncontrarDado(pinguino, true); // True == DadoRapido
+		DadoRapido dadoRapido = (DadoRapido) EncontrarDado(jugador, true); // True == DadoRapido
 
 		if (dadoRapido != null) {
 
-			int resultado = gestorTablero.tirarDado(pinguino, dadoRapido);
+			int[] resultadoYPosFinalDado = ProcesarDado(jugador, dadoRapido);
+			int resultado = resultadoYPosFinalDado[0];
+			int PosFinalDado = resultadoYPosFinalDado[1];
+
+			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
 
 			AddEventoHistorial("Usando dado rápido ha salido: " + resultado);
-
-			movePlayers(resultado, pinguino);
-
 		}
 
-		ActualizarInventarioGUI(pinguino);
-
+		ActualizarInventarioGUI(jugador);
 	}
 
 	@FXML
 	private void handleLento() {
 
-		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
 
-		DadoLento dadoLento = (DadoLento) EncontrarDado(pinguino, false); // False == DadoLento
+		DadoLento dadoLento = (DadoLento) EncontrarDado(jugador, false); // False == DadoLento
 
 		if (dadoLento != null) {
 
-			int resultado = gestorTablero.tirarDado(pinguino, dadoLento);
+			int[] resultadoYPosFinalDado = ProcesarDado(jugador, dadoLento);
+			int resultado = resultadoYPosFinalDado[0];
+			int PosFinalDado = resultadoYPosFinalDado[1];
+
+			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
 
 			AddEventoHistorial("Usando dado lento ha salido: " + resultado);
-
-			movePlayers(resultado, pinguino);
 		}
 
-		ActualizarInventarioGUI(pinguino);
+		ActualizarInventarioGUI(jugador);
+	}
 
+	private int[] ProcesarDado(Jugador jugador, Dado dado) {
+
+		int oldPos = jugador.getPos();
+
+		int resultado = 0;
+
+		if (dado == null) {
+			resultado = gestorTablero.tirarDado(jugador);
+		} else {
+			if (dado instanceof DadoRapido)
+				resultado = gestorTablero.tirarDado(jugador, (DadoRapido) dado);
+			else if (dado instanceof DadoLento)
+				resultado = gestorTablero.tirarDado(jugador, (DadoLento) dado);
+		}
+
+		int PosFinalDado = oldPos + resultado;
+
+		int[] resultadoYPosFinalDado = { resultado, PosFinalDado };
+
+		return resultadoYPosFinalDado;
 	}
 
 	@FXML
 	private void handleNieve() { // Seleccionamos el estado del juego
 
-		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
 
-		Inventario inventario = pinguino.getInventario();
+		Inventario inventario = jugador.getInventario();
 
 		if (inventario.getBolas().isEmpty()) { // Si la lista no es vacia
 			return;
@@ -401,29 +418,29 @@ public class PantallaJuego {
 
 	private void tirarBola(Jugador objBola) {
 
-		Jugador pinguinoAct = gestorTablero.getPartida().getJugadorActual();
+		Jugador jugadorAct = gestorTablero.getPartida().getJugadorActual();
 
-		Inventario inventario = pinguinoAct.getInventario();
+		Inventario inventario = jugadorAct.getInventario();
 
 		if (inventario.getBolas().isEmpty()) {
 			return;
-		} else if (objBola == null || objBola == pinguinoAct || objBola.getPos() == 0) {
+		} else if (objBola == null || objBola == jugadorAct || objBola.getPos() == 0) {
 			return;
 		}
 
 		efectos_de_sonido.sonidoBola();
 
-		int distancia = CalcularDistancia(pinguinoAct, objBola);
+		int distancia = CalcularDistancia(jugadorAct, objBola);
 
-		pinguinoAct.usarItem(inventario.getBolas().getFirst());
+		jugadorAct.usarItem(inventario.getBolas().getFirst());
 
-		ActualizarInventarioGUI(pinguinoAct);
+		ActualizarInventarioGUI(jugadorAct);
 
 		if (CalcularExito(distancia)) {
 
 			objBola.moverPosicion(-1);
 
-			movePlayers(-1, objBola);
+			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugadorAct), -1, jugadorAct);
 
 			AddEventoHistorial("¡¡Has acertado!!");
 
@@ -432,7 +449,6 @@ public class PantallaJuego {
 			AddEventoHistorial("Has fallado :(");
 
 		}
-
 	}
 
 	private int CalcularDistancia(Jugador j1, Jugador j2) {
@@ -528,29 +544,19 @@ public class PantallaJuego {
 		ListaEventos.setItems(ListaObservable);
 	}
 
-	private void animacionMoverJugadores(ArrayList<PairMovimiento> listaMovimientos, int movimientoInput, Jugador objBola) {
+	private void animacionMoverJugadores(ArrayList<PairMovimiento> listaMovimientos, int PosFinalDado,
+			Jugador jugador) {
 
-		if (gestorTablero.getPartida().getFinalizada()) {
+		if (gestorTablero.getPartida().getFinalizada())
 			return;
-		}
 
-		if (objBola != null) {
-			int pos = objBola.getPos() + movimientoInput;
+		listaMovimientos.add(0, new PairMovimiento(jugador.getNombre(), PosFinalDado));
 
-			listaMovimientos.add(0, new PairMovimiento(objBola.getNombre(), pos));
-		} else {
-			Jugador jugador = gestorTablero.getPartida().getJugadorActual();
-
-			int pos = jugador.getPos() + movimientoInput;
-
-			listaMovimientos.add(0, new PairMovimiento(jugador.getNombre(), pos));
-		}
-
-		Jugador jugadorActual = null;
-		
 		Timeline timeline = new Timeline();
 
 		timeline.setRate(0.5); // Velocidad reducida para mayor visibilidad
+
+		Jugador jugadorActual = null;
 
 		int[] dxTotal = { 0, 0, 0, 0, 0 };
 		int[] dyTotal = { 0, 0, 0, 0, 0 };
@@ -558,8 +564,6 @@ public class PantallaJuego {
 		for (int i = 0; i < listaMovimientos.size(); i++) {
 
 			PairMovimiento jugadorYMovimiento = listaMovimientos.get(i);
-
-			
 
 			for (int j = 0; jugadorActual == null; j++) {
 
@@ -595,6 +599,8 @@ public class PantallaJuego {
 			dxTotal[jugadorActualIndice] += (newCol - oldCol) * cellWidth;
 			dyTotal[jugadorActualIndice] += (newRow - oldRow) * cellHeight;
 
+			Jugador jugadorEvento = jugadorActual;
+
 			if (i == 0) {
 				timeline.getKeyFrames()
 						.add(new KeyFrame(Duration.ZERO,
@@ -610,7 +616,7 @@ public class PantallaJuego {
 
 				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700), e -> {
 
-					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorActual);
+					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorEvento);
 
 				}));
 
@@ -624,9 +630,11 @@ public class PantallaJuego {
 
 				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)), e -> {
 
-					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorActual);
+					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorEvento);
 				}));
 			}
+			
+			jugadorActual = null;
 		}
 
 		timeline.setOnFinished(e -> {
@@ -693,58 +701,6 @@ public class PantallaJuego {
 	private void viajandoToggle() {
 
 		viajando = (viajando) ? false : true;
-	}
-
-	private void movePlayers(int steps, Jugador jugador) {
-
-		if (gestorTablero.getPartida().getFinalizada()) {
-			return;
-		}
-
-		int jugadorActual = jugador.getTurnoEnArray();
-
-		int oldPosition = posiciones[jugadorActual];
-
-		posiciones[jugadorActual] += steps;
-
-		// Bound player
-		if (posiciones[jugadorActual] >= 50) {
-			posiciones[jugadorActual] = 49;
-		}
-
-		if (posiciones[jugadorActual] < 0) {
-			posiciones[jugadorActual] = 0;
-		}
-
-		// OLD position
-		int oldRow = oldPosition / COLUMNS;
-		int oldCol = oldPosition % COLUMNS;
-
-		// NEW position
-		int newRow = posiciones[jugadorActual] / COLUMNS;
-		int newCol = posiciones[jugadorActual] % COLUMNS;
-
-		double dx = (newCol - oldCol) * cellWidth;
-		double dy = (newRow - oldRow) * cellHeight;
-
-		TranslateTransition slide = new TranslateTransition(Duration.millis(350), jugadores.get(jugadorActual));
-
-		slide.setByX(dx);
-		slide.setByY(dy);
-
-		slide.setOnFinished(e -> {
-
-			// reset translation
-			jugadores.get(jugadorActual).setTranslateX(0);
-			jugadores.get(jugadorActual).setTranslateY(0);
-
-			// set real position in grid
-			GridPane.setRowIndex(jugadores.get(jugadorActual), newRow);
-			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
-		});
-
-		slide.play();
-
 	}
 
 	public void FinalizarTurno() {
