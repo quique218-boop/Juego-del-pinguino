@@ -30,11 +30,12 @@ public class Pinguino extends Jugador {
 
 		if (misBolas > susBolas) {
 
-			this.moverPosicion(misBolas - susBolas);
+			jugador.moverPosicion(susBolas - misBolas);
+			
 
 		} else if (susBolas > misBolas) {
 
-			jugador.moverPosicion(susBolas - misBolas);
+			this.moverPosicion(misBolas - susBolas);
 
 		}
 		
