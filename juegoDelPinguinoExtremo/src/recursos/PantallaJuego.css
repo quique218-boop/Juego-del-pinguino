@@ -1,36 +1,37 @@
 .root {
     -fx-font-family: "System";
     -fx-background-color: #f6f7fb;
+    -fx-background-image: url("/recursos/Artico.jpg");
 }
 
 /* MENU */
 .menu-bar {
     -fx-background-color: white;
     -fx-border-color: #e6e7ee;
-    -fx-border-width: 0 0 1 0;
+    -fx-border-width: 0.0 0.0 1.0 0.0;
 }
 
 /* TABLERO */
 .board {
-    -fx-background-color: white;
-    -fx-background-radius: 14;
-    -fx-padding: 14;
-    -fx-border-color: #e6e7ee;
-    -fx-border-radius: 14;
-
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 14, 0.15, 0, 2);
+    -fx-background-radius: 14.0;
+    -fx-background-color: radial-gradient(radius 150.0%, #0BBDE3AA, derive(#0BBDE3AA, -20.0%), derive(#0B90E3, 30.0%));
+    -fx-padding: 14.0;
+    -fx-effect: dropshadow(gaussian, rgba(0.0,0.0,0.0,0.1), 14.0, 0.15, 0.0, 2.0);
 }
 
 /* TEXTOS DEL TABLERO */
 .cell-title {
-    -fx-font-size: 22px;
+    -fx-font-size: 22.0px;
+    -fx-font-weight: bold;
     -fx-opacity: 0.65;
 }
 
 .cell-type {
-    -fx-font-size: 12px;
+	-fx-fill: #F5F5F5; 
+    -fx-font-size: 13.0px;
+    -fx-effect: dropshadow(gaussian, rgba(0.0,0.0,0.0,0.9), 14.0, 0.15, 1.0, 2.0);
     -fx-font-weight: bold;
-    -fx-opacity: 0.85;
+    -fx-opacity: 1.0;
 }
 
 /* BARRA INFERIOR */
@@ -40,52 +41,68 @@
 
 /* TARJETAS */
 .card {
-    -fx-background-color: white;
-    -fx-background-radius: 14;
-    -fx-padding: 14;
-    -fx-border-color: #e6e7ee;
-    -fx-border-radius: 14;
-
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 14, 0.15, 0, 2);
+    -fx-background-color: radial-gradient(radius 180.0%, #0B61E3, derive(#0B61E3, -20.0%), derive(#0B61E3, 30.0%));
+    -fx-background-radius: 14.0;
+    -fx-padding: 14.0;
+    -fx-effect: dropshadow(gaussian, rgba(0.0,0.0,0.0,0.1), 14.0, 0.15, 0.0, 2.0);
 }
 
 .card-title {
-    -fx-font-size: 16px;
+	-fx-fill: #F5F5F5; 
+    -fx-font-size: 16.0px;
     -fx-font-weight: bold;
-    -fx-opacity: 0.75;
+    -fx-opacity: 0.8;
 }
 
 .big-text {
-    -fx-font-size: 22px;
+	-fx-fill: #F5F5F5; 
+    -fx-font-size: 22.0px;
     -fx-font-weight: bold;
 }
 
 .stat {
-    -fx-font-size: 15px;
-    -fx-opacity: 0.85;
+	-fx-fill: #F5F5F5; 
+    -fx-font-size: 15.0px;
+    -fx-opacity: 0.95;
+}
+
+.ListaEventos {
+	-fx-padding: 0px;
+
+}
+
+.ListaEventos .list-cell:even {
+	-fx-background-color: #639DF7;
+
+}
+.ListaEventos .list-cell:odd {
+	-fx-background-color: #639DF7;
+
 }
 
 .events {
-    -fx-font-size: 14px;
-    -fx-opacity: 0.85;
+	-fx-fill: #F5F5F5;
+    -fx-font-size: 14.0px;
+    -fx-font-weight: bold;
+    -fx-opacity: 1;
 }
 
 /* BOTONES */
 .button {
-    -fx-background-radius: 10;
-    -fx-padding: 8 14;
-    -fx-background-color: #eef0f6;
-    -fx-text-fill: #1f2330;
+    -fx-background-radius: 10.0;
+    -fx-padding: 8.0 14.0;
+    -fx-background-color: #2F91ED;
+    -fx-text-fill: #F5F5F5;
     -fx-font-weight: bold;
 }
 
 .button:hover {
-    -fx-background-color: #e6e8f0;
+    -fx-background-color: #295fd0;
 }
 
 .button.primary {
-    -fx-background-color: #2f6fed;
-    -fx-text-fill: white;
+    -fx-background-color: #2F91ED;
+    -fx-text-fill: #F5F5F5;
 }
 
 .button.primary:hover {
@@ -94,7 +111,7 @@
 
 .button.danger {
     -fx-background-color: #FF0000;
-    -fx-text-fill: white;
+    -fx-text-fill: #F5F5F5;
 }
 
 .button.danger:hover {
@@ -116,9 +133,9 @@
 
 .player {
     -fx-stroke: white;
-    -fx-stroke-width: 3;
+    -fx-stroke-width: 3.0;
 
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 8, 0.35, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0.0,0.0,0.0,0.45), 8.0, 0.35, 0.0, 2.0);
 
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
@@ -126,9 +143,9 @@
 
 .foca {
     -fx-stroke: red;
-    -fx-stroke-width: 3;
+    -fx-stroke-width: 3.0;
 
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 8, 0.35, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0.0,0.0,0.0,0.45), 8.0, 0.35, 0.0, 2.0);
 
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
@@ -143,5 +160,5 @@
 
 /* Si quieres marcar el jugador activo, añade/quita esta clase desde Java */
 .current-player {
-    -fx-effect: dropshadow(gaussian, gold, 12, 0.6, 0, 0);
+    -fx-effect: dropshadow(gaussian, gold, 12.0, 0.6, 0.0, 0.0);
 }

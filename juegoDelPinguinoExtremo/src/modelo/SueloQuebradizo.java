@@ -17,7 +17,7 @@ public class SueloQuebradizo extends Casilla {
 
 			efectos_de_sonido.sonidoHielo();
 			
-			this.resultado = "Volver al inicio";
+			this.resultado = "El suelo se ha roto, buen viaje!";
 
 			efectos_de_sonido.sonidoMuerte();
 			
@@ -26,15 +26,17 @@ public class SueloQuebradizo extends Casilla {
 			
 		} else if (numeroItemsTotal > 0 && numeroItemsTotal <= 5) {
 
-			this.resultado = "Perder un turno";
+			this.resultado = "El suelo se ha partido un poco y te has quedado atascado";
 
 			jugador.setDeudaTurnos(1);
 
 		} else if (numeroItemsTotal == 0) {
 
-			this.resultado = "Nada";
+			this.resultado = "El suelo ha aguantado";
 
 		}
+		
+		System.out.println(this.resultado);
 	}
 
 	public String getResultado() {

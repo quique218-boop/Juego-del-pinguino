@@ -1,25 +1,34 @@
 package vista;
 
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 
 import controlador.GestorBBDD;
@@ -45,8 +54,6 @@ public class PantallaJuego {
 	private Button rapido;
 	@FXML
 	private Button lento;
-	@FXML
-	private Button peces;
 	@FXML
 	private Button nieve;
 	@FXML
@@ -102,18 +109,61 @@ public class PantallaJuego {
 
 	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
 	private final Random random = new Random();
+	private final double RATIO_DESCENSO_PROBABILIDAD = 0.39d;
+	private final double e = 2.718281828459045235360d;
+	private final int cellWidth = 120;
+	private final int cellHeight = 80;
+	// Relentiza al inicio y final para un poco mas de visibilidad
+	private final Interpolator interpolador = Interpolator.EASE_BOTH;
+	private boolean viajando = false;
 
-	private final Double RATIO_DESCENSO_PROBABILIDAD = 0.39d;
-	private final Double e = 2.718281828459045235360d;
+	private static boolean sonidosInicializados = false;
 
-	private boolean recursiva = false;
-
-	private boolean peligro = false;
+  
+        
 
 	@FXML
 	private void initialize() {
 
+		if (!sonidosInicializados) {
+            efectos_de_sonido.init();
+            sonidosInicializados = true;
+        }
+		
 		// UI
+
+		// Añadir la funcionalidad al texto de cambiar de linea al llegar al final
+
+		/*
+		 * Cambiar la creación de celdas a una personalizada Como parámetro se crea un
+		 * callback con input de ListView y output es ListCell. Entonces crea la llamada
+		 * donde se sobreescribe la función de la celda de updateItem. Simplemente se
+		 * añade que el ítem tenga la función de cambio de línea a la longitud
+		 * especificada.
+		 */
+
+		ListaEventos.setCellFactory(new Callback<ListView<Text>, ListCell<Text>>() {
+			@Override
+			public ListCell<Text> call(ListView<Text> list) {
+				final ListCell<Text> cell = new ListCell<Text>() {
+					@Override
+					protected void updateItem(Text item, boolean empty) {
+						super.updateItem(item, empty);
+
+						if (empty || item == null) {
+							setText(null);
+							setGraphic(null);
+						} else {
+							item.setWrappingWidth(ListaEventos.getPrefWidth() - 20);
+							setGraphic(item);
+						}
+					}
+				};
+
+				return cell;
+			}
+		});
+
 		AddEventoHistorial("¡El juego ha comenzado!");
 
 		P1.getStyleClass().add("current-player"); // Pone el efecto del jugador actual al jugador 1
@@ -156,6 +206,7 @@ public class PantallaJuego {
 
 		// Poner el menu acorde al inventario del jugador actual (Jugador 1)
 		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
+
 	}
 
 	private void mostrarTiposDeCasillasEnTablero(Tablero t) {
@@ -173,6 +224,7 @@ public class PantallaJuego {
 				Text texto = new Text(tipo);
 				texto.setUserData(TAG_CASILLA_TEXT);
 				texto.getStyleClass().add("cell-type");
+				GridPane.setHalignment(texto, HPos.CENTER);
 
 				int row = i / COLUMNS;
 				int col = i % COLUMNS;
@@ -224,94 +276,84 @@ public class PantallaJuego {
 
 		Jugador jugador = (Jugador) gestorTablero.getPartida().getJugadorActual();
 
-		int resultado = gestorTablero.tirarDado(jugador);
+		int[] resultadoYPosFinalDado = ProcesarDado(jugador, null);
+		int resultado = resultadoYPosFinalDado[0];
+		int PosFinalDado = resultadoYPosFinalDado[1];
 
 		// Update the Text
 		dadoResultText.setText("Ha salido: " + resultado);
 
-		// Update the position
-		movePlayers(resultado, jugador);
+		animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
 
-		finalizarTurno.setDisable(false);
+		System.out.println(jugador.getNombre() + " " + jugador.getPos());
 	}
 
 	@FXML
 	private void handleRapido() {
 
-		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
 
-		DadoRapido dadoRapido = (DadoRapido) EncontrarDado(pinguino, true); // True == DadoRapido
+		DadoRapido dadoRapido = (DadoRapido) EncontrarDado(jugador, true); // True == DadoRapido
 
 		if (dadoRapido != null) {
 
-			int resultado = gestorTablero.tirarDado(pinguino, dadoRapido);
+			int[] resultadoYPosFinalDado = ProcesarDado(jugador, dadoRapido);
+			int resultado = resultadoYPosFinalDado[0];
+			int PosFinalDado = resultadoYPosFinalDado[1];
+
+			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
 
 			AddEventoHistorial("Usando dado rápido ha salido: " + resultado);
-
-			movePlayers(resultado, pinguino);
-
 		}
-
-		ActualizarInventarioGUI(pinguino);
-
 	}
 
 	@FXML
 	private void handleLento() {
 
-		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
+		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
 
-		DadoLento dadoLento = (DadoLento) EncontrarDado(pinguino, false); // False == DadoLento
+		DadoLento dadoLento = (DadoLento) EncontrarDado(jugador, false); // False == DadoLento
 
 		if (dadoLento != null) {
 
-			int resultado = gestorTablero.tirarDado(pinguino, dadoLento);
+			int[] resultadoYPosFinalDado = ProcesarDado(jugador, dadoLento);
+			int resultado = resultadoYPosFinalDado[0];
+			int PosFinalDado = resultadoYPosFinalDado[1];
+
+			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
 
 			AddEventoHistorial("Usando dado lento ha salido: " + resultado);
-
-			movePlayers(resultado, pinguino);
 		}
-
-		ActualizarInventarioGUI(pinguino);
-
 	}
 
-	@FXML
-	private void handlePeces() {
+	private int[] ProcesarDado(Jugador jugador, Dado dado) {
 
-		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
+		int oldPos = jugador.getPos();
 
-		jugador.usarItem(jugador.getInventario().getPez().getFirst());
+		int resultado = 0;
 
-		efectos_de_sonido.sonidoPez();
-		
-		if (gestorTablero.getPartida().getCasilla(jugador.getPos()) instanceof Oso) {
-
-			peligro = false;
-
-		} else if (!(jugador instanceof Foca)) {
-
-			Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
-
-			if (jugador.getPos() == foca.getPos()) { // Si estamos en la misma casilla de foca
-
-				foca.esSobornado();
-
-				peligro = false;
-
-			}
+		if (dado == null) {
+			resultado = gestorTablero.tirarDado(jugador);
+		} else {
+			if (dado instanceof DadoRapido)
+				resultado = gestorTablero.tirarDado(jugador, (DadoRapido) dado);
+			else if (dado instanceof DadoLento)
+				resultado = gestorTablero.tirarDado(jugador, (DadoLento) dado);
 		}
 
-		AddEventoHistorial(jugador.getNombre() + " le has dado un pez");
-		FinalizarTurno();
+		int PosFinalDado = oldPos + resultado;
+
+		int[] resultadoYPosFinalDado = { resultado, PosFinalDado };
+
+		return resultadoYPosFinalDado;
 	}
 
 	@FXML
 	private void handleNieve() { // Seleccionamos el estado del juego
-		
-		Pinguino pinguino = (Pinguino) gestorTablero.getPartida().getJugadorActual();
 
-		Inventario inventario = pinguino.getInventario();
+		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
+
+		Inventario inventario = jugador.getInventario();
 
 		if (inventario.getBolas().isEmpty()) { // Si la lista no es vacia
 			return;
@@ -374,36 +416,36 @@ public class PantallaJuego {
 		if (!modoBola) {
 			return;
 		}
-		
+
 		tirarBola(objBola);
 		modoBola = false;
 	}
 
 	private void tirarBola(Jugador objBola) {
 
-		Jugador pinguinoAct = gestorTablero.getPartida().getJugadorActual();
+		Jugador jugadorAct = gestorTablero.getPartida().getJugadorActual();
 
-		Inventario inventario = pinguinoAct.getInventario();
+		Inventario inventario = jugadorAct.getInventario();
 
 		if (inventario.getBolas().isEmpty()) {
 			return;
-		} else if (objBola == null || objBola == pinguinoAct || objBola.getPos() == 0) {
+		} else if (objBola == null || objBola == jugadorAct || objBola.getPos() == 0) {
 			return;
 		}
 
 		efectos_de_sonido.sonidoBola();
-		
-		int distancia = CalcularDistancia(pinguinoAct, objBola);
 
-		pinguinoAct.usarItem(inventario.getBolas().getFirst());
+		int distancia = CalcularDistancia(jugadorAct, objBola);
 
-		ActualizarInventarioGUI(pinguinoAct);
+		jugadorAct.usarItem(inventario.getBolas().getFirst());
+
+		ActualizarInventarioGUI(jugadorAct);
 
 		if (CalcularExito(distancia)) {
 
 			objBola.moverPosicion(-1);
 
-			movePlayers(-1, objBola);
+			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugadorAct), -1, jugadorAct);
 
 			AddEventoHistorial("¡¡Has acertado!!");
 
@@ -412,7 +454,6 @@ public class PantallaJuego {
 			AddEventoHistorial("Has fallado :(");
 
 		}
-
 	}
 
 	private int CalcularDistancia(Jugador j1, Jugador j2) {
@@ -481,8 +522,6 @@ public class PantallaJuego {
 			nieve.setDisable(true);
 		else
 			nieve.setDisable(false);
-
-		peces.setDisable(true);
 	}
 
 	private Dado EncontrarDado(Jugador jugador, boolean Rapido_Lento) { // True == DadoRapido, False == DadoLento
@@ -510,90 +549,189 @@ public class PantallaJuego {
 		ListaEventos.setItems(ListaObservable);
 	}
 
-	private void movePlayers(int steps, Jugador jugador) {
+	private void animacionMoverJugadores(ArrayList<PairMovimiento> listaMovimientos, int PosFinalDado,
+			Jugador jugador) {
 
-		if (gestorTablero.getPartida().getFinalizada()) {
+		if (gestorTablero.getPartida().getFinalizada())
+			return;
+
+		finalizarTurno.setDisable(true);
+		rapido.setDisable(true);
+		lento.setDisable(true);
+		nieve.setDisable(true);
+
+		listaMovimientos.add(0, new PairMovimiento(jugador.getNombre(), PosFinalDado));
+
+		Timeline timeline = new Timeline();
+
+		timeline.setRate(0.5); // Velocidad reducida para mayor visibilidad
+
+		Jugador jugadorActual = null;
+
+		int[] dxTotal = { 0, 0, 0, 0, 0 };
+		int[] dyTotal = { 0, 0, 0, 0, 0 };
+
+		for (int i = 0; i < listaMovimientos.size(); i++) {
+
+			PairMovimiento jugadorYMovimiento = listaMovimientos.get(i);
+
+			for (int j = 0; jugadorActual == null; j++) {
+
+				jugadorActual = gestorTablero.getPartida().getJugador(j)
+						.devolverSiNombreCoincide(jugadorYMovimiento.jugador);
+			}
+
+			int jugadorActualIndice = jugadorActual.getTurnoEnArray();
+
+			int oldPosition = posiciones[jugadorActualIndice];
+
+			int movimiento = jugadorYMovimiento.posicion - oldPosition;
+
+			posiciones[jugadorActualIndice] += movimiento;
+
+			// Bound player
+			if (posiciones[jugadorActualIndice] >= 50) {
+				posiciones[jugadorActualIndice] = 49;
+			}
+
+			if (posiciones[jugadorActualIndice] < 0) {
+				posiciones[jugadorActualIndice] = 0;
+			}
+
+			// OLD position
+			int oldRow = oldPosition / COLUMNS;
+			int oldCol = oldPosition % COLUMNS;
+
+			// NEW position
+			int newRow = posiciones[jugadorActualIndice] / COLUMNS;
+			int newCol = posiciones[jugadorActualIndice] % COLUMNS;
+
+			dxTotal[jugadorActualIndice] += (newCol - oldCol) * cellWidth;
+			dyTotal[jugadorActualIndice] += (newRow - oldRow) * cellHeight;
+
+			Jugador jugadorEvento = jugadorActual;
+
+			if (i == 0) {
+				timeline.getKeyFrames()
+						.add(new KeyFrame(Duration.ZERO,
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(), 0),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(), 0)));
+
+				timeline.getKeyFrames()
+						.add(new KeyFrame(Duration.millis(700),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
+										dxTotal[jugadorActualIndice], interpolador),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
+										dyTotal[jugadorActualIndice], interpolador)));
+
+				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700), e -> {
+
+					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorEvento);
+
+				}));
+
+			} else {
+				timeline.getKeyFrames()
+						.add(new KeyFrame(Duration.millis(700 * (i + 1)),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
+										dxTotal[jugadorActualIndice], interpolador),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
+										dyTotal[jugadorActualIndice], interpolador)));
+
+				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)), e -> {
+
+					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorEvento);
+				}));
+			}
+
+			jugadorActual = null;
+		}
+
+		timeline.setOnFinished(e -> {
+
+			for (int i = 0; i < jugadores.size(); i++) {
+				// reset translation
+				jugadores.get(i).setTranslateX(0);
+				jugadores.get(i).setTranslateY(0);
+
+				// set real position in grid
+				GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
+				GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
+			}
+
+			finalizarTurno.setDisable(false);
+			
+			ActualizarInventarioGUI(jugador);
+		});
+
+		timeline.play();
+	}
+
+	private void MostrarEventosEnKeyFrame(int posicionJugador, Jugador jugador) {
+
+		Casilla casillaActual = gestorTablero.getPartida().getCasilla(posicionJugador);
+
+		switch (casillaActual) {
+
+		case Agujero a -> {
+			if (!viajando)
+				AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
+
+			viajandoToggle();
+		}
+
+		case Evento e -> {
+
+			if (e.getResultado() == "Motos de nieve")
+				viajandoToggle();
+			else if (e.getResultado() == "Perder un turno")
+				FinalizarTurno();
+
+			AddEventoHistorial(jugador.getNombre() + " ha caido en un evento y el evento ha sido: " + e.getResultado());
+		}
+
+		case Trineo t -> {
+			if (!viajando)
+				AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
+
+			viajandoToggle();
+		}
+
+		case SueloQuebradizo s -> {
+
+			AddEventoHistorial(s.getResultado());
+
+			if (s.getResultado() == "El suelo se ha partido un poco y te has quedado atascado")
+				FinalizarTurno();
+		}
+
+		case Oso o -> {
+			if (posicionJugador == 0) {
+				AddEventoHistorial(jugador.getNombre() + " ha sido atacado por un oso");
+			} else {
+				AddEventoHistorial(jugador.getNombre() + " ha usado un pez para evitar ser atacado por un oso");
+			}
+		}
+
+		case Normal n -> {
 			return;
 		}
 
-		int jugadorActual = jugador.getTurnoEnArray();
+		default -> throw new IllegalArgumentException("Unexpected value: " + casillaActual);
 
-		int oldPosition = posiciones[jugadorActual];
-
-		posiciones[jugadorActual] += steps;
-
-		// Bound player
-		if (posiciones[jugadorActual] >= 50) {
-			posiciones[jugadorActual] = 49;
 		}
 
-		if (posiciones[jugadorActual] < 0) {
-			posiciones[jugadorActual] = 0;
-		}
+		ActualizarInventarioGUI(jugador);
+	}
 
-		// OLD position
-		int oldRow = oldPosition / COLUMNS;
-		int oldCol = oldPosition % COLUMNS;
+	private void viajandoToggle() {
 
-		// NEW position
-		int newRow = posiciones[jugadorActual] / COLUMNS;
-		int newCol = posiciones[jugadorActual] % COLUMNS;
-
-		// Calcular tamaño de las casillas
-		double cellWidth = tablero.getWidth() / COLUMNS;
-		double cellHeight = tablero.getHeight() / 10;
-
-		double dx = (newCol - oldCol) * cellWidth;
-		double dy = (newRow - oldRow) * cellHeight;
-
-		TranslateTransition slide = new TranslateTransition(Duration.millis(350), jugadores.get(jugadorActual));
-
-		slide.setByX(dx);
-		slide.setByY(dy);
-
-		slide.setOnFinished(e -> {
-
-			// reset translation
-			jugadores.get(jugadorActual).setTranslateX(0);
-			jugadores.get(jugadorActual).setTranslateY(0);
-
-			// set real position in grid
-			GridPane.setRowIndex(jugadores.get(jugadorActual), newRow);
-			GridPane.setColumnIndex(jugadores.get(jugadorActual), newCol);
-
-			if (!recursiva) {
-				recursiva = true;
-				caerEnCasilla(jugador);
-			} else {
-				recursiva = false;
-			}
-
-		});
-
-		slide.play();
-
+		viajando = (viajando) ? false : true;
 	}
 
 	public void FinalizarTurno() {
 
 		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
-
-		if (peligro == true) {
-
-			AddEventoHistorial(jugadorActual.getNombre() + " no le has dado un pez asi que caes al principio");
-
-			int PosInicial = jugadorActual.getPos();
-
-			efectos_de_sonido.sonidoMuerte();
-			
-			new Oso().realizarAccion(gestorTablero.getPartida(), jugadorActual);
-
-			int movimiento = 0 - PosInicial;
-
-			movePlayers(movimiento, jugadorActual);
-
-			peligro = false;
-		}
 
 		Jugador jugadorSiguiente;
 
@@ -621,139 +759,10 @@ public class PantallaJuego {
 
 		jugadores.get(jugadorSiguiente.getTurnoEnArray()).getStyleClass().add("current-player");
 
-		// volver a activar el botón
-		dado.setDisable(false);
-
 		// Desactivar finalizar turno
 		finalizarTurno.setDisable(true);
 
 		ActualizarInventarioGUI(jugadorSiguiente);
-	}
-
-	public void caerEnCasilla(Jugador jugador) {
-
-		int PosInicial = jugador.getPos();
-
-		Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
-
-		ArrayList<Jugador> jugadoresEnCasilla = EncontrarJugadoresEnCasilla(jugador);
-
-		if (PosInicial == foca.getPos() && jugador != foca) { // Si caes donde la foca y no eres la foca
-			ModoPeligro(jugador);
-			return;
-
-		} else if (!(jugador instanceof Foca) && jugadoresEnCasilla.size() != 0) {
-
-			Pinguino guerrero = (Pinguino) jugador;
-
-			Pinguino guerrero2 = (Pinguino) jugadoresEnCasilla.getFirst();
-
-			int posicionInicial1 = guerrero.getPos();
-			int posicionInicial2 = guerrero2.getPos();
-
-			guerrero.gestionarBatalla(guerrero2);
-			
-			ActualizarInventarioGUI(jugador);
-
-			int posicionFinal1 = guerrero.getPos();
-			int posicionFinal2 = guerrero2.getPos();
-
-			if (posicionInicial1 == posicionFinal1) {
-
-				int movimiento = posicionFinal2 - posicionInicial2;
-
-				movePlayers(movimiento, guerrero2);
-
-			} else if (posicionInicial2 == posicionFinal2) {
-
-				int movimiento = posicionFinal1 - posicionInicial1;
-
-				movePlayers(movimiento, guerrero);
-
-			}
-			
-			return;
-		}
-
-		Casilla casilla = gestorTablero.getPartida().getCasilla(PosInicial);
-
-		if (casilla instanceof Normal) {
-			recursiva = false;
-			return;
-		}
-
-		AddEventoHistorial(jugador.getNombre() + " ha caido en " + casilla.getClass().getSimpleName());
-
-		if (casilla instanceof Oso) {
-
-			ModoPeligro(jugador);
-			return;
-
-		}
-
-		casilla.realizarAccion(gestorTablero.getPartida(), jugador);
-
-		int PosFinal = jugador.getPos();
-
-		int movimiento = PosFinal - PosInicial;
-
-		if (casilla instanceof Evento) {
-
-			AddEventoHistorial("El evento ha sido: " + ((Evento) casilla).getResultado());
-
-			ActualizarInventarioGUI(jugador);
-
-		} else if (casilla instanceof SueloQuebradizo) {
-
-			AddEventoHistorial("El evento ha sido: " + ((SueloQuebradizo) casilla).getResultado());
-
-			ActualizarInventarioGUI(jugador);
-
-		}
-
-		if (jugador.getDeudaTurnos() > 0)
-			FinalizarTurno();
-
-		movePlayers(movimiento, jugador);
-	}
-
-	public ArrayList<Jugador> EncontrarJugadoresEnCasilla(Jugador jugador) {
-
-		int PosicionBusqueda = jugador.getPos();
-
-		ArrayList<Jugador> PackJugadores = new ArrayList<>();
-
-		for (Jugador jugadores : gestorTablero.getPartida().getArrayListJugador()) {
-
-			if (PosicionBusqueda == jugadores.getPos() && jugador != jugadores) {
-
-				PackJugadores.add(jugadores);
-
-			}
-		}
-
-		return PackJugadores;
-	}
-
-	public void ModoPeligro(Jugador jugador) {
-
-		if (jugador.getInventario().getPez().size() <= 0) {
-			peligro = true;
-			FinalizarTurno();
-			return;
-		}
-
-		dado.setDisable(true);
-		rapido.setDisable(true);
-		lento.setDisable(true);
-		nieve.setDisable(true);
-		peces.setDisable(false);
-		finalizarTurno.setDisable(false);
-
-		AddEventoHistorial(jugador.getNombre() + "usa un pez para salvarte");
-
-		peligro = true;
-
 	}
 
 	public void ponerTurnoEnArray() {

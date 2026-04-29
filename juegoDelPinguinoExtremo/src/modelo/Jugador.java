@@ -12,8 +12,7 @@ public abstract class Jugador {
 	private int deudaTurnos;
 	private int partidasTotales;
 	private int turnoEnArray;
-	private Usuario usuario;
-	
+	private boolean objBola;
 
 	public Jugador(String nombre, String color, Inventario inventario) {
 
@@ -22,18 +21,18 @@ public abstract class Jugador {
 		this.posicion = 0;
 		this.inventario = inventario;
 		this.turnoEnArray = -1;
-		
+		this.objBola = false;
 	}
-	
-	public Jugador(int posicion, String nombre, String color, Inventario inventario, int deudaTurnos, int partidasTotales, int turnoEnArray, Usuario usuario) {
+
+	public Jugador(int posicion, String nombre, String color, Inventario inventario, int deudaTurnos,
+			int partidasTotales, int turnoEnArray) {
 
 		this.nombre = nombre;
 		this.color = color;
 		this.posicion = posicion;
 		this.inventario = inventario;
 		this.turnoEnArray = turnoEnArray;
-		this.usuario = usuario;
-		
+		this.objBola = false;
 	}
 
 	public Jugador() {
@@ -43,9 +42,9 @@ public abstract class Jugador {
 		this.posicion = 67;
 		this.inventario = new Inventario();
 	}
-	
+
 	public int getPartidasTotales() {
-		
+
 		return partidasTotales;
 	}
 
@@ -99,9 +98,11 @@ public abstract class Jugador {
 	public void moverPosicion(int nDado) {
 
 		this.posicion += nDado;
-			
-		if(this.posicion >= 50) this.posicion = 49;
-		else if(this.posicion < 0) this.posicion = 0;
+
+		if (this.posicion >= 50)
+			this.posicion = 49;
+		else if (this.posicion < 0)
+			this.posicion = 0;
 	}
 
 	public Inventario getInventario() {
@@ -123,7 +124,7 @@ public abstract class Jugador {
 	public void setDeudaTurnos(int deudaTurnos) {
 		this.deudaTurnos = deudaTurnos;
 	}
-	
+
 	public void reducirDeudaTurnos() {
 		this.deudaTurnos -= 1;
 	}
@@ -214,5 +215,29 @@ public abstract class Jugador {
 			inventario.getDado().remove(item);
 
 	}
+
+	public Jugador devolverSiNombreCoincide(String nombre) {
+
+		if (nombre.equals(this.nombre))
+			return this;
+
+		return null;
+	}
+
+	/*
+	 * public boolean objBola() {
+	 * 
+	 * return objBola;
+	 * 
+	 * }
+	 * 
+	 * public void modoBola(boolean objBola) {
+	 * 
+	 * this.objBola = objBola; }
+	 * 
+	 * public boolean objBola() { return objBola; }
+	 * 
+	 * public void modoBola(boolean objBola) { this.objBola = objBola; }
+	 */
 
 }
