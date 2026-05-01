@@ -2,19 +2,49 @@
 
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.text.Text?>
 
 <VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="vista.LoginController"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="vista.LoginMultipleController"
       alignment="CENTER"
-      spacing="10">
+      spacing="15"
+      style="-fx-background-color: rgba(0,0,0,0.4); -fx-padding: 30;">
 
-    <Label text="LOGIN"/>
+    <!-- 🔥 Jugador actual -->
+    <Label fx:id="textoJugador"
+           text="Jugador 1"
+           style="-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;"/>
 
-    <TextField fx:id="userField" promptText="Username"/>
+    <!-- Título -->
+    <Label text="Iniciar sesión"
+           style="-fx-text-fill: white; -fx-font-size: 16;"/>
 
-    <PasswordField fx:id="passField" promptText="Password"/>
+    <!-- Usuario -->
+    <TextField fx:id="userField"
+               promptText="Usuario"
+               prefWidth="200"/>
 
-    <Button text="ENTER" onAction="#onEnter"/>
+    <!-- Contraseña -->
+    <PasswordField fx:id="passField"
+                   promptText="Contraseña"
+                   prefWidth="200"/>
+
+    <!-- Botón login -->
+    <Button text="Entrar"
+            onAction="#onEnter"
+            prefWidth="200"
+            style="-fx-background-color: #2F91ED; -fx-text-fill: white;"/>
+
+    <!-- 🔥 Mensaje error -->
+    <Label fx:id="mensajeError"
+           text=""
+           style="-fx-text-fill: red;"/>
+
+    <!-- 🔥 Crear usuario -->
+    <Button text="Crear usuario"
+            onAction="#crearUsuario"
+            prefWidth="200"
+            style="-fx-background-color: #22c55e; -fx-text-fill: white;"/>
 
 </VBox>

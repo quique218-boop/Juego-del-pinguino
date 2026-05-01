@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="vista.seleccionJugador"
+            prefWidth="800" prefHeight="600"
+            stylesheets="@PantallaJuego.css">
+
+    <children>
+
+
+        <StackPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                   AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+
+            <VBox alignment="CENTER" spacing="30">
+
+
+                <Text text="Selecciona número de jugadores"
+                      styleClass="big-text"/>
+
+
+                <VBox spacing="20" alignment="CENTER">
+
+                    <Button text="2 Jugadores"
+                            onAction="#jugar2"
+                            prefWidth="220" prefHeight="50"
+                            styleClass="button primary"/>
+
+                    <Button text="3 Jugadores"
+                            onAction="#jugar3"
+                            prefWidth="220" prefHeight="50"
+                            styleClass="button primary"/>
+
+                    <Button text="4 Jugadores"
+                            onAction="#jugar4"
+                            prefWidth="220" prefHeight="50"
+                            styleClass="button primary"/>
+
+                </VBox>
+
+            </VBox>
+
+        </StackPane>
+
+    </children>
+</AnchorPane>

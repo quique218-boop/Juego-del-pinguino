@@ -4,6 +4,7 @@ import modelo.*;
 
 import java.sql.Array;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -91,7 +92,7 @@ public class GestorBBDD {
 		BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
 		           new String[]{"TOTAL"});
 
-		BBDD.insert(con, sqlTablero); ///Termina el insert de la tabla TABLERO
+		BBDD.insert(con, sqlTablero); //Termina el insert de la tabla TABLERO
 		
 		
 		//Hacemos el insert de jugador
@@ -367,22 +368,41 @@ public class GestorBBDD {
 	    
 	    Connection con = BBDD.conectarBaseDatos();
 	    
-	    String sql = "SELECT mi_funcion('" + usuario.getNombre() + "', '" + usuario.getContraseña() + "') AS RES FROM dual";
+	    String sql = "SELECT EXISTE('" + usuario.getNombre() + "', '" + usuario.getContraseña() + "') AS RES FROM dual";
 	    
 	    ArrayList<LinkedHashMap<String, String>> res = BBDD.select(con, sql);
 	    
 	    BBDD.cerrar(con);
 	    
-	    if (res.get(0).get("RES").toUpperCase() == "s") {
+	    if (res.get(0).get("RES").toUpperCase().equals("S")) {
 	    	
 	        return true;
+	        
 	    }
 	    
-	    else {return false;
+	    else {
+	    	return false;
 	    
 	    }
 	    
+	}
+	
+	public static boolean crearUsuario(Usuario u) {
+	    String sql = "INSERT INTO USUARIO (ID_USUARIO, NOMBRE, CONTRASEÑA) VALUES (SEQ_USUARIO.NEXTVAL, ?, ?)";
 
+	    try (Connection con = BBDD.conectarBaseDatos();
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+
+	        ps.setString(1, u.getNombre());
+	        ps.setString(2, u.getContraseña());
+
+	        ps.executeUpdate();
+	        return true;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
 	
 

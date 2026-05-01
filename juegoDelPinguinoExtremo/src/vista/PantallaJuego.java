@@ -118,6 +118,12 @@ public class PantallaJuego {
 	private boolean viajando = false;
 
 	private static boolean sonidosInicializados = false;
+	
+	private ArrayList<Usuario> usuarios;
+
+	public void setUsuarios(ArrayList<Usuario> usuarios) {
+	    this.usuarios = usuarios;
+	}
 
   
         
