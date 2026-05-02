@@ -103,7 +103,8 @@ public class GestorBBDD {
 				
 				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 1, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
 						", seq_tablero.CURRVAL, '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
-						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " +   t1.getArrayListJugador().get(i).getPartidasTotales() + ")";
+						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " + obtenerIdUsuario(t1.getArrayListJugador().get(i).getUsuario()) + ", " +
+						t1.getArrayListJugador().get(i).getPuntuacion() +")";
 				
 				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
 				           new String[]{"TOTAL"});
@@ -119,7 +120,8 @@ public class GestorBBDD {
 				
 				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 0, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
 						", seq_tablero.CURRVAL, '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
-						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " +   t1.getArrayListJugador().get(i).getPartidasTotales() + ")";		
+						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " + obtenerIdUsuario(t1.getArrayListJugador().get(i).getUsuario()) + ", " +
+						t1.getArrayListJugador().get(i).getPuntuacion() +")";		
 				
 				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
 				           new String[]{"TOTAL"});
@@ -162,6 +164,8 @@ public class GestorBBDD {
 			BBDD.insert(con, sqlInventario);
 		}
 	}
+	
+	
 
 	public Tablero cargarTablero(int indice) {
 		
@@ -309,9 +313,12 @@ public class GestorBBDD {
 				String nombre = entrada.get("NOMBRE");
 				String color = entrada.get("COLOR");
 				int turnoPerdido = Integer.parseInt(entrada.get("TURNOSPERDIDOS"));
-				int partidasJugadas = Integer.parseInt(entrada.get("PARTIDASJUGADAS"));
+				int puntuacion = Integer.parseInt(entrada.get("PUNTUACION"));
+				int id_usuario = Integer.parseInt(entrada.get("ID_USUARIO"));
 				
-				Foca nuevo = new Foca(posicion, nombre, color, inventarios, turnoPerdido, partidasJugadas, turno);
+				Usuario usuario = obtenerUsuario(id_usuario);
+				
+				Foca nuevo = new Foca(posicion, nombre, color, inventarios, turnoPerdido, turno, puntuacion, usuario);
 				
 				jugadores.add(nuevo);
 
@@ -324,9 +331,12 @@ public class GestorBBDD {
 				String nombre = entrada.get("NOMBRE");
 				String color = entrada.get("COLOR");
 				int turnoPerdido = Integer.parseInt(entrada.get("TURNOSPERDIDOS"));
-				int partidasJugadas = Integer.parseInt(entrada.get("PARTIDASJUGADAS"));
+				int puntuacion = Integer.parseInt(entrada.get("PUNTUACION"));
+				int id_usuario = Integer.parseInt(entrada.get("ID_USUARIO"));
 				
-				Pinguino nuevo = new Pinguino(posicion, nombre, color, inventarios, turnoPerdido, partidasJugadas, turno);
+				Usuario usuario = obtenerUsuario(id_usuario);
+				
+				Pinguino nuevo = new Pinguino(posicion, nombre, color, inventarios, turnoPerdido, turno, puntuacion, usuario);
 				
 				jugadores.add(nuevo);
 				
@@ -403,6 +413,55 @@ public class GestorBBDD {
 	        e.printStackTrace();
 	        return false;
 	    }
+	}
+	
+	public static int obtenerIdUsuario(Usuario usuario) {
+
+	    String sql = "SELECT ID_USUARIO " +
+	                 "FROM USUARIO " +
+	                 "WHERE NOMBRE = ? ";
+
+	    try (Connection con = BBDD.conectarBaseDatos();
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+
+	        ps.setString(1, usuario.getNombre());
+
+	        ResultSet rs = ps.executeQuery();
+
+	        if (rs.next()) {
+	            return rs.getInt("ID_USUARIO");
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return -1; // no encontrado
+	}
+	
+	public static Usuario obtenerUsuario(int idUsuario) {
+
+	    String sql = "SELECT NOMBRE, CONTRASENA FROM USUARIO WHERE ID_USUARIO = ?";
+
+	    try (Connection con = BBDD.conectarBaseDatos();
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+
+	        ps.setInt(1, idUsuario);
+
+	        ResultSet rs = ps.executeQuery();
+
+	        if (rs.next()) {
+	            String nombre = rs.getString("NOMBRE");
+	            String contrasena = rs.getString("CONTRASENA");
+
+	            return new Usuario(nombre, contrasena);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return null; // no encontrado
 	}
 	
 

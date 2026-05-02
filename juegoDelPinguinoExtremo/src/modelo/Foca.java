@@ -8,8 +8,8 @@ public class Foca extends Jugador {
 
 	}
 	
-	public Foca(int posicion, String nombre, String color, Inventario inventario, int deudaTurnos, int partidasTotales, int turnoEnArray, Usuario usuario) {
-		super( posicion, nombre, color, inventario, deudaTurnos, partidasTotales, turnoEnArray, usuario);
+	public Foca(int posicion, String nombre, String color, Inventario inventario, int deudaTurnos, int turnoEnArray, int puntuacion, Usuario usuario) {
+		super( posicion, nombre, color, inventario, deudaTurnos, turnoEnArray, puntuacion, usuario);
 	}
 
 

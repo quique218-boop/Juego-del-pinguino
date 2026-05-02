@@ -10,8 +10,8 @@ public abstract class Jugador {
 	private boolean turnoTerminado;
 	private Inventario inventario;
 	private int deudaTurnos;
-	private int partidasTotales;
 	private int turnoEnArray;
+	private int puntuacion;
 	private Usuario usuario;
 
 	public Jugador(String nombre, String color, Inventario inventario) {
@@ -25,14 +25,16 @@ public abstract class Jugador {
 	}
 
 	public Jugador(int posicion, String nombre, String color, Inventario inventario, int deudaTurnos,
-			int partidasTotales, int turnoEnArray, Usuario usuario) {
+			 int turnoEnArray, int puntuacion, Usuario usuario) {
 
 		this.nombre = nombre;
 		this.color = color;
 		this.posicion = posicion;
 		this.inventario = inventario;
 		this.turnoEnArray = turnoEnArray;
+		this.puntuacion = puntuacion;
 		this.usuario = usuario;
+		
 	}
 
 	public Jugador() {
@@ -41,6 +43,8 @@ public abstract class Jugador {
 		this.color = "rojo puton";
 		this.posicion = 67;
 		this.inventario = new Inventario();
+		this.usuario = new Usuario("1", "2");
+		this.puntuacion = 0;
 	}
 	
 	public Usuario getUsuario() {
@@ -54,11 +58,11 @@ public abstract class Jugador {
 		this.usuario = usuario; 
 		
 	}
-
-	public int getPartidasTotales() {
-
-		return partidasTotales;
+	
+	public int getPuntuacion() {
+		return puntuacion;
 	}
+
 
 	public String getNombre() {
 
