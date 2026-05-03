@@ -1,0 +1,12 @@
+.slot {
+    -fx-pref-width: 150;
+    -fx-pref-height: 100;
+    -fx-background-color: #3a7bd5;
+    -fx-text-fill: white;
+    -fx-font-size: 16;
+    -fx-background-radius: 15;
+}
+
+.slot:hover {
+    -fx-background-color: #5aa9ff;
+}

@@ -61,7 +61,7 @@ public class Menu {
 
     @FXML
     private void cargarPartida(ActionEvent event) {
-        cambiarVentana(event, "/recursos/CargarP.fxml");
+        cambiarVentana(event, "/recursos/slots.fxml");
     }
 
     @FXML

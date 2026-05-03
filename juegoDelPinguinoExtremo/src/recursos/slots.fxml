@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="vista.Slots"
+            stylesheets="@slots.css"
+            style="-fx-background-color: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);">
+
+    <top>
+        <Label text="Seleccionar Slot"
+               BorderPane.alignment="CENTER"
+               style="-fx-text-fill: white; -fx-font-size: 26; -fx-padding: 20;"/>
+    </top>
+
+    <center>
+        <GridPane hgap="20" vgap="20" alignment="CENTER">
+
+            <Button fx:id="slot1" text="Slot 1" onAction="#handleSlot" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="slot"/>
+            <Button fx:id="slot2" text="Slot 2" onAction="#handleSlot" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="slot"/>
+            <Button fx:id="slot3" text="Slot 3" onAction="#handleSlot" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="slot"/>
+            <Button fx:id="slot4" text="Slot 4" onAction="#handleSlot" GridPane.rowIndex="0" GridPane.columnIndex="3" styleClass="slot"/>
+
+            <Button fx:id="slot5" text="Slot 5" onAction="#handleSlot" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="slot"/>
+            <Button fx:id="slot6" text="Slot 6" onAction="#handleSlot" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="slot"/>
+            <Button fx:id="slot7" text="Slot 7" onAction="#handleSlot" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="slot"/>
+            <Button fx:id="slot8" text="Slot 8" onAction="#handleSlot" GridPane.rowIndex="1" GridPane.columnIndex="3" styleClass="slot"/>
+
+        </GridPane>
+    </center>
+
+
+    <bottom>
+        <VBox alignment="CENTER" spacing="10" style="-fx-padding: 20;">
+            <Label fx:id="mensaje" style="-fx-text-fill: red;"/>
+            <Button text="Volver" onAction="#volver"
+                    style="-fx-background-color: #444; -fx-text-fill: white; -fx-pref-width: 150;"/>
+        </VBox>
+    </bottom>
+
+</BorderPane>

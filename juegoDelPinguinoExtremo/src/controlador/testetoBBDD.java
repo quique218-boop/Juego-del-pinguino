@@ -22,7 +22,7 @@ public class testetoBBDD {
 		 tableta.añadirJugador(b);
 		 tableta.añadirJugador(c);
 		 
-		 bases.guardar(tableta.getPartida());
+		 GestorBBDD.guardar(tableta.getPartida(), 1);
 		 
 		/*Tablero tablero = bases.cargarTablero(1);
 		

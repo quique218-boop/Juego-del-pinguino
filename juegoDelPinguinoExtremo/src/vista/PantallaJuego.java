@@ -1,6 +1,7 @@
 package vista;
 
 import javafx.animation.Interpolator;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -257,9 +258,24 @@ public class PantallaJuego {
 	}
 
 	@FXML
-	private void handleSaveGame() {
-		System.out.println("Saved game.");
-		gestorBBDD.guardar(gestorTablero.getPartida());
+	private void handleSaveGame(ActionEvent event) {
+		
+		try {
+	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/slots.fxml"));
+	        Parent root = loader.load();
+
+	        Slots controller = loader.getController();
+
+	        controller.setModo(Slots.Modo.GUARDAR);
+	        controller.setPartida(gestorTablero.getPartida());
+
+	        Stage stage = (Stage) P1.getScene().getWindow();
+	        stage.setScene(new Scene(root));
+	        stage.show();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 
 	@FXML

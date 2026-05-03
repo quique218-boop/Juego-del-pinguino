@@ -23,7 +23,7 @@ public class GestorBBDD {
 	}
 
 	
-	public void guardar(Tablero t1) {
+	public static void guardar(Tablero t1, int slot) {
 		
 		con = BBDD.conectarBaseDatos();
 
@@ -83,7 +83,7 @@ public class GestorBBDD {
 		
 		varray += " '"+casillasBBDD.get(49)+"'";
 		
-		String sqlTablero = "INSERT INTO TABLERO VALUES(seq_tablero.NEXTVAL, "
+		String sqlTablero = "INSERT INTO TABLERO VALUES("+ slot+", "
 		+turnos_tablero+", "+posActual+", ARRAY_CASILLAS("+varray+"), SYSDATE, 1)";
 		
 		System.out.println(sqlTablero);
@@ -102,7 +102,7 @@ public class GestorBBDD {
 			if(t1.getArrayListJugador().get(i) instanceof Foca) {
 				
 				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 1, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
-						", seq_tablero.CURRVAL, '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
+						", "+slot+", '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
 						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " + obtenerIdUsuario(t1.getArrayListJugador().get(i).getUsuario()) + ", " +
 						t1.getArrayListJugador().get(i).getPuntuacion() +")";
 				
@@ -119,7 +119,7 @@ public class GestorBBDD {
 			else {
 				
 				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 0, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
-						", seq_tablero.CURRVAL, '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
+						", "+slot+", '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
 						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " + obtenerIdUsuario(t1.getArrayListJugador().get(i).getUsuario()) + ", " +
 						t1.getArrayListJugador().get(i).getPuntuacion() +")";		
 				
@@ -167,7 +167,7 @@ public class GestorBBDD {
 	
 	
 
-	public Tablero cargarTablero(int indice) {
+	public static Tablero cargarTablero(int indice) {
 		
 		con = BBDD.conectarBaseDatos();
 		
@@ -462,6 +462,27 @@ public class GestorBBDD {
 	    }
 
 	    return null; // no encontrado
+	}
+	
+	public static boolean existeSlot(int slot) {
+
+	    String sql = "SELECT COUNT(*) FROM TABLERO WHERE SLOT = ?";
+
+	    try (Connection con = BBDD.conectarBaseDatos();
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+
+	        ps.setInt(1, slot);
+	        ResultSet rs = ps.executeQuery();
+
+	        if (rs.next()) {
+	            return rs.getInt(1) > 0;
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return false;
 	}
 	
 
