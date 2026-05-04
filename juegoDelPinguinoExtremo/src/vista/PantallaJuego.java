@@ -467,8 +467,6 @@ public class PantallaJuego {
 			dxTotal[jugadorActualIndice] += (newCol - oldCol) * cellWidth;
 			dyTotal[jugadorActualIndice] += (newRow - oldRow) * cellHeight;
 
-			Jugador jugadorEvento = jugadorActual;
-
 			if (i == 0) {
 				timeline.getKeyFrames()
 						.add(new KeyFrame(Duration.ZERO,
@@ -481,14 +479,6 @@ public class PantallaJuego {
 										dxTotal[jugadorActualIndice], interpolador),
 								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
 										dyTotal[jugadorActualIndice], interpolador)));
-
-				if (listaMovimientos.size() == 1)
-					timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700), e -> {
-
-						MostrarEventosEnKeyFrame(listaMovimientos, posiciones[jugadorActualIndice], jugadorEvento);
-
-					}));
-
 			} else {
 				timeline.getKeyFrames()
 						.add(new KeyFrame(Duration.millis(700 * (i + 1)),
@@ -496,11 +486,6 @@ public class PantallaJuego {
 										dxTotal[jugadorActualIndice], interpolador),
 								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
 										dyTotal[jugadorActualIndice], interpolador)));
-
-				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)), e -> {
-
-					MostrarEventosEnKeyFrame(listaMovimientos, posiciones[jugadorActualIndice], jugadorEvento);
-				}));
 			}
 
 			jugadorActual = null;
@@ -518,6 +503,8 @@ public class PantallaJuego {
 				GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
 			}
 
+			MostrarEventos(listaMovimientos);
+
 			finalizarTurno.setDisable(false);
 
 			if (jugador.getDeudaTurnos() > 0)
@@ -529,82 +516,87 @@ public class PantallaJuego {
 		timeline.play();
 	}
 
-	private void MostrarEventosEnKeyFrame(ArrayList<PairMovimiento> listaMovimientos, int posicionJugador,
-			Jugador jugador) {
+	public void MostrarEventos(ArrayList<PairMovimiento> listaMovimientos) {
 
-		Casilla casillaActual = gestorTablero.getPartida().getCasilla(posicionJugador);
+		ArrayList<String> listaNombres = new ArrayList<>();
 
-		int posicionAnterior = -1;
+		ArrayList<Jugador> jugadores = new ArrayList<>(listaNombres.size());
 
-		if (listaMovimientos.size() != 1) {
+		for (PairMovimiento nombres : listaMovimientos) {
 
-			for (int j = listaMovimientos.size() - 1; j >= 1; j--) {
-				if (listaMovimientos.get(j - 1).jugador.equals(jugador.getNombre())) {
-					posicionAnterior = listaMovimientos.get(j - 1).posicion;
+			String nombre = nombres.jugador;
+
+			Jugador jugadorEncontrado = null;
+
+			for (int i = 0; jugadorEncontrado == null; i++) {
+
+				jugadorEncontrado = gestorTablero.getPartida().getJugador(i).devolverSiNombreCoincide(nombre);
+
+				if (jugadorEncontrado != null && !jugadores.contains(jugadorEncontrado))
+					jugadores.add(jugadorEncontrado);
+			}
+		}
+
+		for (Jugador jugador : jugadores) {
+
+			ArrayList<Integer> listaSaneada = new ArrayList<>();
+
+			for (PairMovimiento pareja : listaMovimientos) {
+				if (pareja.jugador.equals(jugador.getNombre()))
+					listaSaneada.add(pareja.posicion);
+			}
+
+			for (int i = 0; i < listaSaneada.size() || (i < 1 && listaSaneada.size() == 1); i++) {
+				int posicion = listaSaneada.get(i);
+				int posicionSiguiente;
+				if (i == listaSaneada.size() - 1) {
+					posicionSiguiente = 50;
+				} else {
+					posicionSiguiente = listaSaneada.get(i + 1);
 				}
+
+				Casilla casilla = gestorTablero.getPartida().getCasilla(posicion);
+				Casilla casillaSiguiente = gestorTablero.getPartida().getCasilla(posicionSiguiente);
+
+				switch (casilla) {
+
+				case Agujero a -> {
+					if (casillaSiguiente instanceof Agujero)
+						AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
+				}
+
+				case Evento e -> {
+					AddEventoHistorial(
+							jugador.getNombre() + " ha caido en un evento y el evento ha sido: " + e.getResultado());
+				}
+
+				case Trineo t -> {
+					if (casillaSiguiente instanceof Trineo)
+						AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
+				}
+
+				case SueloQuebradizo s -> {
+					AddEventoHistorial(s.getResultado());
+				}
+
+				case Oso o -> {
+					if (casillaSiguiente.getPosicion() == 0) {
+						AddEventoHistorial(jugador.getNombre() + " ha sido atacado por un oso");
+					} else {
+						AddEventoHistorial(jugador.getNombre() + " ha usado un pez para evitar ser atacado por un oso");
+					}
+				}
+
+				case Normal n -> {
+				}
+
+				default -> throw new IllegalArgumentException("Unexpected value: " + casilla);
+
+				}
+
+				ActualizarInventarioGUI(jugador);
 			}
-
-			if (posicionAnterior == -1)
-				posicionAnterior = posicionJugador;
-
-		} else {
-			posicionAnterior = posicionJugador;
 		}
-
-		Casilla casillaAnterior = gestorTablero.getPartida().getCasilla(posicionAnterior);
-
-		switch (casillaActual) {
-
-		case Agujero a -> {
-			if (posicionJugador == 0 && posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
-				AddEventoHistorial(jugador.getNombre() + " ha caido hasta el inicio");
-			else if (posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
-				AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
-
-		}
-
-		case Evento e -> {
-
-			AddEventoHistorial(jugador.getNombre() + " ha caido en un evento y el evento ha sido: " + e.getResultado());
-		}
-
-		case Trineo t -> {
-			if (posicionJugador != posicionAnterior && casillaAnterior instanceof Trineo)
-				AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
-		}
-
-		case SueloQuebradizo s -> {
-
-			AddEventoHistorial(s.getResultado());
-
-		}
-
-		case Oso o -> {
-			if (posicionJugador == 0) {
-				AddEventoHistorial(jugador.getNombre() + " ha sido atacado por un oso");
-			} else {
-				AddEventoHistorial(jugador.getNombre() + " ha usado un pez para evitar ser atacado por un oso");
-			}
-		}
-
-		case Normal n -> {
-			if (casillaAnterior instanceof Trineo) {
-				AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
-			} else if (casillaAnterior instanceof Agujero) {
-				if (posicionJugador == 0 && posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
-					AddEventoHistorial(jugador.getNombre() + " ha caido hasta el inicio");
-				else if (posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
-					AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
-			}
-
-			return;
-		}
-
-		default -> throw new IllegalArgumentException("Unexpected value: " + casillaActual);
-
-		}
-
-		ActualizarInventarioGUI(jugador);
 	}
 
 	public void FinalizarTurno() {

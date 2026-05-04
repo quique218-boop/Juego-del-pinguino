@@ -215,6 +215,12 @@ public class Tablero {
 		
 		tablero.add(new Normal());
 		
+		for(int i = 0; i < tablero.size(); i++) {
+			
+			tablero.get(i).setPosicion(i);
+			
+		}
+		
 		listaCasillas = tablero;
 		
 	}
