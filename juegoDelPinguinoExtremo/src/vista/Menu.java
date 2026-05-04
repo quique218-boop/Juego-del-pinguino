@@ -58,6 +58,17 @@ public class Menu {
     private void nuevaPartida(ActionEvent event) {
         cambiarVentana(event, "/recursos/seleccionJugadores.fxml");
     }
+    
+    @FXML
+    private void irEstadisticas(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/recursos/estadisticas.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     private void cargarPartida(ActionEvent event) {

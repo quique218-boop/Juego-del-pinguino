@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="vista.EstadisticasController"
+            stylesheets="@estadisticas.css"
+            styleClass="root">
+
+    <top>
+        <Label text="ESTADÍSTICAS"
+               BorderPane.alignment="CENTER"
+               styleClass="titulo"/>
+    </top>
+
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20" styleClass="panel">
+
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="Globales" onAction="#mostrarGlobales" styleClass="btn-azul"/>
+                <Button text="Usuario" onAction="#mostrarUsuario" styleClass="btn-verde"/>
+            </HBox>
+
+            <VBox fx:id="panelGlobal" spacing="10" alignment="CENTER">
+
+                <Label text="Media de puntuación:" styleClass="label"/>
+                <Label fx:id="mediaLabel" styleClass="valor"/>
+
+                <Label text="Ranking jugadores:" styleClass="label"/>
+                <TextArea fx:id="rankingArea" editable="false" prefHeight="150"/>
+
+            </VBox>
+
+            <VBox fx:id="panelUsuario" spacing="10" alignment="CENTER" visible="false">
+
+                <TextField fx:id="userField" promptText="Usuario"/>
+                <PasswordField fx:id="passField" promptText="Contraseña"/>
+
+                <Button text="Consultar" onAction="#consultarUsuario" styleClass="btn-azul"/>
+
+                <Label fx:id="resultadoUsuario" styleClass="valor"/>
+
+            </VBox>
+
+        </VBox>
+    </center>
+
+    <bottom>
+        <VBox alignment="CENTER" style="-fx-padding: 20;">
+            <Button text="Volver" onAction="#volver" styleClass="btn-rojo"/>
+        </VBox>
+    </bottom>
+
+</BorderPane>
