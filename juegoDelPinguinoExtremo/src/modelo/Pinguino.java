@@ -3,6 +3,9 @@ package modelo;
 import java.util.ArrayList;
 
 public class Pinguino extends Jugador {
+	
+	private int puntuacion;
+	private Usuario usuario;
 
 
 	public Pinguino(String nombre, String color, Inventario inventario) {
@@ -16,8 +19,33 @@ public class Pinguino extends Jugador {
 	}
 	
 	public Pinguino(int posicion, String nombre, String color, Inventario inventario, int deudaTurnos, int turnoEnArray, int puntuacion, Usuario usuario) {
-		super( posicion, nombre, color, inventario, deudaTurnos, turnoEnArray, puntuacion, usuario);
+		super( posicion, nombre, color, inventario, deudaTurnos, turnoEnArray);
+		this.usuario = usuario;
+		this.puntuacion = puntuacion;
+				
 	}
+	
+	public Usuario getUsuario() {
+		
+		return usuario;
+		
+	}
+	
+	public void setUsuario(Usuario usuario) {
+		
+		this.usuario = usuario; 
+		
+	}
+	
+	public int getPuntuacion() {
+		return puntuacion;
+	}
+	
+	public void setPuntuacion(int puntuacion) {
+		
+		this.puntuacion = puntuacion;
+	}
+	
 
 	public void gestionarBatalla(Pinguino jugador) {
 

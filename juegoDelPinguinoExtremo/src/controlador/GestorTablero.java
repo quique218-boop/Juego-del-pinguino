@@ -292,11 +292,6 @@ public class GestorTablero {
 
 	}
 
-	public void guardarPartida() {
-
-		gestorbbdd.guardar(tablero);
-
-	}
 
 	public void cargarPartida(int id) {
 
