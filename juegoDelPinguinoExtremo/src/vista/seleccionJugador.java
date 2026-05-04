@@ -24,7 +24,6 @@ public class seleccionJugador {
         stage.show();
     }
 
-    // Botones del FXML
 
     @FXML
     private void jugar2(ActionEvent event) throws IOException {

@@ -43,8 +43,6 @@ public class CrearUsuarioController {
         String confirm = confirmField.getText();
         Usuario usuario = new Usuario(user, pass);
 
-        // 🔥 VALIDACIONES
-
         if (user.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
             mensajeError.setText("Rellena todos los campos");
             return;

@@ -50,7 +50,6 @@ public class Slots {
         }
     }
 
-    // 🔵 GUARDAR
     private void guardar(int slot) {
         try {
             GestorBBDD.guardar(tableroActual, slot);
@@ -61,7 +60,6 @@ public class Slots {
         }
     }
 
-    // 🟢 CARGAR
     private void cargar(int slot) {
         try {
             if (!GestorBBDD.existeSlot(slot)) {
@@ -71,7 +69,6 @@ public class Slots {
 
             Tablero p = GestorBBDD.cargarTablero(slot);
 
-            // 👉 AQUÍ luego conectamos con PantallaJuego
             System.out.println("Cargar partida slot " + slot);
 
         } catch (Exception e) {
@@ -80,7 +77,6 @@ public class Slots {
         }
     }
 
-    // 🔙 VOLVER
     @FXML
     private void volver(ActionEvent event) throws Exception{
 

@@ -24,7 +24,6 @@ public class LoginMultipleController {
 
 	    private ArrayList<Usuario> usuarios = new ArrayList<>();
 
-	    // 🔥 LO RECIBE DE LA PANTALLA ANTERIOR
 	    public void setNumeroJugadores(int n) {
 	        this.totalJugadores = n;
 	    }
