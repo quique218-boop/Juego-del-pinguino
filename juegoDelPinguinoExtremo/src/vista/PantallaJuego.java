@@ -5,7 +5,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -28,8 +27,6 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Random;
 
 import controlador.GestorBBDD;
@@ -38,7 +35,7 @@ import modelo.*;
 
 public class PantallaJuego {
 
-	// Menu items
+	// Items de menu
 	@FXML
 	private MenuItem newGame;
 	@FXML
@@ -48,7 +45,7 @@ public class PantallaJuego {
 	@FXML
 	private MenuItem quitGame;
 
-	// Buttons
+	// Botones
 	@FXML
 	private Button dado;
 	@FXML
@@ -60,7 +57,7 @@ public class PantallaJuego {
 	@FXML
 	private Button finalizarTurno;
 
-	// Texts
+	// Textos
 	@FXML
 	private Text dadoResultText;
 	@FXML
@@ -72,7 +69,7 @@ public class PantallaJuego {
 	@FXML
 	private Text nieve_t;
 
-	// Game board and player pieces
+	// Tablero y piezas
 	@FXML
 	private GridPane tablero;
 	@FXML
@@ -86,37 +83,33 @@ public class PantallaJuego {
 	@FXML
 	private Circle FOCA;
 
+	// Lista de eventos
 	@FXML
 	private ListView<Text> ListaEventos;
-
 	private ObservableList<Text> ListaObservable = FXCollections.observableArrayList();
 
-	private boolean modoBola = false;
-
-	private GestorTablero gestorTablero;
-	private GestorBBDD gestorBBDD;
-	// ONLY FOR TESTING!!!
-	private static final int COLUMNS = 5;
-	private int p1Position = 0;
-	private int p2Position = 0;
-	private int p3Position = 0;
-	private int p4Position = 0;// Tracks current position (from 0 to 49 in a 5x10 grid)
-	private int focaPosition = 0;
-	private int turno = 0;
-
-	private ArrayList<Circle> jugadores = new ArrayList<>();
-
-	private int[] posiciones = { p1Position, p2Position, p3Position, p4Position, focaPosition };
-
-	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
+	// Variables finales
 	private final Random random = new Random();
+	private static final String TAG_CASILLA_TEXT = "CASILLA_TEXT";
+	// Calculo tirar bola de nieve
 	private final double RATIO_DESCENSO_PROBABILIDAD = 0.39d;
 	private final double e = 2.718281828459045235360d;
+	// Medidas tablero
+	private static final int COLUMNS = 5;
 	private final int cellWidth = 120;
 	private final int cellHeight = 80;
-	// Relentiza al inicio y final para un poco mas de visibilidad
+	// Animacion: Relentiza al inicio y final para un poco mas de visibilidad
 	private final Interpolator interpolador = Interpolator.EASE_BOTH;
-	private boolean viajando = false;
+
+	// Crear gestores
+	private GestorTablero gestorTablero;
+	private GestorBBDD gestorBBDD;
+
+	// Variables modificables
+	private ArrayList<Circle> jugadores = new ArrayList<>();
+	private int[] posiciones = { 0, 0, 0, 0, 0 };
+	private int turno = 0;
+	private boolean modoBola = false;
 
 	private static boolean sonidosInicializados = false;
 	
@@ -348,28 +341,6 @@ public class PantallaJuego {
 		}
 	}
 
-	private int[] ProcesarDado(Jugador jugador, Dado dado) {
-
-		int oldPos = jugador.getPos();
-
-		int resultado = 0;
-
-		if (dado == null) {
-			resultado = gestorTablero.tirarDado(jugador);
-		} else {
-			if (dado instanceof DadoRapido)
-				resultado = gestorTablero.tirarDado(jugador, (DadoRapido) dado);
-			else if (dado instanceof DadoLento)
-				resultado = gestorTablero.tirarDado(jugador, (DadoLento) dado);
-		}
-
-		int PosFinalDado = oldPos + resultado;
-
-		int[] resultadoYPosFinalDado = { resultado, PosFinalDado };
-
-		return resultadoYPosFinalDado;
-	}
-
 	@FXML
 	private void handleNieve() { // Seleccionamos el estado del juego
 
@@ -382,6 +353,13 @@ public class PantallaJuego {
 		}
 
 		modoBola = true;
+
+		for (Jugador jugadorObj : gestorTablero.getPartida().getArrayListJugador()) {
+
+			if (jugadorObj != jugador)
+				jugadores.get(jugadorObj.getTurnoEnArray()).getStyleClass().add("obj-player");
+
+		}
 	}
 
 	@FXML
@@ -409,6 +387,295 @@ public class PantallaJuego {
 		selecPingu(gestorTablero.getPartida().getArrayListJugador().getLast());
 	}
 
+	private void selecPingu(Jugador objBola) {
+		if (!modoBola) {
+			return;
+		}
+
+		tirarBola(objBola);
+		modoBola = false;
+
+		for (Jugador jugadorObj : gestorTablero.getPartida().getArrayListJugador()) {
+
+			if (jugadorObj != gestorTablero.getPartida().getJugadorActual())
+				jugadores.get(jugadorObj.getTurnoEnArray()).getStyleClass().remove("obj-player");
+
+		}
+	}
+
+	private void tirarBola(Jugador objBola) {
+
+		Jugador jugadorAct = gestorTablero.getPartida().getJugadorActual();
+
+		Inventario inventario = jugadorAct.getInventario();
+
+		if (inventario.getBolas().isEmpty()) {
+			return;
+		} else if (objBola == null || objBola == jugadorAct || objBola.getPos() == 0) {
+			AddEventoHistorial("No se puede disparar a ese jugador");
+			return;
+		}
+
+		efectos_de_sonido.sonidoBola();
+
+		int distancia = CalcularDistancia(jugadorAct, objBola);
+
+		jugadorAct.usarItem(inventario.getBolas().getFirst());
+
+		ActualizarInventarioGUI(jugadorAct);
+
+		if (CalcularExito(distancia)) {
+
+			objBola.moverPosicion(-1);
+
+			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugadorAct), -1, jugadorAct);
+
+			AddEventoHistorial("¡¡Has acertado!!");
+
+		} else {
+
+			AddEventoHistorial("Has fallado :(");
+
+		}
+	}
+
+	private void animacionMoverJugadores(ArrayList<PairMovimiento> listaMovimientos, int PosFinalDado,
+			Jugador jugador) {
+
+		if (gestorTablero.getPartida().getFinalizada())
+			return;
+
+		finalizarTurno.setDisable(true);
+		rapido.setDisable(true);
+		lento.setDisable(true);
+		nieve.setDisable(true);
+
+		listaMovimientos.add(0, new PairMovimiento(jugador.getNombre(), PosFinalDado));
+
+		Timeline timeline = new Timeline();
+
+		timeline.setRate(0.5); // Velocidad reducida para mayor visibilidad
+
+		Jugador jugadorActual = null;
+
+		int[] dxTotal = { 0, 0, 0, 0, 0 };
+		int[] dyTotal = { 0, 0, 0, 0, 0 };
+
+		for (int i = 0; i < listaMovimientos.size(); i++) {
+
+			PairMovimiento jugadorYMovimiento = listaMovimientos.get(i);
+
+			for (int j = 0; jugadorActual == null; j++) {
+
+				jugadorActual = gestorTablero.getPartida().getJugador(j)
+						.devolverSiNombreCoincide(jugadorYMovimiento.jugador);
+			}
+
+			int jugadorActualIndice = jugadorActual.getTurnoEnArray();
+
+			int oldPosition = posiciones[jugadorActualIndice];
+
+			int movimiento = jugadorYMovimiento.posicion - oldPosition;
+
+			posiciones[jugadorActualIndice] += movimiento;
+
+			// Bound player
+			if (posiciones[jugadorActualIndice] >= 50) {
+				posiciones[jugadorActualIndice] = 49;
+			}
+
+			if (posiciones[jugadorActualIndice] < 0) {
+				posiciones[jugadorActualIndice] = 0;
+			}
+
+			// OLD position
+			int oldRow = oldPosition / COLUMNS;
+			int oldCol = oldPosition % COLUMNS;
+
+			// NEW position
+			int newRow = posiciones[jugadorActualIndice] / COLUMNS;
+			int newCol = posiciones[jugadorActualIndice] % COLUMNS;
+
+			dxTotal[jugadorActualIndice] += (newCol - oldCol) * cellWidth;
+			dyTotal[jugadorActualIndice] += (newRow - oldRow) * cellHeight;
+
+			Jugador jugadorEvento = jugadorActual;
+
+			if (i == 0) {
+				timeline.getKeyFrames()
+						.add(new KeyFrame(Duration.ZERO,
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(), 0),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(), 0)));
+
+				timeline.getKeyFrames()
+						.add(new KeyFrame(Duration.millis(700),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
+										dxTotal[jugadorActualIndice], interpolador),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
+										dyTotal[jugadorActualIndice], interpolador)));
+
+				if (listaMovimientos.size() == 1)
+					timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700), e -> {
+
+						MostrarEventosEnKeyFrame(listaMovimientos, posiciones[jugadorActualIndice], jugadorEvento);
+
+					}));
+
+			} else {
+				timeline.getKeyFrames()
+						.add(new KeyFrame(Duration.millis(700 * (i + 1)),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
+										dxTotal[jugadorActualIndice], interpolador),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
+										dyTotal[jugadorActualIndice], interpolador)));
+
+				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)), e -> {
+
+					MostrarEventosEnKeyFrame(listaMovimientos, posiciones[jugadorActualIndice], jugadorEvento);
+				}));
+			}
+
+			jugadorActual = null;
+		}
+
+		timeline.setOnFinished(e -> {
+
+			for (int i = 0; i < jugadores.size(); i++) {
+				// reset translation
+				jugadores.get(i).setTranslateX(0);
+				jugadores.get(i).setTranslateY(0);
+
+				// set real position in grid
+				GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
+				GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
+			}
+
+			finalizarTurno.setDisable(false);
+
+			if (jugador.getDeudaTurnos() > 0)
+				FinalizarTurno();
+
+			ActualizarInventarioGUI(jugador);
+		});
+
+		timeline.play();
+	}
+
+	private void MostrarEventosEnKeyFrame(ArrayList<PairMovimiento> listaMovimientos, int posicionJugador,
+			Jugador jugador) {
+
+		Casilla casillaActual = gestorTablero.getPartida().getCasilla(posicionJugador);
+
+		int posicionAnterior = -1;
+
+		if (listaMovimientos.size() != 1) {
+
+			for (int j = listaMovimientos.size() - 1; j >= 1; j--) {
+				if (listaMovimientos.get(j - 1).jugador.equals(jugador.getNombre())) {
+					posicionAnterior = listaMovimientos.get(j - 1).posicion;
+				}
+			}
+
+			if (posicionAnterior == -1)
+				posicionAnterior = posicionJugador;
+
+		} else {
+			posicionAnterior = posicionJugador;
+		}
+
+		Casilla casillaAnterior = gestorTablero.getPartida().getCasilla(posicionAnterior);
+
+		switch (casillaActual) {
+
+		case Agujero a -> {
+			if (posicionJugador == 0 && posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
+				AddEventoHistorial(jugador.getNombre() + " ha caido hasta el inicio");
+			else if (posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
+				AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
+
+		}
+
+		case Evento e -> {
+
+			AddEventoHistorial(jugador.getNombre() + " ha caido en un evento y el evento ha sido: " + e.getResultado());
+		}
+
+		case Trineo t -> {
+			if (posicionJugador != posicionAnterior && casillaAnterior instanceof Trineo)
+				AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
+		}
+
+		case SueloQuebradizo s -> {
+
+			AddEventoHistorial(s.getResultado());
+
+		}
+
+		case Oso o -> {
+			if (posicionJugador == 0) {
+				AddEventoHistorial(jugador.getNombre() + " ha sido atacado por un oso");
+			} else {
+				AddEventoHistorial(jugador.getNombre() + " ha usado un pez para evitar ser atacado por un oso");
+			}
+		}
+
+		case Normal n -> {
+			if (casillaAnterior instanceof Trineo) {
+				AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
+			} else if (casillaAnterior instanceof Agujero) {
+				if (posicionJugador == 0 && posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
+					AddEventoHistorial(jugador.getNombre() + " ha caido hasta el inicio");
+				else if (posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
+					AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
+			}
+
+			return;
+		}
+
+		default -> throw new IllegalArgumentException("Unexpected value: " + casillaActual);
+
+		}
+
+		ActualizarInventarioGUI(jugador);
+	}
+
+	public void FinalizarTurno() {
+
+		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
+
+		Jugador jugadorSiguiente;
+
+		turno = (turno + 1) % jugadores.size(); // Cambio de turno
+
+		jugadorSiguiente = gestorTablero.getPartida().getJugador(turno);
+
+		while (jugadorSiguiente.getDeudaTurnos() > 0) {
+
+			if (jugadorSiguiente.getDeudaTurnos() > 0) {
+				AddEventoHistorial(jugadorSiguiente.getNombre() + " pierde el turno");
+				jugadorSiguiente.reducirDeudaTurnos();
+			}
+
+			turno = (turno + 1) % jugadores.size(); // Cambio de turno
+
+			jugadorSiguiente = gestorTablero.getPartida().getJugador(turno);
+
+		}
+
+		// Cambiar jugador actual en la lógica
+		gestorTablero.getPartida().setJugadorActual(gestorTablero.getPartida().getJugador(turno));
+
+		jugadores.get(jugadorActual.getTurnoEnArray()).getStyleClass().remove("current-player");
+
+		jugadores.get(jugadorSiguiente.getTurnoEnArray()).getStyleClass().add("current-player");
+
+		resetVariablesDeTurno();
+
+		ActualizarInventarioGUI(jugadorSiguiente);
+	}
+
+	// Funciones auxiliares
+
 	private void BorrarFichasSinJugador() {
 
 		ArrayList<Jugador> listaJugadores = gestorTablero.getPartida().getArrayListJugador();
@@ -434,48 +701,26 @@ public class PantallaJuego {
 		}
 	}
 
-	private void selecPingu(Jugador objBola) {
-		if (!modoBola) {
-			return;
-		}
+	private int[] ProcesarDado(Jugador jugador, Dado dado) {
 
-		tirarBola(objBola);
-		modoBola = false;
-	}
+		int oldPos = jugador.getPos();
 
-	private void tirarBola(Jugador objBola) {
+		int resultado = 0;
 
-		Jugador jugadorAct = gestorTablero.getPartida().getJugadorActual();
-
-		Inventario inventario = jugadorAct.getInventario();
-
-		if (inventario.getBolas().isEmpty()) {
-			return;
-		} else if (objBola == null || objBola == jugadorAct || objBola.getPos() == 0) {
-			return;
-		}
-
-		efectos_de_sonido.sonidoBola();
-
-		int distancia = CalcularDistancia(jugadorAct, objBola);
-
-		jugadorAct.usarItem(inventario.getBolas().getFirst());
-
-		ActualizarInventarioGUI(jugadorAct);
-
-		if (CalcularExito(distancia)) {
-
-			objBola.moverPosicion(-1);
-
-			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugadorAct), -1, jugadorAct);
-
-			AddEventoHistorial("¡¡Has acertado!!");
-
+		if (dado == null) {
+			resultado = gestorTablero.tirarDado(jugador);
 		} else {
-
-			AddEventoHistorial("Has fallado :(");
-
+			if (dado instanceof DadoRapido)
+				resultado = gestorTablero.tirarDado(jugador, (DadoRapido) dado);
+			else if (dado instanceof DadoLento)
+				resultado = gestorTablero.tirarDado(jugador, (DadoLento) dado);
 		}
+
+		int PosFinalDado = oldPos + resultado;
+
+		int[] resultadoYPosFinalDado = { resultado, PosFinalDado };
+
+		return resultadoYPosFinalDado;
 	}
 
 	private int CalcularDistancia(Jugador j1, Jugador j2) {
@@ -571,220 +816,18 @@ public class PantallaJuego {
 		ListaEventos.setItems(ListaObservable);
 	}
 
-	private void animacionMoverJugadores(ArrayList<PairMovimiento> listaMovimientos, int PosFinalDado,
-			Jugador jugador) {
+	private void resetVariablesDeTurno() {
 
-		if (gestorTablero.getPartida().getFinalizada())
-			return;
-
-		finalizarTurno.setDisable(true);
-		rapido.setDisable(true);
-		lento.setDisable(true);
-		nieve.setDisable(true);
-
-		listaMovimientos.add(0, new PairMovimiento(jugador.getNombre(), PosFinalDado));
-
-		Timeline timeline = new Timeline();
-
-		timeline.setRate(0.5); // Velocidad reducida para mayor visibilidad
-
-		Jugador jugadorActual = null;
-
-		int[] dxTotal = { 0, 0, 0, 0, 0 };
-		int[] dyTotal = { 0, 0, 0, 0, 0 };
-
-		for (int i = 0; i < listaMovimientos.size(); i++) {
-
-			PairMovimiento jugadorYMovimiento = listaMovimientos.get(i);
-
-			for (int j = 0; jugadorActual == null; j++) {
-
-				jugadorActual = gestorTablero.getPartida().getJugador(j)
-						.devolverSiNombreCoincide(jugadorYMovimiento.jugador);
-			}
-
-			int jugadorActualIndice = jugadorActual.getTurnoEnArray();
-
-			int oldPosition = posiciones[jugadorActualIndice];
-
-			int movimiento = jugadorYMovimiento.posicion - oldPosition;
-
-			posiciones[jugadorActualIndice] += movimiento;
-
-			// Bound player
-			if (posiciones[jugadorActualIndice] >= 50) {
-				posiciones[jugadorActualIndice] = 49;
-			}
-
-			if (posiciones[jugadorActualIndice] < 0) {
-				posiciones[jugadorActualIndice] = 0;
-			}
-
-			// OLD position
-			int oldRow = oldPosition / COLUMNS;
-			int oldCol = oldPosition % COLUMNS;
-
-			// NEW position
-			int newRow = posiciones[jugadorActualIndice] / COLUMNS;
-			int newCol = posiciones[jugadorActualIndice] % COLUMNS;
-
-			dxTotal[jugadorActualIndice] += (newCol - oldCol) * cellWidth;
-			dyTotal[jugadorActualIndice] += (newRow - oldRow) * cellHeight;
-
-			Jugador jugadorEvento = jugadorActual;
-
-			if (i == 0) {
-				timeline.getKeyFrames()
-						.add(new KeyFrame(Duration.ZERO,
-								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(), 0),
-								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(), 0)));
-
-				timeline.getKeyFrames()
-						.add(new KeyFrame(Duration.millis(700),
-								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
-										dxTotal[jugadorActualIndice], interpolador),
-								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
-										dyTotal[jugadorActualIndice], interpolador)));
-
-				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700), e -> {
-
-					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorEvento);
-
-				}));
-
-			} else {
-				timeline.getKeyFrames()
-						.add(new KeyFrame(Duration.millis(700 * (i + 1)),
-								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
-										dxTotal[jugadorActualIndice], interpolador),
-								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
-										dyTotal[jugadorActualIndice], interpolador)));
-
-				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)), e -> {
-
-					MostrarEventosEnKeyFrame(posiciones[jugadorActualIndice], jugadorEvento);
-				}));
-			}
-
-			jugadorActual = null;
-		}
-
-		timeline.setOnFinished(e -> {
-
-			for (int i = 0; i < jugadores.size(); i++) {
-				// reset translation
-				jugadores.get(i).setTranslateX(0);
-				jugadores.get(i).setTranslateY(0);
-
-				// set real position in grid
-				GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
-				GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
-			}
-
-			finalizarTurno.setDisable(false);
-			
-			ActualizarInventarioGUI(jugador);
-		});
-
-		timeline.play();
-	}
-
-	private void MostrarEventosEnKeyFrame(int posicionJugador, Jugador jugador) {
-
-		Casilla casillaActual = gestorTablero.getPartida().getCasilla(posicionJugador);
-
-		switch (casillaActual) {
-
-		case Agujero a -> {
-			if (!viajando)
-				AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
-
-			viajandoToggle();
-		}
-
-		case Evento e -> {
-
-			if (e.getResultado() == "Motos de nieve")
-				viajandoToggle();
-			else if (e.getResultado() == "Perder un turno")
-				FinalizarTurno();
-
-			AddEventoHistorial(jugador.getNombre() + " ha caido en un evento y el evento ha sido: " + e.getResultado());
-		}
-
-		case Trineo t -> {
-			if (!viajando)
-				AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
-
-			viajandoToggle();
-		}
-
-		case SueloQuebradizo s -> {
-
-			AddEventoHistorial(s.getResultado());
-
-			if (s.getResultado() == "El suelo se ha partido un poco y te has quedado atascado")
-				FinalizarTurno();
-		}
-
-		case Oso o -> {
-			if (posicionJugador == 0) {
-				AddEventoHistorial(jugador.getNombre() + " ha sido atacado por un oso");
-			} else {
-				AddEventoHistorial(jugador.getNombre() + " ha usado un pez para evitar ser atacado por un oso");
-			}
-		}
-
-		case Normal n -> {
-			return;
-		}
-
-		default -> throw new IllegalArgumentException("Unexpected value: " + casillaActual);
-
-		}
-
-		ActualizarInventarioGUI(jugador);
-	}
-
-	private void viajandoToggle() {
-
-		viajando = (viajando) ? false : true;
-	}
-
-	public void FinalizarTurno() {
-
-		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
-
-		Jugador jugadorSiguiente;
-
-		turno = (turno + 1) % jugadores.size(); // Cambio de turno
-
-		jugadorSiguiente = gestorTablero.getPartida().getJugador(turno);
-
-		while (jugadorSiguiente.getDeudaTurnos() > 0) {
-
-			if (jugadorSiguiente.getDeudaTurnos() > 0) {
-				AddEventoHistorial(jugadorSiguiente.getNombre() + " pierde el turno");
-				jugadorSiguiente.reducirDeudaTurnos();
-			}
-
-			turno = (turno + 1) % jugadores.size(); // Cambio de turno
-
-			jugadorSiguiente = gestorTablero.getPartida().getJugador(turno);
-
-		}
-
-		// Cambiar jugador actual en la lógica
-		gestorTablero.getPartida().setJugadorActual(gestorTablero.getPartida().getJugador(turno));
-
-		jugadores.get(jugadorActual.getTurnoEnArray()).getStyleClass().remove("current-player");
-
-		jugadores.get(jugadorSiguiente.getTurnoEnArray()).getStyleClass().add("current-player");
-
+		modoBola = false;
 		// Desactivar finalizar turno
 		finalizarTurno.setDisable(true);
+		dado.setDisable(false);
 
-		ActualizarInventarioGUI(jugadorSiguiente);
+		for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
+
+			jugadores.get(jugador.getTurnoEnArray()).getStyleClass().remove("obj-player");
+
+		}
 	}
 
 	public void ponerTurnoEnArray() {
@@ -794,9 +837,5 @@ public class PantallaJuego {
 			gestorTablero.getPartida().getJugador(i).setTurnoEnArray(i);
 
 		}
-	}
-
-	public void setGestorPartida(GestorTablero gestorTablero) {
-		this.gestorTablero = gestorTablero;
 	}
 }

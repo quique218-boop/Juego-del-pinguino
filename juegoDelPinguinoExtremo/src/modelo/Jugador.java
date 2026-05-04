@@ -32,9 +32,7 @@ public abstract class Jugador {
 		this.posicion = posicion;
 		this.inventario = inventario;
 		this.turnoEnArray = turnoEnArray;
-		this.puntuacion = puntuacion;
-		this.usuario = usuario;
-		
+
 	}
 
 	public Jugador() {
@@ -239,5 +237,4 @@ public abstract class Jugador {
 
 		return null;
 	}
-
 }
