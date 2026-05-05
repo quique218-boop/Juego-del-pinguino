@@ -110,6 +110,7 @@ public class PantallaJuego {
 	private int turno = 0;
 	private boolean modoBola = false;
 	private boolean focaSobornadaEsteTurno = false;
+	private boolean focaJuega = false;
 
 	@FXML
 	private void initialize() {
@@ -167,6 +168,7 @@ public class PantallaJuego {
 		// Añadir jugadores hardcodeados temporalmente
 		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", new Inventario()));
 		gestorTablero.añadirJugador(new Pinguino("Jugador2", "Verde", new Inventario()));
+		gestorTablero.añadirJugador(new Pinguino("Jugador3", "Verde", new Inventario()));
 		gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
 
 		// Asignar el jugador actual como el primero de la lista (Jugador 1)
@@ -259,7 +261,7 @@ public class PantallaJuego {
 		dado.setDisable(true);
 
 		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
-		
+
 		int posInicialSiFoca = jugador.getPos();
 
 		int[] resultadoYPosFinalDado = ProcesarDado(jugador, null);
@@ -286,7 +288,7 @@ public class PantallaJuego {
 		DadoRapido dadoRapido = (DadoRapido) EncontrarDado(jugador, true); // True == DadoRapido
 
 		if (dadoRapido != null) {
-			
+
 			int posInicialSiFoca = jugador.getPos();
 
 			int[] resultadoYPosFinalDado = ProcesarDado(jugador, dadoRapido);
@@ -311,7 +313,7 @@ public class PantallaJuego {
 		DadoLento dadoLento = (DadoLento) EncontrarDado(jugador, false); // False == DadoLento
 
 		if (dadoLento != null) {
-			
+
 			int posInicialSiFoca = jugador.getPos();
 
 			int[] resultadoYPosFinalDado = ProcesarDado(jugador, dadoLento);
@@ -524,7 +526,8 @@ public class PantallaJuego {
 
 			MostrarEventos(listaMovimientos);
 
-			finalizarTurno.setDisable(false);
+			if (!focaJuega)
+				finalizarTurno.setDisable(false);
 
 			if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
 				FinalizarTurno();
@@ -623,7 +626,7 @@ public class PantallaJuego {
 			}
 
 			Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
-			
+
 			if (foca.getDeudaTurnos() == 2 && !focaSobornadaEsteTurno) {
 				AddEventoHistorial(foca.getNombre() + " ha sido sobornada para no golpear y no se movera en 2 turnos");
 				focaSobornadaEsteTurno = true;
@@ -663,9 +666,52 @@ public class PantallaJuego {
 
 		jugadores.get(jugadorSiguiente.getTurnoEnArray()).getStyleClass().add("current-player");
 
+		if (jugadorSiguiente instanceof Foca)
+			turnoFoca();
+		else
+			focaJuega = false;
+
 		resetVariablesDeTurno();
 
 		ActualizarInventarioGUI(jugadorSiguiente);
+
+	}
+
+	private void turnoFoca() {
+
+		focaJuega = true;
+
+		Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
+
+		ArrayList<ArrayList<Integer>> acciones = gestorTablero.ejecutarTurnoCompleto(foca);
+
+		if (acciones.size() == 1) {
+
+			ArrayList<Integer> tirarDados = acciones.getFirst();
+
+			for (int dado : tirarDados) {
+
+				if (foca == gestorTablero.getPartida().getJugadorActual()) {
+
+					switch (dado) {
+
+					case 0:
+
+						break;
+					case 1:
+						break;
+					case 2:
+						break;
+
+					}
+
+				}
+			}
+
+		} else {
+
+		}
+
 	}
 
 	// Funciones auxiliares
@@ -780,20 +826,22 @@ public class PantallaJuego {
 
 		nieve_t.setText("Bolas de nieve: " + bolasNieve);
 
-		if (dadoRapido == 0)
-			rapido.setDisable(true);
-		else
-			rapido.setDisable(false);
+		if (!focaJuega) {
+			if (dadoRapido == 0)
+				rapido.setDisable(true);
+			else
+				rapido.setDisable(false);
 
-		if (dadoLento == 0)
-			lento.setDisable(true);
-		else
-			lento.setDisable(false);
+			if (dadoLento == 0)
+				lento.setDisable(true);
+			else
+				lento.setDisable(false);
 
-		if (bolasNieve == 0)
-			nieve.setDisable(true);
-		else
-			nieve.setDisable(false);
+			if (bolasNieve == 0)
+				nieve.setDisable(true);
+			else
+				nieve.setDisable(false);
+		}
 	}
 
 	private Dado EncontrarDado(Jugador jugador, boolean Rapido_Lento) { // True == DadoRapido, False == DadoLento
@@ -826,7 +874,9 @@ public class PantallaJuego {
 		modoBola = false;
 		// Desactivar finalizar turno
 		finalizarTurno.setDisable(true);
-		dado.setDisable(false);
+
+		if (!focaJuega)
+			dado.setDisable(false);
 
 		for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
 
