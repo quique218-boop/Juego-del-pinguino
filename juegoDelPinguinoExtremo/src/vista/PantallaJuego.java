@@ -7,6 +7,7 @@ import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -17,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -24,6 +26,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -353,30 +356,30 @@ public class PantallaJuego {
 
 	@FXML
 	private void selecP1() {
-		selecPingu(gestorTablero.getPartida().getJugador(0));
+		selecJugador(gestorTablero.getPartida().getJugador(0));
 	}
 
 	@FXML
 	private void selecP2() {
-		selecPingu(gestorTablero.getPartida().getJugador(1));
+		selecJugador(gestorTablero.getPartida().getJugador(1));
 	}
 
 	@FXML
 	private void selecP3() {
-		selecPingu(gestorTablero.getPartida().getJugador(2));
+		selecJugador(gestorTablero.getPartida().getJugador(2));
 	}
 
 	@FXML
 	private void selecP4() {
-		selecPingu(gestorTablero.getPartida().getJugador(3));
+		selecJugador(gestorTablero.getPartida().getJugador(3));
 	}
 
 	@FXML
 	private void selecFOCA() {
-		selecPingu(gestorTablero.getPartida().getArrayListJugador().getLast());
+		selecJugador(gestorTablero.getPartida().getArrayListJugador().getLast());
 	}
 
-	private void selecPingu(Jugador objBola) {
+	private void selecJugador(Jugador objBola) {
 		if (!modoBola) {
 			return;
 		}
@@ -685,33 +688,71 @@ public class PantallaJuego {
 
 		ArrayList<ArrayList<Integer>> acciones = gestorTablero.ejecutarTurnoCompleto(foca);
 
-		if (acciones.size() == 1) {
+		boolean ArrayDados;
 
-			ArrayList<Integer> tirarDados = acciones.getFirst();
+		if (acciones.getFirst().contains(4))
+			ArrayDados = false;
+		else
+			ArrayDados = true;
 
-			for (int dado : tirarDados) {
+		for (int i = 0; i < acciones.size(); i++) {
 
-				if (foca == gestorTablero.getPartida().getJugadorActual()) {
+			if (ArrayDados) {
 
-					switch (dado) {
+				ArrayList<Integer> tirarDados = acciones.get(i);
+
+				for (int dado : tirarDados) {
+
+					if (foca == gestorTablero.getPartida().getJugadorActual()) {
+
+						switch (dado) {
+
+						case 0:
+							System.out.println("FOCA HA USADO NORMAL");
+							this.dado.fire();
+							break;
+						case 1:
+							System.out.println("FOCA HA USADO LENTO");
+							this.lento.fire();
+							break;
+						case 2:
+							System.out.println("FOCA HA USADO RAPIDO");
+							this.rapido.fire();
+							break;
+						}
+
+					} else {
+						return;
+					}
+				}
+			} else {
+
+				ArrayList<Integer> tirarBolas = acciones.get(i);
+
+				for (int objetivo : tirarBolas) {
+
+					this.nieve.fire();
+
+					switch (objetivo) {
 
 					case 0:
-
-						break;
+						selecP1();
 					case 1:
-						break;
+						selecP2();
 					case 2:
-						break;
+						selecP3();
+					case 3:
+						selecP4();
 
 					}
-
 				}
 			}
 
-		} else {
+			ArrayDados = (ArrayDados) ? false : true;
 
 		}
 
+		FinalizarTurno();
 	}
 
 	// Funciones auxiliares

@@ -174,15 +174,18 @@ public class GestorTablero {
 
 			limiteSuperiorRand = objetivosTotales.size();
 
+			int cantidadDeDisparos = rand.nextInt(inventarioFoca.getBolas().size());
+
 			ArrayList<Integer> listaDisparos = new ArrayList<>();
 
 			if (objetivosTotales.size() != 0) {
-				while (objetivosTotales.size() != 0) {
+				while (objetivosTotales.size() != 0 && cantidadDeDisparos > 0) {
 					int eleccion = rand.nextInt(limiteSuperiorRand);
 
 					listaDisparos.add(objetivosTotales.get(eleccion).getTurnoEnArray());
 
 					objetivosTotales.remove(eleccion);
+					cantidadDeDisparos--;
 				}
 			}
 
