@@ -63,77 +63,24 @@ public class GestorTablero {
 
 	}
 
+	public ArrayList<String> estadoPeleas() {
+
+		ArrayList<Jugador> jugadores = tablero.getArrayListJugador();
+
+		ArrayList<String> estado = new ArrayList<>();
+
+		for (Jugador jugador : jugadores) {
+
+			String pelea = jugador.getPelea();
+
+			if (pelea != null)
+				estado.add(pelea);
+		}
+		
+		return estado;
+	}
+
 	public void ejecutarTurnoCompleto() {
-
-		if (tablero.getJugadorActual() instanceof Foca) {
-
-			Dado d;
-
-			if (tablero.getJugadorActual().getInventario().getDado().size() > 0) {
-
-				d = tablero.getJugadorActual().getInventario().getDado().get(rand.nextInt(2)); // Tomamos un dado
-																								// aleatoría de entre
-																								// los de la foca
-
-			}
-
-			else {
-
-				d = new Dado();
-
-			}
-
-			int movimiento = tirarDado(tablero.getJugadorActual(), d);
-
-			gestorjugador.jugadorSeMueve(tablero.getJugadorActual(), movimiento);
-
-			tablero.getCasilla(tablero.getJugadorActual().getPos()).realizarAccion(tablero, tablero.getJugadorActual());
-
-			for (int i = 0; i < tablero.getArrayListJugador().size(); i++) {
-
-				if (tablero.getJugadorActual().getPos() == tablero.getJugador(i).getPos()) {
-
-					if (tablero.getJugador(i).getInventario().getPez().size() > 0) {
-
-						tablero.getJugador(i).getInventario().getPez().remove(0);
-
-					}
-
-					else {
-
-						((Foca) tablero.getJugadorActual()).golpearJugador(((Pinguino) tablero.getJugador(i)), tablero);
-
-					}
-
-				}
-
-			}
-
-		}
-
-		else {
-
-			Dado d = new Dado(); // AQUÍ DEBEREMOS DE TOMAR EL DADO ELEGIDO EN LA VISTA
-
-			int movimiento = tirarDado(tablero.getJugadorActual(), d);
-
-			gestorjugador.jugadorSeMueve(tablero.getJugadorActual(), movimiento);
-
-			tablero.getCasilla(tablero.getJugadorActual().getPos()).realizarAccion(tablero, tablero.getJugadorActual());
-
-			for (int i = 0; i < tablero.getArrayListJugador().size(); i++) {
-
-				if (tablero.getJugadorActual().getPos() == tablero.getJugador(i).getPos()) {
-
-					((Pinguino) tablero.getJugadorActual()).gestionarBatalla(((Pinguino) tablero.getJugador(i)));
-
-				}
-
-			}
-
-		}
-
-		siguienteTurno();
 
 	}
 
@@ -226,15 +173,19 @@ public class GestorTablero {
 				int PosFinalPinguino2 = pinguino2.getPos();
 
 				if (PosFinalPinguino1 == PosFinalPinguino2) {
+					pinguino1.resultadoGuerra(pinguino2, null); // Empate jugador 1
+					pinguino2.resultadoGuerra(pinguino1, null); // Empate jugador 2
 					return jugadorYMovimientos;
-
 				} else if (PosFinalPinguino1 != PosInicialPinguino1) {
 					jugadorYMovimientos.add(new PairMovimiento(pinguino1.getNombre(), PosFinalPinguino1));
 					jugadorYMovimientos.addAll(procesarTurnoJugador(pinguino1));
-
+					pinguino1.resultadoGuerra(pinguino2, false); // Pierde jugador 1
+					pinguino2.resultadoGuerra(pinguino1, true); // Gana jugador 2
 				} else if (PosFinalPinguino2 != PosInicialPinguino2) {
 					jugadorYMovimientos.add(new PairMovimiento(pinguino2.getNombre(), PosFinalPinguino2));
 					jugadorYMovimientos.addAll(procesarTurnoJugador(pinguino2));
+					pinguino1.resultadoGuerra(pinguino2, true); // Gana jugador 1
+					pinguino2.resultadoGuerra(pinguino1, false); // Pierde jugador 2
 				}
 			}
 
