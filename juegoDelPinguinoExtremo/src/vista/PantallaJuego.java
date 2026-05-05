@@ -257,8 +257,8 @@ public class PantallaJuego {
 		// Evita spam del botón
 		dado.setDisable(true);
 
-		Jugador jugador = (Jugador) gestorTablero.getPartida().getJugadorActual();
-
+		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
+		
 		int[] resultadoYPosFinalDado = ProcesarDado(jugador, null);
 		int resultado = resultadoYPosFinalDado[0];
 		int PosFinalDado = resultadoYPosFinalDado[1];
@@ -269,6 +269,10 @@ public class PantallaJuego {
 		animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
 
 		System.out.println(jugador.getNombre() + " " + jugador.getPos());
+		
+		if (jugador instanceof Foca) {
+			FocaCompruebaRobo(PosFinalDado, jugador);
+		}
 	}
 
 	@FXML
@@ -279,14 +283,18 @@ public class PantallaJuego {
 		DadoRapido dadoRapido = (DadoRapido) EncontrarDado(jugador, true); // True == DadoRapido
 
 		if (dadoRapido != null) {
-
+			
 			int[] resultadoYPosFinalDado = ProcesarDado(jugador, dadoRapido);
 			int resultado = resultadoYPosFinalDado[0];
 			int PosFinalDado = resultadoYPosFinalDado[1];
-
+			
 			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
 
 			AddEventoHistorial("Usando dado rápido ha salido: " + resultado);
+			
+			if (jugador instanceof Foca) {
+				FocaCompruebaRobo(PosFinalDado, jugador);
+			}
 		}
 	}
 
@@ -298,7 +306,7 @@ public class PantallaJuego {
 		DadoLento dadoLento = (DadoLento) EncontrarDado(jugador, false); // False == DadoLento
 
 		if (dadoLento != null) {
-
+			
 			int[] resultadoYPosFinalDado = ProcesarDado(jugador, dadoLento);
 			int resultado = resultadoYPosFinalDado[0];
 			int PosFinalDado = resultadoYPosFinalDado[1];
@@ -306,6 +314,10 @@ public class PantallaJuego {
 			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
 
 			AddEventoHistorial("Usando dado lento ha salido: " + resultado);
+			
+			if (jugador instanceof Foca) {
+				FocaCompruebaRobo(PosFinalDado, jugador);
+			}
 		}
 	}
 
@@ -550,7 +562,7 @@ public class PantallaJuego {
 				int posicion = listaSaneada.get(i);
 				int posicionSiguiente;
 				if (i == listaSaneada.size() - 1) {
-					posicionSiguiente = 50;
+					posicionSiguiente = 49;
 				} else {
 					posicionSiguiente = listaSaneada.get(i + 1);
 				}
@@ -657,6 +669,17 @@ public class PantallaJuego {
 
 				jugadores.add((Circle) nodo);
 
+			}
+		}
+	}
+
+	private void FocaCompruebaRobo(int PosFinalDado, Jugador jugador) {
+		for (Jugador jugadorRobado : gestorTablero.getPartida().getArrayListJugador()) {
+			if (jugadorRobado != jugador) {
+				if (PosFinalDado > jugadorRobado.getPos()) {
+					((Foca) jugador).aplastarJugador((Pinguino) jugadorRobado);
+					AddEventoHistorial(jugadorRobado.getNombre() + " ha sido robado por la foca");
+				}
 			}
 		}
 	}
