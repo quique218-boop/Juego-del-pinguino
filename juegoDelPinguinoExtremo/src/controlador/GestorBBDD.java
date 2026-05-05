@@ -3,6 +3,7 @@ package controlador;
 import modelo.*;
 
 import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -483,6 +484,80 @@ public class GestorBBDD {
 	    }
 
 	    return false;
+	}
+	
+	
+	//FUNCIONES PL/SQL PARA LAS ESTADÍSTICAS
+	
+	public static int partidasGanadas(int id) {
+		
+	}
+	
+	public static int partidasJugadas(int id) {
+		
+	}
+
+	public static int recordUsuario(int id) {
+	
+	}
+	
+	public static double obtenerMediaPuntuacion() {
+		
+		double media = 0;
+
+	    try (Connection conn = BBDD.conectarBaseDatos()) {
+
+	        CallableStatement stmt = conn.prepareCall("{ ? = call MEDIAPUNTUACION() }");
+
+	        // Registrar el valor de retorno
+	        stmt.registerOutParameter(1, java.sql.Types.NUMERIC);
+
+	        stmt.execute();
+
+	        media = stmt.getDouble(1);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return media;
+		
+	}
+	
+	
+	public static String obtenerRankingTexto() {
+	    StringBuilder resultado = new StringBuilder();
+
+	    try (Connection conn = BBDD.conectarBaseDatos()) {
+
+	        CallableStatement stmt = conn.prepareCall("{ ? = call RANKING() }");
+	        stmt.registerOutParameter(1, oracle.jdbc.OracleTypes.CURSOR);
+
+	        stmt.execute();
+
+	        ResultSet rs = ((oracle.jdbc.OracleCallableStatement) stmt).getCursor(1);
+	        int posicion = 1;
+
+	        while (rs.next()) {
+	            String nombre = rs.getString("NOMBRE");
+	            int puntos = rs.getInt("PUNTUACIONTOTAL");
+
+	            resultado.append(posicion)
+	                     .append(". ")
+	                     .append(nombre)
+	                     .append(" - ")
+	                     .append(puntos)
+	                     .append(" pts\n");
+
+	            posicion++;
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "Error al cargar ranking";
+	    }
+
+	    return resultado.toString();
 	}
 	
 

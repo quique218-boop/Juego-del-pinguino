@@ -39,7 +39,6 @@ public class EstadisticasController {
         panelUsuario.setVisible(true);
     }
 
-    // 📊 GLOBAL
     private void cargarGlobales() {
         try {
             double media = GestorBBDD.obtenerMediaPuntuacion();
@@ -69,10 +68,11 @@ public class EstadisticasController {
         int id = GestorBBDD.obtenerIdUsuario(u);
 
         int ganadas = GestorBBDD.partidasGanadas(id);
+        int jugadas = GestorBBDD.partidasJugadas(id);
         int record = GestorBBDD.recordUsuario(id);
 
         resultadoUsuario.setText(
-            "Ganadas: " + ganadas + "\nRecord: " + record
+            "Jugadas: " + jugadas + "\nGanadas: " + ganadas + "\nRecord: " + record
         );
     }
 
