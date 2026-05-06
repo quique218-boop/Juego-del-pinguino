@@ -10,8 +10,8 @@ public class Dado extends Item {
 	private int min;
 
 	public Dado() {
-		// Deberia ser 10, esta para testear en 1
-		this.max = 1;
+
+		this.max = 10;
 
 		this.min = 1;
 

@@ -63,78 +63,144 @@ public class GestorTablero {
 
 	}
 
-	public void ejecutarTurnoCompleto() {
+	public ArrayList<String> estadoPeleas() {
 
-		if (tablero.getJugadorActual() instanceof Foca) {
+		ArrayList<Jugador> jugadores = tablero.getArrayListJugador();
 
-			Dado d;
+		ArrayList<String> estado = new ArrayList<>();
 
-			if (tablero.getJugadorActual().getInventario().getDado().size() > 0) {
+		for (Jugador jugador : jugadores) {
 
-				d = tablero.getJugadorActual().getInventario().getDado().get(rand.nextInt(2)); // Tomamos un dado
-																								// aleatoría de entre
-																								// los de la foca
+			String pelea = jugador.getPelea();
 
-			}
-
-			else {
-
-				d = new Dado();
-
-			}
-
-			int movimiento = tirarDado(tablero.getJugadorActual(), d);
-
-			gestorjugador.jugadorSeMueve(tablero.getJugadorActual(), movimiento);
-
-			tablero.getCasilla(tablero.getJugadorActual().getPos()).realizarAccion(tablero, tablero.getJugadorActual());
-
-			for (int i = 0; i < tablero.getArrayListJugador().size(); i++) {
-
-				if (tablero.getJugadorActual().getPos() == tablero.getJugador(i).getPos()) {
-
-					if (tablero.getJugador(i).getInventario().getPez().size() > 0) {
-
-						tablero.getJugador(i).getInventario().getPez().remove(0);
-
-					}
-
-					else {
-
-						((Foca) tablero.getJugadorActual()).golpearJugador(((Pinguino) tablero.getJugador(i)), tablero);
-
-					}
-
-				}
-
-			}
-
+			if (pelea != null)
+				estado.add(pelea);
 		}
 
-		else {
+		return estado;
+	}
 
-			Dado d = new Dado(); // AQUÍ DEBEREMOS DE TOMAR EL DADO ELEGIDO EN LA VISTA
+	public ArrayList<ArrayList<Integer>> ejecutarTurnoCompleto(Foca foca) {
 
-			int movimiento = tirarDado(tablero.getJugadorActual(), d);
+		ArrayList<ArrayList<Integer>> acciones = new ArrayList<>();
 
-			gestorjugador.jugadorSeMueve(tablero.getJugadorActual(), movimiento);
+		Random rand = new Random();
 
-			tablero.getCasilla(tablero.getJugadorActual().getPos()).realizarAccion(tablero, tablero.getJugadorActual());
+		Inventario inventarioFoca = foca.getInventario();
 
-			for (int i = 0; i < tablero.getArrayListJugador().size(); i++) {
+		// Elegir dado
 
-				if (tablero.getJugadorActual().getPos() == tablero.getJugador(i).getPos()) {
+		ArrayList<Integer> dadoRapido = new ArrayList<>();
+		ArrayList<Integer> dadoLento = new ArrayList<>();
 
-					((Pinguino) tablero.getJugadorActual()).gestionarBatalla(((Pinguino) tablero.getJugador(i)));
+		for (int i = 0; i < inventarioFoca.getDado().size(); i++) {
 
-				}
+			Dado dado = inventarioFoca.getDado().get(i);
 
+			if (dado instanceof DadoRapido) {
+				dadoRapido.add(i);
+			} else if (dado instanceof DadoLento) {
+				dadoLento.add(i);
 			}
-
 		}
 
-		siguienteTurno();
+		// Opciones que puede usar el rand
 
+		int limiteSuperiorRand = -1;
+
+		if (dadoRapido.size() != 0 && dadoLento.size() != 0) { // Encontrado los dos tipos
+			limiteSuperiorRand = 3;
+		} else if (dadoRapido.size() != 0 || dadoLento.size() != 0) { // Encontrado rapido o lento
+			limiteSuperiorRand = 2;
+		} else { // Encontrado ninguno
+			limiteSuperiorRand = 1;
+		}
+
+		// Elegir dado
+
+		ArrayList<Integer> dadoUsar = new ArrayList<>();
+
+		while (!dadoUsar.contains(0)) {
+			dadoUsar.add(rand.nextInt(limiteSuperiorRand));
+		}
+
+		// Limpiar no existentes o agotados
+
+		for (int i = 0; i < dadoUsar.size(); i++) {
+
+			int eleccion = dadoUsar.get(i);
+
+			switch (eleccion) {
+
+			case 0:
+				break;
+
+			case 1:
+
+				if (dadoLento.size() == 0 && dadoRapido.size() == 0) { // No queda, borrar
+					dadoUsar.remove(i);
+				} else if (dadoLento.size() == 0 && dadoRapido.size() != 0) { // Solo quedan rapidos, intercambio
+					dadoUsar.add(i, 2); // Pones un dos en el lugar del uno
+					dadoUsar.remove(i + 1); // El uno se ha movido al siguiente indicie por lo que sumas 1
+				} else { // Restar un uso
+					dadoLento.removeLast();
+				}
+
+				break;
+
+			case 2:
+
+				if (dadoRapido.size() == 0) { // No queda, borrar
+					dadoUsar.remove(i);
+				} else { // Restar un uso
+					dadoRapido.removeLast();
+				}
+
+				break;
+			}
+		}
+
+		acciones.add(dadoUsar);
+
+		// Usar bola de nieve
+
+		boolean usarBola = rand.nextBoolean();
+
+		if (usarBola) {
+
+			ArrayList<Jugador> objetivosTotales = tablero.getArrayListJugador();
+
+			objetivosTotales.removeLast();
+
+			limiteSuperiorRand = objetivosTotales.size();
+
+			int cantidadDeDisparos = rand.nextInt(inventarioFoca.getBolas().size());
+
+			ArrayList<Integer> listaDisparos = new ArrayList<>();
+
+			if (objetivosTotales.size() != 0) {
+				while (objetivosTotales.size() != 0 && cantidadDeDisparos > 0) {
+					int eleccion = rand.nextInt(limiteSuperiorRand);
+
+					listaDisparos.add(objetivosTotales.get(eleccion).getTurnoEnArray());
+
+					objetivosTotales.remove(eleccion);
+					cantidadDeDisparos--;
+				}
+			}
+
+			// Usar bola de nieve antes o despues de los dados
+
+			boolean despues = rand.nextBoolean();
+
+			if (despues) {
+				acciones.add(listaDisparos);
+			} else {
+				acciones.add(0, listaDisparos);
+			}
+		}
+
+		return acciones;
 	}
 
 	public ArrayList<PairMovimiento> procesarTurnoJugador(Jugador jugador) {
@@ -226,15 +292,19 @@ public class GestorTablero {
 				int PosFinalPinguino2 = pinguino2.getPos();
 
 				if (PosFinalPinguino1 == PosFinalPinguino2) {
+					pinguino1.resultadoGuerra(pinguino2, null); // Empate jugador 1
+					pinguino2.resultadoGuerra(pinguino1, null); // Empate jugador 2
 					return jugadorYMovimientos;
-
 				} else if (PosFinalPinguino1 != PosInicialPinguino1) {
 					jugadorYMovimientos.add(new PairMovimiento(pinguino1.getNombre(), PosFinalPinguino1));
 					jugadorYMovimientos.addAll(procesarTurnoJugador(pinguino1));
-
+					pinguino1.resultadoGuerra(pinguino2, false); // Pierde jugador 1
+					pinguino2.resultadoGuerra(pinguino1, true); // Gana jugador 2
 				} else if (PosFinalPinguino2 != PosInicialPinguino2) {
 					jugadorYMovimientos.add(new PairMovimiento(pinguino2.getNombre(), PosFinalPinguino2));
 					jugadorYMovimientos.addAll(procesarTurnoJugador(pinguino2));
+					pinguino1.resultadoGuerra(pinguino2, true); // Gana jugador 1
+					pinguino2.resultadoGuerra(pinguino1, false); // Pierde jugador 2
 				}
 			}
 
