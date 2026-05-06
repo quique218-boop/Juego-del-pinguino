@@ -363,10 +363,9 @@ public class GestorTablero {
 	}
 
 
-	public void cargarPartida(int id) {
-
-		// Aquí cargaremos nuestra partida en la BBDD
-
+	public void setTablero(Tablero tablero) {
+		
+		this.tablero = tablero;
+		
 	}
-
 }

@@ -28,9 +28,16 @@ public class Slots {
     @FXML private Label mensaje;
 
     // 🔥 SETTERS DESDE FUERA
-    public void setModo(Modo modo) {
-        this.modo = modo;
+    public void setModo(Boolean estado) {
+        if(estado) {
+        	this.modo = Modo.CARGAR;
+        }
+        else {
+        	this.modo = Modo.GUARDAR;
+        }
     }
+    
+   
 
     public void setPartida(Tablero tablero) {
         this.tableroActual = tablero;
@@ -69,7 +76,18 @@ public class Slots {
 
             Tablero p = GestorBBDD.cargarTablero(slot);
 
-            System.out.println("Cargar partida slot " + slot);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/PantallaJuego.fxml"));
+	        Parent root = loader.load();
+	        
+	        PantallaJuego controller = loader.getController();
+	        
+	        controller.inicio(p);
+
+
+	        Stage stage = (Stage) mensaje.getScene().getWindow();	        
+	        stage.setScene(new Scene(root));
+	        stage.setTitle("Juego");
+	        stage.show();;
 
         } catch (Exception e) {
             mensaje.setText("Error al cargar");

@@ -73,12 +73,18 @@ public class LoginMultipleController {
 	    }
 
 	    private void irAlJuego(ActionEvent event) throws IOException {
+	    	
+	    	
 
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/PantallaJuego.fxml"));
+	       
+	    	FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/PantallaJuego.fxml"));
 	        Parent root = loader.load();
-
+	        
 	        PantallaJuego controller = loader.getController();
 	        controller.setUsuarios(usuarios);
+	        
+	        controller.inicio(null);
+
 
 	        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 	        stage.setScene(new Scene(root));

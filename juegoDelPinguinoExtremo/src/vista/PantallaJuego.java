@@ -127,8 +127,10 @@ public class PantallaJuego {
   
         
 
-	@FXML
-	private void initialize() {
+	
+	public void inicio(Tablero tablero) {
+		
+		
 
 		if (!sonidosInicializados) {
             efectos_de_sonido.init();
@@ -180,16 +182,26 @@ public class PantallaJuego {
 
 		// Creacion gestor tablero y crear un nuevo tablero
 		gestorTablero = new GestorTablero();
+		if(tablero == null) {
 		gestorTablero.NuevoTablero();
+		
+		for(int i = 0; i < usuarios.size(); i++){
+			
+			gestorTablero.añadirJugador(new Pinguino(usuarios.get(i).getNombre(), "Azul", new Inventario(), usuarios.get(i)));
+			
+		}
+		
+		gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
+		
+		}
+		else {
+			gestorTablero.setTablero(tablero);
+		}
 
 		// Pone el texto del tipo de casilla
 		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
 
-		// Añadir jugadores hardcodeados temporalmente
-		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", new Inventario()));
-		gestorTablero.añadirJugador(new Pinguino("Jugador2", "Verde", new Inventario()));
-		gestorTablero.añadirJugador(new Pinguino("Jugador3", "Verde", new Inventario()));
-		gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
+		
 
 		// Asignar el jugador actual como el primero de la lista (Jugador 1)
 		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
@@ -199,17 +211,7 @@ public class PantallaJuego {
 
 		// Borramos los circulos cuando no hay jugadores para ellos.
 		BorrarFichasSinJugador();
-
-		// TEMPORALMENTE DAMOS LOS OBJETOS AL PRINCIPIO
-		// Jugador 1
-		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new DadoLento());
-		gestorTablero.getPartida().getJugador(0).getInventario().addListaDado(new DadoRapido());
-		gestorTablero.getPartida().getJugador(0).getInventario().addListaBolas(new BolaDeNieve());
-		gestorTablero.getPartida().getJugador(0).getInventario().addListaPez(new Pez());
-		// Jugador 2
-		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
-		gestorTablero.getPartida().getJugador(1).getInventario().addListaPez(new Pez());
-
+	
 		// Poner el menu acorde al inventario del jugador actual (Jugador 1)
 		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
 

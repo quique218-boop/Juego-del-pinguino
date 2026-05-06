@@ -9,9 +9,10 @@ public class Pinguino extends Jugador {
 	private Usuario usuario;
 
 
-	public Pinguino(String nombre, String color, Inventario inventario) {
+	public Pinguino(String nombre, String color, Inventario inventario, Usuario usuario) {
 
 		super(nombre, color, inventario);
+		this.usuario = usuario;
 
 	}
 	
