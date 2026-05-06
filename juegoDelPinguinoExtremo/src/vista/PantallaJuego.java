@@ -8,6 +8,7 @@ import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -18,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -25,6 +27,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -110,6 +113,8 @@ public class PantallaJuego {
 	private int[] posiciones = { 0, 0, 0, 0, 0 };
 	private int turno = 0;
 	private boolean modoBola = false;
+	private boolean focaSobornadaEsteTurno = false;
+	private boolean focaJuega = false;
 
 	private static boolean sonidosInicializados = false;
 	
@@ -183,6 +188,7 @@ public class PantallaJuego {
 		// Añadir jugadores hardcodeados temporalmente
 		gestorTablero.añadirJugador(new Pinguino("Jugador1", "Azul", new Inventario()));
 		gestorTablero.añadirJugador(new Pinguino("Jugador2", "Verde", new Inventario()));
+		gestorTablero.añadirJugador(new Pinguino("Jugador3", "Verde", new Inventario()));
 		gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
 
 		// Asignar el jugador actual como el primero de la lista (Jugador 1)
@@ -289,18 +295,24 @@ public class PantallaJuego {
 		// Evita spam del botón
 		dado.setDisable(true);
 
-		Jugador jugador = (Jugador) gestorTablero.getPartida().getJugadorActual();
+		Jugador jugador = gestorTablero.getPartida().getJugadorActual();
+
+		int posInicialSiFoca = jugador.getPos();
 
 		int[] resultadoYPosFinalDado = ProcesarDado(jugador, null);
 		int resultado = resultadoYPosFinalDado[0];
-		int PosFinalDado = resultadoYPosFinalDado[1];
+		int posFinalDado = resultadoYPosFinalDado[1];
 
 		// Update the Text
 		dadoResultText.setText("Ha salido: " + resultado);
 
-		animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
+		animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
 
 		System.out.println(jugador.getNombre() + " " + jugador.getPos());
+
+		if (jugador instanceof Foca) {
+			FocaCompruebaRobo(posInicialSiFoca, posFinalDado, jugador);
+		}
 	}
 
 	@FXML
@@ -312,13 +324,19 @@ public class PantallaJuego {
 
 		if (dadoRapido != null) {
 
+			int posInicialSiFoca = jugador.getPos();
+
 			int[] resultadoYPosFinalDado = ProcesarDado(jugador, dadoRapido);
 			int resultado = resultadoYPosFinalDado[0];
-			int PosFinalDado = resultadoYPosFinalDado[1];
+			int posFinalDado = resultadoYPosFinalDado[1];
 
-			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
+			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
 
 			AddEventoHistorial("Usando dado rápido ha salido: " + resultado);
+
+			if (jugador instanceof Foca) {
+				FocaCompruebaRobo(posInicialSiFoca, posFinalDado, jugador);
+			}
 		}
 	}
 
@@ -331,13 +349,19 @@ public class PantallaJuego {
 
 		if (dadoLento != null) {
 
+			int posInicialSiFoca = jugador.getPos();
+
 			int[] resultadoYPosFinalDado = ProcesarDado(jugador, dadoLento);
 			int resultado = resultadoYPosFinalDado[0];
-			int PosFinalDado = resultadoYPosFinalDado[1];
+			int posFinalDado = resultadoYPosFinalDado[1];
 
-			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), PosFinalDado, jugador);
+			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
 
 			AddEventoHistorial("Usando dado lento ha salido: " + resultado);
+
+			if (jugador instanceof Foca) {
+				FocaCompruebaRobo(posInicialSiFoca, posFinalDado, jugador);
+			}
 		}
 	}
 
@@ -364,30 +388,30 @@ public class PantallaJuego {
 
 	@FXML
 	private void selecP1() {
-		selecPingu(gestorTablero.getPartida().getJugador(0));
+		selecJugador(gestorTablero.getPartida().getJugador(0));
 	}
 
 	@FXML
 	private void selecP2() {
-		selecPingu(gestorTablero.getPartida().getJugador(1));
+		selecJugador(gestorTablero.getPartida().getJugador(1));
 	}
 
 	@FXML
 	private void selecP3() {
-		selecPingu(gestorTablero.getPartida().getJugador(2));
+		selecJugador(gestorTablero.getPartida().getJugador(2));
 	}
 
 	@FXML
 	private void selecP4() {
-		selecPingu(gestorTablero.getPartida().getJugador(3));
+		selecJugador(gestorTablero.getPartida().getJugador(3));
 	}
 
 	@FXML
 	private void selecFOCA() {
-		selecPingu(gestorTablero.getPartida().getArrayListJugador().getLast());
+		selecJugador(gestorTablero.getPartida().getArrayListJugador().getLast());
 	}
 
-	private void selecPingu(Jugador objBola) {
+	private void selecJugador(Jugador objBola) {
 		if (!modoBola) {
 			return;
 		}
@@ -428,7 +452,7 @@ public class PantallaJuego {
 
 			objBola.moverPosicion(-1);
 
-			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugadorAct), -1, jugadorAct);
+			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugadorAct), objBola.getPos(), objBola);
 
 			AddEventoHistorial("¡¡Has acertado!!");
 
@@ -439,7 +463,7 @@ public class PantallaJuego {
 		}
 	}
 
-	private void animacionMoverJugadores(ArrayList<PairMovimiento> listaMovimientos, int PosFinalDado,
+	private void animacionMoverJugadores(ArrayList<PairMovimiento> listaMovimientos, int posFinalDado,
 			Jugador jugador) {
 
 		if (gestorTablero.getPartida().getFinalizada())
@@ -450,7 +474,7 @@ public class PantallaJuego {
 		lento.setDisable(true);
 		nieve.setDisable(true);
 
-		listaMovimientos.add(0, new PairMovimiento(jugador.getNombre(), PosFinalDado));
+		listaMovimientos.add(0, new PairMovimiento(jugador.getNombre(), posFinalDado));
 
 		Timeline timeline = new Timeline();
 
@@ -499,8 +523,6 @@ public class PantallaJuego {
 			dxTotal[jugadorActualIndice] += (newCol - oldCol) * cellWidth;
 			dyTotal[jugadorActualIndice] += (newRow - oldRow) * cellHeight;
 
-			Jugador jugadorEvento = jugadorActual;
-
 			if (i == 0) {
 				timeline.getKeyFrames()
 						.add(new KeyFrame(Duration.ZERO,
@@ -513,14 +535,6 @@ public class PantallaJuego {
 										dxTotal[jugadorActualIndice], interpolador),
 								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
 										dyTotal[jugadorActualIndice], interpolador)));
-
-				if (listaMovimientos.size() == 1)
-					timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700), e -> {
-
-						MostrarEventosEnKeyFrame(listaMovimientos, posiciones[jugadorActualIndice], jugadorEvento);
-
-					}));
-
 			} else {
 				timeline.getKeyFrames()
 						.add(new KeyFrame(Duration.millis(700 * (i + 1)),
@@ -528,11 +542,6 @@ public class PantallaJuego {
 										dxTotal[jugadorActualIndice], interpolador),
 								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
 										dyTotal[jugadorActualIndice], interpolador)));
-
-				timeline.getKeyFrames().add(new KeyFrame(Duration.millis(700 * (i + 1)), e -> {
-
-					MostrarEventosEnKeyFrame(listaMovimientos, posiciones[jugadorActualIndice], jugadorEvento);
-				}));
 			}
 
 			jugadorActual = null;
@@ -550,93 +559,116 @@ public class PantallaJuego {
 				GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
 			}
 
-			finalizarTurno.setDisable(false);
+			MostrarEventos(listaMovimientos);
 
-			if (jugador.getDeudaTurnos() > 0)
+			if (!focaJuega)
+				finalizarTurno.setDisable(false);
+
+			if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
 				FinalizarTurno();
 
-			ActualizarInventarioGUI(jugador);
+			ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
 		});
 
 		timeline.play();
 	}
 
-	private void MostrarEventosEnKeyFrame(ArrayList<PairMovimiento> listaMovimientos, int posicionJugador,
-			Jugador jugador) {
+	public void MostrarEventos(ArrayList<PairMovimiento> listaMovimientos) {
 
-		Casilla casillaActual = gestorTablero.getPartida().getCasilla(posicionJugador);
+		ArrayList<String> listaNombres = new ArrayList<>();
 
-		int posicionAnterior = -1;
+		ArrayList<Jugador> jugadores = new ArrayList<>(listaNombres.size());
 
-		if (listaMovimientos.size() != 1) {
+		for (PairMovimiento nombres : listaMovimientos) {
 
-			for (int j = listaMovimientos.size() - 1; j >= 1; j--) {
-				if (listaMovimientos.get(j - 1).jugador.equals(jugador.getNombre())) {
-					posicionAnterior = listaMovimientos.get(j - 1).posicion;
+			String nombre = nombres.jugador;
+
+			Jugador jugadorEncontrado = null;
+
+			for (int i = 0; jugadorEncontrado == null; i++) {
+
+				jugadorEncontrado = gestorTablero.getPartida().getJugador(i).devolverSiNombreCoincide(nombre);
+
+				if (jugadorEncontrado != null && !jugadores.contains(jugadorEncontrado))
+					jugadores.add(jugadorEncontrado);
+			}
+		}
+
+		for (Jugador jugador : jugadores) {
+
+			ArrayList<Integer> listaSaneada = new ArrayList<>();
+
+			for (PairMovimiento pareja : listaMovimientos) {
+				if (pareja.jugador.equals(jugador.getNombre()))
+					listaSaneada.add(pareja.posicion);
+			}
+
+			for (int i = 0; i < listaSaneada.size() || (i < 1 && listaSaneada.size() == 1); i++) {
+				int posicion = listaSaneada.get(i);
+				int posicionSiguiente;
+				if (i == listaSaneada.size() - 1) {
+					posicionSiguiente = 49;
+				} else {
+					posicionSiguiente = listaSaneada.get(i + 1);
+				}
+
+				Casilla casilla = gestorTablero.getPartida().getCasilla(posicion);
+				Casilla casillaSiguiente = gestorTablero.getPartida().getCasilla(posicionSiguiente);
+
+				switch (casilla) {
+
+				case Agujero a -> {
+					if (casillaSiguiente instanceof Agujero)
+						AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
+				}
+
+				case Evento e -> {
+					AddEventoHistorial(
+							jugador.getNombre() + " ha caido en un evento y el evento ha sido: " + e.getResultado());
+				}
+
+				case Trineo t -> {
+					if (casillaSiguiente instanceof Trineo)
+						AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
+				}
+
+				case SueloQuebradizo s -> {
+					AddEventoHistorial(s.getResultado());
+				}
+
+				case Oso o -> {
+					if (casillaSiguiente.getPosicion() == 0) {
+						AddEventoHistorial(jugador.getNombre() + " ha sido atacado por un oso");
+					} else {
+						AddEventoHistorial(jugador.getNombre() + " ha usado un pez para evitar ser atacado por un oso");
+					}
+				}
+
+				case Normal n -> {
+				}
+
+				default -> throw new IllegalArgumentException("Unexpected value: " + casilla);
+
 				}
 			}
 
-			if (posicionAnterior == -1)
-				posicionAnterior = posicionJugador;
+			ArrayList<String> estadoPeleas = gestorTablero.estadoPeleas();
 
-		} else {
-			posicionAnterior = posicionJugador;
-		}
-
-		Casilla casillaAnterior = gestorTablero.getPartida().getCasilla(posicionAnterior);
-
-		switch (casillaActual) {
-
-		case Agujero a -> {
-			if (posicionJugador == 0 && posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
-				AddEventoHistorial(jugador.getNombre() + " ha caido hasta el inicio");
-			else if (posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
-				AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
-
-		}
-
-		case Evento e -> {
-
-			AddEventoHistorial(jugador.getNombre() + " ha caido en un evento y el evento ha sido: " + e.getResultado());
-		}
-
-		case Trineo t -> {
-			if (posicionJugador != posicionAnterior && casillaAnterior instanceof Trineo)
-				AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
-		}
-
-		case SueloQuebradizo s -> {
-
-			AddEventoHistorial(s.getResultado());
-
-		}
-
-		case Oso o -> {
-			if (posicionJugador == 0) {
-				AddEventoHistorial(jugador.getNombre() + " ha sido atacado por un oso");
-			} else {
-				AddEventoHistorial(jugador.getNombre() + " ha usado un pez para evitar ser atacado por un oso");
-			}
-		}
-
-		case Normal n -> {
-			if (casillaAnterior instanceof Trineo) {
-				AddEventoHistorial(jugador.getNombre() + " ha utilizado un trineo");
-			} else if (casillaAnterior instanceof Agujero) {
-				if (posicionJugador == 0 && posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
-					AddEventoHistorial(jugador.getNombre() + " ha caido hasta el inicio");
-				else if (posicionJugador != posicionAnterior && casillaAnterior instanceof Agujero)
-					AddEventoHistorial(jugador.getNombre() + " ha caido en un agujero");
+			if (estadoPeleas != null) {
+				for (String pelea : estadoPeleas) {
+					AddEventoHistorial(pelea);
+				}
 			}
 
-			return;
+			Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
+
+			if (foca.getDeudaTurnos() == 2 && !focaSobornadaEsteTurno) {
+				AddEventoHistorial(foca.getNombre() + " ha sido sobornada para no golpear y no se movera en 2 turnos");
+				focaSobornadaEsteTurno = true;
+			} else if (foca.getDeudaTurnos() == 0) {
+				focaSobornadaEsteTurno = false;
+			}
 		}
-
-		default -> throw new IllegalArgumentException("Unexpected value: " + casillaActual);
-
-		}
-
-		ActualizarInventarioGUI(jugador);
 	}
 
 	public void FinalizarTurno() {
@@ -669,9 +701,90 @@ public class PantallaJuego {
 
 		jugadores.get(jugadorSiguiente.getTurnoEnArray()).getStyleClass().add("current-player");
 
+		if (jugadorSiguiente instanceof Foca)
+			turnoFoca();
+		else
+			focaJuega = false;
+
 		resetVariablesDeTurno();
 
 		ActualizarInventarioGUI(jugadorSiguiente);
+
+	}
+
+	private void turnoFoca() {
+
+		focaJuega = true;
+
+		Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
+
+		ArrayList<ArrayList<Integer>> acciones = gestorTablero.ejecutarTurnoCompleto(foca);
+
+		boolean ArrayDados;
+
+		if (acciones.getFirst().contains(4))
+			ArrayDados = false;
+		else
+			ArrayDados = true;
+
+		for (int i = 0; i < acciones.size(); i++) {
+
+			if (ArrayDados) {
+
+				ArrayList<Integer> tirarDados = acciones.get(i);
+
+				for (int dado : tirarDados) {
+
+					if (foca == gestorTablero.getPartida().getJugadorActual()) {
+
+						switch (dado) {
+
+						case 0:
+							System.out.println("FOCA HA USADO NORMAL");
+							this.dado.fire();
+							break;
+						case 1:
+							System.out.println("FOCA HA USADO LENTO");
+							this.lento.fire();
+							break;
+						case 2:
+							System.out.println("FOCA HA USADO RAPIDO");
+							this.rapido.fire();
+							break;
+						}
+
+					} else {
+						return;
+					}
+				}
+			} else {
+
+				ArrayList<Integer> tirarBolas = acciones.get(i);
+
+				for (int objetivo : tirarBolas) {
+
+					this.nieve.fire();
+
+					switch (objetivo) {
+
+					case 0:
+						selecP1();
+					case 1:
+						selecP2();
+					case 2:
+						selecP3();
+					case 3:
+						selecP4();
+
+					}
+				}
+			}
+
+			ArrayDados = (ArrayDados) ? false : true;
+
+		}
+
+		FinalizarTurno();
 	}
 
 	// Funciones auxiliares
@@ -697,6 +810,17 @@ public class PantallaJuego {
 
 				jugadores.add((Circle) nodo);
 
+			}
+		}
+	}
+
+	private void FocaCompruebaRobo(int posInicialSiFoca, int PosFinalDado, Jugador jugador) {
+		for (Jugador jugadorRobado : gestorTablero.getPartida().getArrayListJugador()) {
+			if (jugadorRobado != jugador) {
+				if (posInicialSiFoca < jugadorRobado.getPos() && PosFinalDado > jugadorRobado.getPos()) {
+					((Foca) jugador).aplastarJugador((Pinguino) jugadorRobado);
+					AddEventoHistorial(jugadorRobado.getNombre() + " ha sido robado por la foca");
+				}
 			}
 		}
 	}
@@ -775,20 +899,22 @@ public class PantallaJuego {
 
 		nieve_t.setText("Bolas de nieve: " + bolasNieve);
 
-		if (dadoRapido == 0)
-			rapido.setDisable(true);
-		else
-			rapido.setDisable(false);
+		if (!focaJuega) {
+			if (dadoRapido == 0)
+				rapido.setDisable(true);
+			else
+				rapido.setDisable(false);
 
-		if (dadoLento == 0)
-			lento.setDisable(true);
-		else
-			lento.setDisable(false);
+			if (dadoLento == 0)
+				lento.setDisable(true);
+			else
+				lento.setDisable(false);
 
-		if (bolasNieve == 0)
-			nieve.setDisable(true);
-		else
-			nieve.setDisable(false);
+			if (bolasNieve == 0)
+				nieve.setDisable(true);
+			else
+				nieve.setDisable(false);
+		}
 	}
 
 	private Dado EncontrarDado(Jugador jugador, boolean Rapido_Lento) { // True == DadoRapido, False == DadoLento
@@ -821,7 +947,9 @@ public class PantallaJuego {
 		modoBola = false;
 		// Desactivar finalizar turno
 		finalizarTurno.setDisable(true);
-		dado.setDisable(false);
+
+		if (!focaJuega)
+			dado.setDisable(false);
 
 		for (Jugador jugador : gestorTablero.getPartida().getArrayListJugador()) {
 

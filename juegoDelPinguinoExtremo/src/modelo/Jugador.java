@@ -11,6 +11,7 @@ public abstract class Jugador {
 	private Inventario inventario;
 	private int deudaTurnos;
 	private int turnoEnArray;
+	private String pelea;
 
 	public Jugador(String nombre, String color, Inventario inventario) {
 
@@ -216,5 +217,25 @@ public abstract class Jugador {
 			return this;
 
 		return null;
+	}
+
+	public void resultadoGuerra(Jugador rival, Boolean victoria) {
+
+		if (victoria == null) {
+			this.pelea = this.nombre + " ha empatado con " + rival.nombre;
+			return;
+		}
+		
+		this.pelea = (victoria) ? this.nombre + " ha ganado una pelea contra " + rival.getNombre()
+				: this.nombre + " ha perdido una pelea contra " + rival.getNombre();
+	}
+
+	public String getPelea() {
+
+		String pelea = this.pelea;
+
+		this.pelea = null;
+
+		return pelea;
 	}
 }
