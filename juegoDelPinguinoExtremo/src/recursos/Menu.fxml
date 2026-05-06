@@ -14,11 +14,10 @@
             <Font size="24.0" />
          </font>
       </Label>
-      <Button layoutX="58.0" layoutY="150.0" mnemonicParsing="false" onAction="#nuevaPartida" prefHeight="50.0" prefWidth="115.0" styleClass="NuevaPartida" text="NUEVA PARTIDA" />
-      <Button layoutX="221.0" layoutY="150.0" mnemonicParsing="false" onAction="#cargarPartida" prefHeight="50.0" prefWidth="131.0" styleClass="CargarPartida" text="CARGAR PARTIDA" />
-      <Button text="ESTADISTICAS" onAction="#irEstadisticas" layoutX="221.0" layoutY="150.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="131.0" />
-      <Button layoutX="111.0" layoutY="246.0" mnemonicParsing="false" onAction="#Configuracion" prefHeight="50.0" prefWidth="131.0" text="CONFIGURACIÓN" />
-      <Button layoutX="317.0" layoutY="246.0" mnemonicParsing="false" onAction="#Salir" prefHeight="50.0" prefWidth="131.0" styleClass="Salir" text="SALIR DEL JUEGO" />
+      <Button layoutX="116.0" layoutY="150.0" mnemonicParsing="false" onAction="#nuevaPartida" prefHeight="50.0" prefWidth="115.0" styleClass="NuevaPartida" text="NUEVA PARTIDA" />
+      <Button layoutX="367.0" layoutY="150.0" mnemonicParsing="false" onAction="#cargarPartida" prefHeight="50.0" prefWidth="131.0" styleClass="CargarPartida" text="CARGAR PARTIDA" />
+      <Button layoutX="108.0" layoutY="246.0" mnemonicParsing="false" onAction="#irEstadisticas" prefHeight="50.0" prefWidth="131.0" text="ESTADISTICAS" />
+      <Button layoutX="367.0" layoutY="246.0" mnemonicParsing="false" onAction="#Salir" prefHeight="50.0" prefWidth="131.0" styleClass="Salir" text="SALIR DEL JUEGO" />
       <ImageView fitHeight="142.0" fitWidth="148.0" layoutX="55.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../../../../Downloads/durisimo.png" />
