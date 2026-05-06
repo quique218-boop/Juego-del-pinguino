@@ -267,7 +267,7 @@ public class PantallaJuego {
 
 	        Slots controller = loader.getController();
 
-	        controller.setModo(Slots.Modo.GUARDAR);
+	        controller.setModo(false);
 	        controller.setPartida(gestorTablero.getPartida());
 
 	        Stage stage = (Stage) P1.getScene().getWindow();

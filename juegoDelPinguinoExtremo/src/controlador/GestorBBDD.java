@@ -438,7 +438,7 @@ public class GestorBBDD {
 	
 	public static Usuario obtenerUsuario(int idUsuario) {
 
-	    String sql = "SELECT NOMBRE, CONTRASENA FROM USUARIO WHERE ID_USUARIO = ?";
+	    String sql = "SELECT NOMBRE, CONTRASEÑA FROM USUARIO WHERE ID_USUARIO = ?";
 
 	    try (Connection con = BBDD.conectarBaseDatos();
 	         PreparedStatement ps = con.prepareStatement(sql)) {
@@ -449,7 +449,7 @@ public class GestorBBDD {
 
 	        if (rs.next()) {
 	            String nombre = rs.getString("NOMBRE");
-	            String contrasena = rs.getString("CONTRASENA");
+	            String contrasena = rs.getString("CONTRASEÑA");
 
 	            return new Usuario(nombre, contrasena);
 	        }
@@ -463,7 +463,7 @@ public class GestorBBDD {
 	
 	public static boolean existeSlot(int slot) {
 
-	    String sql = "SELECT COUNT(*) FROM TABLERO WHERE SLOT = ?";
+	    String sql = "SELECT COUNT(*) FROM TABLERO WHERE ID_TABLERO = ?";
 
 	    try (Connection con = BBDD.conectarBaseDatos();
 	         PreparedStatement ps = con.prepareStatement(sql)) {

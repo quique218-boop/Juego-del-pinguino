@@ -18,7 +18,9 @@ public class Main extends Application {
 		Scene scene = new Scene(root);
 
 		stage.setTitle("Login");
-		stage.setScene(scene);
+		stage.setScene(scene
+				
+				);
 
 		stage.initStyle(StageStyle.UNIFIED);
 		
