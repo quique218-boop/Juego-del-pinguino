@@ -4,11 +4,11 @@ import javafx.animation.Interpolator;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -19,7 +19,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -27,7 +26,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -104,6 +102,8 @@ public class PantallaJuego {
 	// Animacion: Relentiza al inicio y final para un poco mas de visibilidad
 	private final Interpolator interpolador = Interpolator.EASE_BOTH;
 
+	private final SequentialTransition animador = new SequentialTransition();
+
 	// Crear gestores
 	private GestorTablero gestorTablero;
 	private GestorBBDD gestorBBDD;
@@ -117,26 +117,20 @@ public class PantallaJuego {
 	private boolean focaJuega = false;
 
 	private static boolean sonidosInicializados = false;
-	
+
 	private ArrayList<Usuario> usuarios;
 
 	public void setUsuarios(ArrayList<Usuario> usuarios) {
-	    this.usuarios = usuarios;
+		this.usuarios = usuarios;
 	}
 
-  
-        
-
-	
 	public void inicio(Tablero tablero) {
-		
-		
 
 		if (!sonidosInicializados) {
-            efectos_de_sonido.init();
-            sonidosInicializados = true;
-        }
-		
+			efectos_de_sonido.init();
+			sonidosInicializados = true;
+		}
+
 		// UI
 
 		// Añadir la funcionalidad al texto de cambiar de linea al llegar al final
@@ -182,26 +176,27 @@ public class PantallaJuego {
 
 		// Creacion gestor tablero y crear un nuevo tablero
 		gestorTablero = new GestorTablero();
-		if(tablero == null) {
-		gestorTablero.NuevoTablero();
-		
-		for(int i = 0; i < usuarios.size(); i++){
-			
-			gestorTablero.añadirJugador(new Pinguino(usuarios.get(i).getNombre(), "Azul", new Inventario(), usuarios.get(i)));
-			
-		}
-		
-		gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
-		
-		}
-		else {
+		if (tablero == null) {
+			gestorTablero.NuevoTablero();
+
+			for (int i = 0; i < usuarios.size(); i++) {
+
+				gestorTablero.añadirJugador(
+						new Pinguino(usuarios.get(i).getNombre(), "Azul", new Inventario(), usuarios.get(i)));
+
+			}
+
+			gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
+
+			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaDado(new DadoRapido());
+			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaDado(new DadoLento());
+
+		} else {
 			gestorTablero.setTablero(tablero);
 		}
 
 		// Pone el texto del tipo de casilla
 		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
-
-		
 
 		// Asignar el jugador actual como el primero de la lista (Jugador 1)
 		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
@@ -211,7 +206,7 @@ public class PantallaJuego {
 
 		// Borramos los circulos cuando no hay jugadores para ellos.
 		BorrarFichasSinJugador();
-	
+
 		// Poner el menu acorde al inventario del jugador actual (Jugador 1)
 		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
 
@@ -248,35 +243,38 @@ public class PantallaJuego {
 	// Menu actions
 	@FXML
 	private void handleNewGame() throws IOException {
+
+		// TODO
 		System.out.println("New game.");
 
 		Parent root = FXMLLoader.load(getClass().getResource("/recursos/PantallaJuego.fxml"));
 
 		Stage stage = (Stage) P1.getScene().getWindow();
 		stage.setScene(new Scene(root));
+
 		stage.show();
 
 	}
 
 	@FXML
 	private void handleSaveGame(ActionEvent event) {
-		
+
 		try {
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/slots.fxml"));
-	        Parent root = loader.load();
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/slots.fxml"));
+			Parent root = loader.load();
 
-	        Slots controller = loader.getController();
+			Slots controller = loader.getController();
 
-	        controller.setModo(Slots.Modo.GUARDAR);
-	        controller.setPartida(gestorTablero.getPartida());
+			controller.setModo(false);
+			controller.setPartida(gestorTablero.getPartida());
 
-	        Stage stage = (Stage) P1.getScene().getWindow();
-	        stage.setScene(new Scene(root));
-	        stage.show();
+			Stage stage = (Stage) P1.getScene().getWindow();
+			stage.setScene(new Scene(root));
+			stage.show();
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -548,31 +546,59 @@ public class PantallaJuego {
 
 			jugadorActual = null;
 		}
+		if (focaJuega) {
+			timeline.setOnFinished(e -> {
 
-		timeline.setOnFinished(e -> {
+				animador.getChildren().remove(timeline);
 
-			for (int i = 0; i < jugadores.size(); i++) {
-				// reset translation
-				jugadores.get(i).setTranslateX(0);
-				jugadores.get(i).setTranslateY(0);
+				for (int i = 0; i < jugadores.size(); i++) {
+					// reset translation
+					jugadores.get(i).setTranslateX(0);
+					jugadores.get(i).setTranslateY(0);
 
-				// set real position in grid
-				GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
-				GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
-			}
+					// set real position in grid
+					GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
+					GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
+				}
 
-			MostrarEventos(listaMovimientos);
+				MostrarEventos(listaMovimientos);
 
-			if (!focaJuega)
+				if (!focaJuega)
+					finalizarTurno.setDisable(false);
+
+				if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
+					FinalizarTurno();
+
+				ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
+			});
+
+			animador.getChildren().addLast(timeline);
+
+		} else {
+			timeline.setOnFinished(e -> {
+
+				for (int i = 0; i < jugadores.size(); i++) {
+					// reset translation
+					jugadores.get(i).setTranslateX(0);
+					jugadores.get(i).setTranslateY(0);
+
+					// set real position in grid
+					GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
+					GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
+				}
+
+				MostrarEventos(listaMovimientos);
+
 				finalizarTurno.setDisable(false);
 
-			if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
-				FinalizarTurno();
+				if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
+					FinalizarTurno();
 
-			ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
-		});
+				ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
+			});
 
-		timeline.play();
+			timeline.play();
+		}
 	}
 
 	public void MostrarEventos(ArrayList<PairMovimiento> listaMovimientos) {
@@ -743,15 +769,15 @@ public class PantallaJuego {
 
 						case 0:
 							System.out.println("FOCA HA USADO NORMAL");
-							this.dado.fire();
+							handleDado(null);
 							break;
 						case 1:
 							System.out.println("FOCA HA USADO LENTO");
-							this.lento.fire();
+							handleLento();
 							break;
 						case 2:
 							System.out.println("FOCA HA USADO RAPIDO");
-							this.rapido.fire();
+							handleRapido();
 							break;
 						}
 
@@ -786,7 +812,13 @@ public class PantallaJuego {
 
 		}
 
-		FinalizarTurno();
+		System.out.println("DESPUES DE SU TURNO FOCA ESTA EN " + foca.getPos());
+
+		animador.setOnFinished(e -> {
+			FinalizarTurno();
+		});
+
+		animador.play();
 	}
 
 	// Funciones auxiliares
