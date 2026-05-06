@@ -594,7 +594,8 @@ public class GestorBBDD {
 	
 	
 	public static String obtenerRankingTexto() {
-	    StringBuilder resultado = new StringBuilder();
+	    
+		StringBuilder resultado = new StringBuilder();
 
 	    try (Connection conn = BBDD.conectarBaseDatos()) {
 
