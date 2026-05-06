@@ -1,5 +1,6 @@
 package vista;
 
+import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 
 import javafx.animation.KeyFrame;
@@ -549,8 +550,6 @@ public class PantallaJuego {
 		if (focaJuega) {
 			timeline.setOnFinished(e -> {
 
-				animador.getChildren().remove(timeline);
-
 				for (int i = 0; i < jugadores.size(); i++) {
 					// reset translation
 					jugadores.get(i).setTranslateX(0);
@@ -562,9 +561,6 @@ public class PantallaJuego {
 				}
 
 				MostrarEventos(listaMovimientos);
-
-				if (!focaJuega)
-					finalizarTurno.setDisable(false);
 
 				if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
 					FinalizarTurno();
@@ -815,6 +811,10 @@ public class PantallaJuego {
 		System.out.println("DESPUES DE SU TURNO FOCA ESTA EN " + foca.getPos());
 
 		animador.setOnFinished(e -> {
+			for (Animation animacion : animador.getChildren()) {
+				animador.getChildren().remove(animacion);
+			}
+			
 			FinalizarTurno();
 		});
 
