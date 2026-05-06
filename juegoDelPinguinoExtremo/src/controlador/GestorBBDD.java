@@ -104,8 +104,7 @@ public class GestorBBDD {
 				
 				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 1, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
 						", "+slot+", '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
-						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " + obtenerIdUsuario(t1.getArrayListJugador().get(i).getUsuario()) + ", " +
-						t1.getArrayListJugador().get(i).getPuntuacion() +")";
+						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", 0,  0)";
 				
 				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
 				           new String[]{"TOTAL"});
@@ -121,8 +120,8 @@ public class GestorBBDD {
 				
 				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 0, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
 						", "+slot+", '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
-						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " + obtenerIdUsuario(t1.getArrayListJugador().get(i).getUsuario()) + ", " +
-						t1.getArrayListJugador().get(i).getPuntuacion() +")";		
+						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " + obtenerIdUsuario(((Pinguino)t1.getArrayListJugador().get(i)).getUsuario()) + ", " +
+						((Pinguino)t1.getArrayListJugador().get(i)).getPuntuacion() +")";		
 				
 				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
 				           new String[]{"TOTAL"});
@@ -314,12 +313,8 @@ public class GestorBBDD {
 				String nombre = entrada.get("NOMBRE");
 				String color = entrada.get("COLOR");
 				int turnoPerdido = Integer.parseInt(entrada.get("TURNOSPERDIDOS"));
-				int puntuacion = Integer.parseInt(entrada.get("PUNTUACION"));
-				int id_usuario = Integer.parseInt(entrada.get("ID_USUARIO"));
 				
-				Usuario usuario = obtenerUsuario(id_usuario);
-				
-				Foca nuevo = new Foca(posicion, nombre, color, inventarios, turnoPerdido, turno, puntuacion, usuario);
+				Foca nuevo = new Foca(posicion, nombre, color, inventarios, turnoPerdido, turno);
 				
 				jugadores.add(nuevo);
 
@@ -358,18 +353,19 @@ public class GestorBBDD {
 			
 	}
 	
-	public void actualizarTablero(Tablero tablero) {
+	public void actualizarTablero(Tablero tablero, int id) {
+		
 		
 		con = BBDD.conectarBaseDatos();
 
-		BBDD.update(con, "DELETE FROM INVENTARIO WHERE ID_JUGADOR IN (SELECT ID_JUGADOR FROM JUGADOR WHERE ID_TABLERO = " + tablero.getId() + ")");
+		BBDD.update(con, "DELETE FROM INVENTARIO WHERE ID_JUGADOR IN (SELECT ID_JUGADOR FROM JUGADOR WHERE ID_TABLERO = " + id + ")");
 	    
-	    BBDD.update(con, "DELETE FROM JUGADOR WHERE ID_TABLERO = " + tablero.getId());
+	    BBDD.update(con, "DELETE FROM JUGADOR WHERE ID_TABLERO = " + id);
 	    
-	    BBDD.update(con, "DELETE FROM TABLERO WHERE ID_TABLERO = " + tablero.getId());
+	    BBDD.update(con, "DELETE FROM TABLERO WHERE ID_TABLERO = " + id);
 
 
-	    guardar(tablero);
+	    guardar(tablero, id);
 
 	    BBDD.cerrar(con);
 			
@@ -491,13 +487,86 @@ public class GestorBBDD {
 	
 	public static int partidasGanadas(int id) {
 		
+		int ganadas = 0;
+
+	    String sql =
+	        "SELECT PARTIDASGANADAS " +
+	        "FROM USUARIO " +
+	        "WHERE ID_USUARIO = " + id;
+
+	    try (Connection con = BBDD.conectarBaseDatos()) {
+
+	        ArrayList<LinkedHashMap<String, String>> res =
+	                BBDD.select(con, sql);
+
+	        if (!res.isEmpty()) {
+	            ganadas = Integer.parseInt(
+	                    res.get(0).get("PARTIDASGANADAS")
+	            );
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return ganadas;
+		
 	}
 	
 	public static int partidasJugadas(int id) {
 		
+		int jugadas = 0;
+
+	    String sql =
+	        "SELECT PARTIDASJUGADAS " +
+	        "FROM USUARIO " +
+	        "WHERE ID_USUARIO = " + id;
+
+	    try (Connection con = BBDD.conectarBaseDatos()) {
+
+	        ArrayList<LinkedHashMap<String, String>> res =
+	                BBDD.select(con, sql);
+
+	        if (!res.isEmpty()) {
+	            jugadas = Integer.parseInt(
+	                    res.get(0).get("PARTIDASJUGADAS")
+	            );
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return jugadas;
 	}
+		
+	
 
 	public static int recordUsuario(int id) {
+		
+		int record = 0;
+
+	    String sql =
+	        "SELECT PUNTUACIONTOTAL " +
+	        "FROM USUARIO " +
+	        "WHERE ID_USUARIO = " + id;
+
+	    try (Connection con = BBDD.conectarBaseDatos()) {
+
+	        ArrayList<LinkedHashMap<String, String>> res =
+	                BBDD.select(con, sql);
+
+	        if (!res.isEmpty()) {
+	            record = Integer.parseInt(
+	                    res.get(0).get("PUNTUACIONTOTAL")
+	            );
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return record;
 	
 	}
 	
@@ -509,7 +578,6 @@ public class GestorBBDD {
 
 	        CallableStatement stmt = conn.prepareCall("{ ? = call MEDIAPUNTUACION() }");
 
-	        // Registrar el valor de retorno
 	        stmt.registerOutParameter(1, java.sql.Types.NUMERIC);
 
 	        stmt.execute();
@@ -548,6 +616,7 @@ public class GestorBBDD {
 	                     .append(" - ")
 	                     .append(puntos)
 	                     .append(" pts\n");
+	            
 
 	            posicion++;
 	        }

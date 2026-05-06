@@ -29,7 +29,13 @@
                 <Label fx:id="mediaLabel" styleClass="valor"/>
 
                 <Label text="Ranking jugadores:" styleClass="label"/>
-                <TextArea fx:id="rankingArea" editable="false" prefHeight="150"/>
+                <Label fx:id="rankingArea"
+       					wrapText="true"
+					    alignment="CENTER"
+					    textAlignment="CENTER"
+					    prefWidth="500"
+					    prefHeight="200"
+					    styleClass="ranking-label"/>
 
             </VBox>
 
@@ -40,7 +46,7 @@
 
                 <Button text="Consultar" onAction="#consultarUsuario" styleClass="btn-azul"/>
 
-                <Label fx:id="resultadoUsuario" styleClass="valor"/>
+                <Label fx:id="resultadoUsuario" styleClass="valor" wrapText="true" prefHeight="120"/>
 
             </VBox>
 

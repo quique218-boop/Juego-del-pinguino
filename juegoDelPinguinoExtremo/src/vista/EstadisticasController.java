@@ -18,17 +18,22 @@ public class EstadisticasController {
     @FXML private VBox panelUsuario;
 
     @FXML private Label mediaLabel;
-    @FXML private TextArea rankingArea;
-
+    @FXML private Label rankingArea;
     @FXML private TextField userField;
     @FXML private PasswordField passField;
     @FXML private Label resultadoUsuario;
 
     // 🔘 CAMBIAR VISTAS
+   
+    
+    
     @FXML
     private void mostrarGlobales() {
-        panelGlobal.setVisible(true);
-        panelUsuario.setVisible(false);
+    	panelGlobal.setManaged(true);
+    	panelGlobal.setVisible(true);
+
+    	panelUsuario.setManaged(false);
+    	panelUsuario.setVisible(false);
 
         cargarGlobales();
     }

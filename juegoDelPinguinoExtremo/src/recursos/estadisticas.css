@@ -62,3 +62,21 @@
 .btn-rojo:hover {
     -fx-background-color: #ef4444;
 }
+.ranking-label {
+
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+
+    -fx-background-color: #102531;
+
+    -fx-padding: 20;
+
+    -fx-border-color: #00d9ff;
+    -fx-border-width: 2;
+
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+
+    -fx-alignment: center;
+}
