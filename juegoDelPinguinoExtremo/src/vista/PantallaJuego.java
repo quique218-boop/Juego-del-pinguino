@@ -112,6 +112,8 @@ public class PantallaJuego {
 	// Variables modificables
 	private ArrayList<Circle> jugadores = new ArrayList<>();
 	private int[] posiciones = { 0, 0, 0, 0, 0 };
+	int[] dxTotalFoca = { 0, 0, 0, 0, 0 };
+	int[] dyTotalFoca = { 0, 0, 0, 0, 0 };
 	private int turno = 0;
 	private boolean modoBola = false;
 	private boolean focaSobornadaEsteTurno = false;
@@ -606,9 +608,6 @@ public class PantallaJuego {
 
 		Jugador jugadorActual = null;
 
-		int[] dxTotal = { 0, 0, 0, 0, 0 };
-		int[] dyTotal = { 0, 0, 0, 0, 0 };
-
 		for (int i = 0; i < listaMovimientos.size(); i++) {
 
 			PairMovimiento jugadorYMovimiento = listaMovimientos.get(i);
@@ -644,10 +643,10 @@ public class PantallaJuego {
 			int newRow = posiciones[jugadorActualIndice] / COLUMNS;
 			int newCol = posiciones[jugadorActualIndice] % COLUMNS;
 
-			dxTotal[jugadorActualIndice] += (newCol - oldCol) * cellWidth;
-			dyTotal[jugadorActualIndice] += (newRow - oldRow) * cellHeight;
+			dxTotalFoca[jugadorActualIndice] += (newCol - oldCol) * cellWidth;
+			dyTotalFoca[jugadorActualIndice] += (newRow - oldRow) * cellHeight;
 
-			if (i == 0) {
+			if (i == 0 && animadorFoca.totalDurationProperty().getValue() == Duration.millis(0)) {
 				animadorFoca.getKeyFrames()
 						.add(new KeyFrame((animadorFoca.getTotalDuration()),
 								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(), 0),
@@ -656,16 +655,16 @@ public class PantallaJuego {
 				animadorFoca.getKeyFrames()
 						.add(new KeyFrame(Duration.millis(700).add(animadorFoca.getTotalDuration()),
 								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
-										dxTotal[jugadorActualIndice], interpolador),
+										dxTotalFoca[jugadorActualIndice], interpolador),
 								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
-										dyTotal[jugadorActualIndice], interpolador)));
+										dyTotalFoca[jugadorActualIndice], interpolador)));
 			} else {
 				animadorFoca.getKeyFrames()
 						.add(new KeyFrame(Duration.millis(700 * (i + 1)).add(animadorFoca.getTotalDuration()),
 								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
-										dxTotal[jugadorActualIndice], interpolador),
+										dxTotalFoca[jugadorActualIndice], interpolador),
 								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
-										dyTotal[jugadorActualIndice], interpolador)));
+										dyTotalFoca[jugadorActualIndice], interpolador)));
 			}
 
 			jugadorActual = null;
@@ -692,12 +691,17 @@ public class PantallaJuego {
 
 			ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
 
+			System.out.println("Antes de borrado" + animadorFoca.getTotalDuration());
+
 			animadorFoca.getKeyFrames().removeAll(animadorFoca.getKeyFrames());
 
 			if (focaJuega) {
 				FinalizarTurno();
 			}
-			
+
+			dxTotalFoca = new int[] { 0, 0, 0, 0 };
+			dyTotalFoca = new int[] { 0, 0, 0, 0 };
+
 			System.out.println("Despues de borrado" + animadorFoca.getTotalDuration());
 		});
 	}
