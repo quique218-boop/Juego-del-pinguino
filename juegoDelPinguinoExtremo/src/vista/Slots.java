@@ -21,18 +21,26 @@ public class Slots {
         GUARDAR,
         CARGAR
     }
+    
+    private Scene escenaAnterior;
+    
+    public void setEscenaAnterior(Scene escena) {
+        this.escenaAnterior = escena;
+    }
 
     private Modo modo;
     private Tablero tableroActual;
+    
 
     @FXML private Label mensaje;
+    
 
-    // 🔥 SETTERS DESDE FUERA
     public void setModo(Boolean estado) {
         if(estado) {
         	this.modo = Modo.CARGAR;
         }
         else {
+        	
         	this.modo = Modo.GUARDAR;
         }
     }
@@ -96,21 +104,24 @@ public class Slots {
     }
 
     @FXML
-    private void volver(ActionEvent event) throws Exception{
+    private void volver(ActionEvent event) throws Exception {
 
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stage = (Stage) ((Node) event.getSource())
+                .getScene()
+                .getWindow();
 
-        Parent root = FXMLLoader.load(getClass().getResource("/recursos/Menu.fxml"));
+        if (escenaAnterior != null) {
 
-		Scene scene = new Scene(root);
+            stage.setScene(escenaAnterior);
 
-		stage.setTitle("Login");
-		stage.setScene(scene);
+        } else {
 
-		stage.initStyle(StageStyle.UNIFIED);
-		
-		stage.getIcons().add(new Image("/recursos/pinguino.png"));
-		
-		stage.show();
+            Parent root = FXMLLoader.load(
+                    getClass().getResource("/recursos/Menu.fxml"));
+
+            stage.setScene(new Scene(root));
+        }
+
+        stage.show();
     }
 }

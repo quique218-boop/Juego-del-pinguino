@@ -9,90 +9,186 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 import modelo.Usuario;
 import controlador.GestorBBDD;
 
 public class EstadisticasController {
 
+    // PANELES
     @FXML private VBox panelGlobal;
     @FXML private VBox panelUsuario;
 
+    // GLOBALES
     @FXML private Label mediaLabel;
     @FXML private Label rankingArea;
+
+    @FXML private Label recordGlobalLabel;
+    @FXML private Label jugadoresRecordLabel;
+    @FXML private Label superioresMediaLabel;
+
+    // USUARIO
     @FXML private TextField userField;
     @FXML private PasswordField passField;
     @FXML private Label resultadoUsuario;
 
-    // 🔘 CAMBIAR VISTAS
-   
-    
-    
+    // =========================
+    // CAMBIO DE VISTAS
+    // =========================
+
     @FXML
     private void mostrarGlobales() {
-    	panelGlobal.setManaged(true);
-    	panelGlobal.setVisible(true);
 
-    	panelUsuario.setManaged(false);
-    	panelUsuario.setVisible(false);
+        panelGlobal.setManaged(true);
+        panelGlobal.setVisible(true);
+
+        panelUsuario.setManaged(false);
+        panelUsuario.setVisible(false);
 
         cargarGlobales();
     }
 
     @FXML
     private void mostrarUsuario() {
-        panelGlobal.setVisible(false);
+
+        panelUsuario.setManaged(true);
         panelUsuario.setVisible(true);
+
+        panelGlobal.setManaged(false);
+        panelGlobal.setVisible(false);
     }
 
-    private void cargarGlobales() {
-        try {
-            double media = GestorBBDD.obtenerMediaPuntuacion();
-            mediaLabel.setText(String.valueOf(media));
+    // =========================
+    // ESTADÍSTICAS GLOBALES
+    // =========================
 
-            rankingArea.setText(GestorBBDD.obtenerRankingTexto());
+    private void cargarGlobales() {
+
+        try {
+
+            // MEDIA
+            double media = GestorBBDD.obtenerMediaPuntuacion();
+            mediaLabel.setText(String.format("%.2f", media));
+
+            // RECORD GLOBAL
+            int record = GestorBBDD.obtenerRecordGlobal();
+            recordGlobalLabel.setText(String.valueOf(record));
+
+            // JUGADORES RECORD
+            jugadoresRecordLabel.setText(
+                GestorBBDD.obtenerJugadoresRecord()
+            );
+
+            // JUGADORES SOBRE MEDIA
+            superioresMediaLabel.setText(
+                GestorBBDD.obtenerJugadoresSuperiorMedia()
+            );
+
+            // RANKING
+            rankingArea.setText(
+                GestorBBDD.obtenerRankingTexto()
+            );
 
         } catch (Exception e) {
+
             mediaLabel.setText("Error");
+            e.printStackTrace();
         }
     }
 
-    // 👤 USUARIO
+    // =========================
+    // ESTADÍSTICAS USUARIO
+    // =========================
+
     @FXML
     private void consultarUsuario() {
 
-        String user = userField.getText();
-        String pass = passField.getText();
+        try {
 
-        Usuario u = new Usuario(user, pass);
+            String user = userField.getText();
+            String pass = passField.getText();
 
-        if (!GestorBBDD.validarUsuario(u)) {
-            resultadoUsuario.setText("Usuario incorrecto");
-            return;
+            Usuario u = new Usuario(user, pass);
+
+            // VALIDAR
+            if (!GestorBBDD.validarUsuario(u)) {
+
+                resultadoUsuario.setText(
+                    "❌ Usuario incorrecto"
+                );
+
+                return;
+            }
+
+            int id = GestorBBDD.obtenerIdUsuario(u);
+
+            // DATOS
+            int ganadas = GestorBBDD.partidasGanadas(id);
+            int jugadas = GestorBBDD.partidasJugadas(id);
+            int record = GestorBBDD.recordUsuario(id);
+
+            // NUEVO
+            int posicion = GestorBBDD.obtenerPosicionRanking(id);
+
+            double porcentaje =
+                GestorBBDD.obtenerPorcentajeInferior(ganadas);
+
+            // MOSTRAR
+            resultadoUsuario.setText(
+
+                "👤 Usuario: " + user +
+
+                "\n\n🎮 Partidas jugadas: " + jugadas +
+
+                "\n🏆 Partidas ganadas: " + ganadas +
+
+                "\n⭐ Récord usuario: " + record +
+
+                "\n📈 Posición ranking: #" + posicion +
+
+                "\n📊 Mejor que el "
+                + String.format("%.2f", porcentaje)
+                + "% de jugadores"
+
+            );
+
+        } catch (Exception e) {
+
+            resultadoUsuario.setText(
+                "Error al consultar usuario"
+            );
+
+            e.printStackTrace();
         }
-
-        int id = GestorBBDD.obtenerIdUsuario(u);
-
-        int ganadas = GestorBBDD.partidasGanadas(id);
-        int jugadas = GestorBBDD.partidasJugadas(id);
-        int record = GestorBBDD.recordUsuario(id);
-
-        resultadoUsuario.setText(
-            "Jugadas: " + jugadas + "\nGanadas: " + ganadas + "\nRecord: " + record
-        );
     }
 
-    // 🔙 VOLVER
+    // =========================
+    // VOLVER
+    // =========================
+
     @FXML
     private void volver(ActionEvent event) {
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/Menu.fxml"));
+
+            FXMLLoader loader =
+                new FXMLLoader(
+                    getClass().getResource(
+                        "/recursos/Menu.fxml"
+                    )
+                );
+
             Parent root = loader.load();
 
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Stage stage = (Stage)
+                ((Node) event.getSource())
+                .getScene()
+                .getWindow();
+
             stage.setScene(new Scene(root));
 
         } catch (Exception e) {
+
             e.printStackTrace();
         }
     }

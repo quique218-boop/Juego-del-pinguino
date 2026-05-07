@@ -16,37 +16,96 @@
     </top>
 
     <center>
-        <VBox alignment="TOP_CENTER" spacing="20" styleClass="panel">
+        <VBox alignment="TOP_CENTER"
+              spacing="20"
+              styleClass="panel">
 
+            <!-- BOTONES -->
             <HBox spacing="20" alignment="CENTER">
-                <Button text="Globales" onAction="#mostrarGlobales" styleClass="btn-azul"/>
-                <Button text="Usuario" onAction="#mostrarUsuario" styleClass="btn-verde"/>
+
+                <Button text="Globales"
+                        onAction="#mostrarGlobales"
+                        styleClass="btn-azul"/>
+
+                <Button text="Usuario"
+                        onAction="#mostrarUsuario"
+                        styleClass="btn-verde"/>
+
             </HBox>
 
-            <VBox fx:id="panelGlobal" spacing="10" alignment="CENTER">
+            <!-- GLOBALES -->
+            <VBox fx:id="panelGlobal"
+                  spacing="15"
+                  alignment="CENTER">
 
-                <Label text="Media de puntuación:" styleClass="label"/>
-                <Label fx:id="mediaLabel" styleClass="valor"/>
+                <!-- MEDIA -->
+                <Label text="Media de puntuación:"
+                       styleClass="label"/>
 
-                <Label text="Ranking jugadores:" styleClass="label"/>
+                <Label fx:id="mediaLabel"
+                       styleClass="valor"/>
+
+                <!-- RECORD -->
+                <Label text="Récord global:"
+                       styleClass="label"/>
+
+                <Label fx:id="recordGlobalLabel"
+                       styleClass="valor"/>
+
+                <!-- JUGADORES RECORD -->
+                <Label text="Jugadores con récord:"
+                       styleClass="label"/>
+
+                <Label fx:id="jugadoresRecordLabel"
+                       styleClass="ranking-label"
+                       wrapText="true"
+                       prefWidth="500"/>
+
+                <!-- JUGADORES SOBRE MEDIA -->
+                <Label text="Jugadores por encima de la media:"
+                       styleClass="label"/>
+
+                <Label fx:id="superioresMediaLabel"
+                       styleClass="ranking-label"
+                       wrapText="true"
+                       prefWidth="500"/>
+
+                <!-- RANKING -->
+                <Label text="Ranking jugadores:"
+                       styleClass="label"/>
+
                 <Label fx:id="rankingArea"
-       					wrapText="true"
-					    alignment="CENTER"
-					    textAlignment="CENTER"
-					    prefWidth="500"
-					    prefHeight="200"
-					    styleClass="ranking-label"/>
+                       wrapText="true"
+                       alignment="CENTER"
+                       textAlignment="CENTER"
+                       prefWidth="500"
+                       prefHeight="250"
+                       styleClass="ranking-label"/>
 
             </VBox>
 
-            <VBox fx:id="panelUsuario" spacing="10" alignment="CENTER" visible="false">
+            <!-- USUARIO -->
+            <VBox fx:id="panelUsuario"
+                  spacing="10"
+                  alignment="CENTER"
+                  visible="false"
+                  managed="false">
 
-                <TextField fx:id="userField" promptText="Usuario"/>
-                <PasswordField fx:id="passField" promptText="Contraseña"/>
+                <TextField fx:id="userField"
+                           promptText="Usuario"/>
 
-                <Button text="Consultar" onAction="#consultarUsuario" styleClass="btn-azul"/>
+                <PasswordField fx:id="passField"
+                               promptText="Contraseña"/>
 
-                <Label fx:id="resultadoUsuario" styleClass="valor" wrapText="true" prefHeight="120"/>
+                <Button text="Consultar"
+                        onAction="#consultarUsuario"
+                        styleClass="btn-azul"/>
+
+                <Label fx:id="resultadoUsuario"
+                       styleClass="ranking-label"
+                       wrapText="true"
+                       prefWidth="450"
+                       prefHeight="220"/>
 
             </VBox>
 
@@ -54,8 +113,13 @@
     </center>
 
     <bottom>
-        <VBox alignment="CENTER" style="-fx-padding: 20;">
-            <Button text="Volver" onAction="#volver" styleClass="btn-rojo"/>
+        <VBox alignment="CENTER"
+              style="-fx-padding: 20;">
+
+            <Button text="Volver"
+                    onAction="#volver"
+                    styleClass="btn-rojo"/>
+
         </VBox>
     </bottom>
 

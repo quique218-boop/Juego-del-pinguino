@@ -85,6 +85,7 @@ public class PantallaJuego {
 	private Circle P4;
 	@FXML
 	private Circle FOCA;
+	
 
 	// Lista de eventos
 	@FXML
@@ -119,6 +120,8 @@ public class PantallaJuego {
 	private static boolean sonidosInicializados = false;
 	
 	private ArrayList<Usuario> usuarios;
+	
+	
 
 	public void setUsuarios(ArrayList<Usuario> usuarios) {
 	    this.usuarios = usuarios;
@@ -130,7 +133,7 @@ public class PantallaJuego {
 	
 	public void inicio(Tablero tablero) {
 		
-		
+		boolean guardada = false;
 
 		if (!sonidosInicializados) {
             efectos_de_sonido.init();
@@ -182,6 +185,7 @@ public class PantallaJuego {
 
 		// Creacion gestor tablero y crear un nuevo tablero
 		gestorTablero = new GestorTablero();
+		
 		if(tablero == null) {
 		gestorTablero.NuevoTablero();
 		
@@ -196,6 +200,7 @@ public class PantallaJuego {
 		}
 		else {
 			gestorTablero.setTablero(tablero);
+			guardada = true;
 		}
 
 		// Pone el texto del tipo de casilla
@@ -211,6 +216,10 @@ public class PantallaJuego {
 
 		// Borramos los circulos cuando no hay jugadores para ellos.
 		BorrarFichasSinJugador();
+		
+		if(guardada = true) {
+		    colocarJugadoresCargados();
+		}
 	
 		// Poner el menu acorde al inventario del jugador actual (Jugador 1)
 		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
@@ -262,6 +271,7 @@ public class PantallaJuego {
 	private void handleSaveGame(ActionEvent event) {
 		
 		try {
+			
 	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/slots.fxml"));
 	        Parent root = loader.load();
 
@@ -269,6 +279,7 @@ public class PantallaJuego {
 
 	        controller.setModo(false);
 	        controller.setPartida(gestorTablero.getPartida());
+	        controller.setEscenaAnterior(P1.getScene());
 
 	        Stage stage = (Stage) P1.getScene().getWindow();
 	        stage.setScene(new Scene(root));
@@ -281,8 +292,25 @@ public class PantallaJuego {
 
 	@FXML
 	private void handleLoadGame() {
-		System.out.println("Loaded game.");
-		// TODO
+		
+		try {
+			
+	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/slots.fxml"));
+	        Parent root = loader.load();
+
+	        Slots controller = loader.getController();
+
+	        controller.setModo(true);
+	        controller.setPartida(gestorTablero.getPartida());
+	        controller.setEscenaAnterior(P1.getScene());
+
+	        Stage stage = (Stage) P1.getScene().getWindow();
+	        stage.setScene(new Scene(root));
+	        stage.show();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 
 	@FXML
@@ -967,5 +995,20 @@ public class PantallaJuego {
 			gestorTablero.getPartida().getJugador(i).setTurnoEnArray(i);
 
 		}
+	}
+	
+	private void colocarJugadoresCargados() {
+
+	    for (int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
+
+	        Jugador jugador = gestorTablero.getPartida().getJugador(i);
+
+	        int pos = jugador.getPos();
+
+	        posiciones[i] = pos;
+
+	        GridPane.setRowIndex(jugadores.get(i), pos / COLUMNS);
+	        GridPane.setColumnIndex(jugadores.get(i), pos % COLUMNS);
+	    }
 	}
 }

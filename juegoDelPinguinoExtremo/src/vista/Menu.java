@@ -13,7 +13,7 @@ import vista.Slots.Modo;
 
 public class Menu {
 
-	private boolean sAmbiental = true;
+	private boolean sAmbiental = false;
 	private double volumen = 0.5; // 50%
 
 	public static MediaPlayer musicaAmbiente;

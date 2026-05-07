@@ -85,7 +85,7 @@ public class GestorBBDD {
 		varray += " '"+casillasBBDD.get(49)+"'";
 		
 		String sqlTablero = "INSERT INTO TABLERO VALUES("+ slot+", "
-		+turnos_tablero+", "+posActual+", ARRAY_CASILLAS("+varray+"), SYSDATE, 1)";
+		+turnos_tablero+", "+posActual+", ARRAY_CASILLAS("+varray+"), SYSDATE)";
 		
 		System.out.println(sqlTablero);
 
@@ -123,8 +123,8 @@ public class GestorBBDD {
 						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " + obtenerIdUsuario(((Pinguino)t1.getArrayListJugador().get(i)).getUsuario()) + ", " +
 						((Pinguino)t1.getArrayListJugador().get(i)).getPuntuacion() +")";		
 				
-				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
-				           new String[]{"TOTAL"});
+				//BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
+				  //         new String[]{"TOTAL"});
 				
 				System.out.println(sqlJugador);
 				
@@ -160,9 +160,12 @@ public class GestorBBDD {
 			
 			BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
 			           new String[]{"TOTAL"});
+			System.out.println(sqlInventario);
 			
 			BBDD.insert(con, sqlInventario);
 		}
+		
+		
 	}
 	
 	
@@ -630,5 +633,183 @@ public class GestorBBDD {
 	    return resultado.toString();
 	}
 	
+	
+	public static int obtenerRecordGlobal() {
+
+	    int record = 0;
+
+	    try {
+
+	        con = BBDD.conectarBaseDatos();
+
+	        CallableStatement cs =
+	            con.prepareCall("{ ? = call RECORD_GANADAS() }");
+
+	        cs.registerOutParameter(1, java.sql.Types.INTEGER);
+
+	        cs.execute();
+
+	        record = cs.getInt(1);
+
+	        cs.close();
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+	    }
+
+	    return record;
+	}
+	
+	public static String obtenerJugadoresRecord() {
+
+	    String texto = "";
+
+	    try {
+
+	        con = BBDD.conectarBaseDatos();
+
+	        CallableStatement cs =
+	            con.prepareCall("{ ? = call JUGADORES_RECORD() }");
+
+	        cs.registerOutParameter(
+	            1,
+	            oracle.jdbc.OracleTypes.CURSOR
+	        );
+
+	        cs.execute();
+
+	        ResultSet rs =
+	            (ResultSet) cs.getObject(1);
+
+	        while (rs.next()) {
+
+	            texto += "🏆 "
+	                   + rs.getString("NOMBRE")
+	                   + "\n";
+	        }
+
+	        rs.close();
+	        cs.close();
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+	    }
+
+	    return texto;
+	}
+	
+	
+	public static String obtenerJugadoresSuperiorMedia() {
+
+	    String texto = "";
+
+	    try {
+
+	        con = BBDD.conectarBaseDatos();
+
+	        CallableStatement cs =
+	            con.prepareCall(
+	                "{ ? = call JUGADORES_SUPERIOR_MEDIA() }"
+	            );
+
+	        cs.registerOutParameter(
+	            1,
+	            oracle.jdbc.OracleTypes.CURSOR
+	        );
+
+	        cs.execute();
+
+	        ResultSet rs =
+	            (ResultSet) cs.getObject(1);
+
+	        while (rs.next()) {
+
+	            texto += "⭐ "
+	                   + rs.getString("NOMBRE")
+	                   + " ("
+	                   + rs.getInt("PARTIDASGANADAS")
+	                   + ")\n";
+	        }
+
+	        rs.close();
+	        cs.close();
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+	    }
+
+	    return texto;
+	}
+	
+	public static int obtenerPosicionRanking(int idUsuario) {
+
+	    int posicion = -1;
+
+	    try {
+
+	        con = BBDD.conectarBaseDatos();
+
+	        CallableStatement cs =
+	            con.prepareCall(
+	                "{ ? = call POSICION_RANKING(?) }"
+	            );
+
+	        cs.registerOutParameter(
+	            1,
+	            java.sql.Types.INTEGER
+	        );
+
+	        cs.setInt(2, idUsuario);
+
+	        cs.execute();
+
+	        posicion = cs.getInt(1);
+
+	        cs.close();
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+	    }
+
+	    return posicion;
+	}
+	
+	public static double obtenerPorcentajeInferior(int ganadas) {
+
+		    double porcentaje = 0;
+
+		    try {
+
+		        con = BBDD.conectarBaseDatos();
+
+		        CallableStatement cs =
+		            con.prepareCall(
+		                "{ ? = call PORCENTAJE_INFERIOR(?) }"
+		            );
+
+		        cs.registerOutParameter(
+		            1,
+		            java.sql.Types.DOUBLE
+		        );
+
+		        cs.setInt(2, ganadas);
+
+		        cs.execute();
+
+		        porcentaje = cs.getDouble(1);
+
+		        cs.close();
+
+		    } catch (Exception e) {
+
+		        e.printStackTrace();
+		    }
+
+		    return porcentaje;
+		}
 
 }
