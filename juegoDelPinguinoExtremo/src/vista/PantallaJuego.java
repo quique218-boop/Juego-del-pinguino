@@ -701,6 +701,8 @@ public class PantallaJuego {
 
 			dxTotalFoca = new int[] { 0, 0, 0, 0 };
 			dyTotalFoca = new int[] { 0, 0, 0, 0 };
+			
+			((Foca) gestorTablero.getPartida().getJugadorActual()).resetGolpeados();
 
 			System.out.println("Despues de borrado" + animadorFoca.getTotalDuration());
 		});
