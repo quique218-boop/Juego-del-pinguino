@@ -162,44 +162,47 @@ public class GestorTablero {
 
 		acciones.add(dadoUsar);
 
-		// Usar bola de nieve
+		if (inventarioFoca.getBolas().size() != 0) {
 
-		boolean usarBola = rand.nextBoolean();
+			// Usar bola de nieve
 
-		if (usarBola) {
+			boolean usarBola = rand.nextBoolean();
 
-			ArrayList<Jugador> objetivosTotales = tablero.getArrayListJugador();
+			if (usarBola) {
 
-			objetivosTotales.removeLast();
+				ArrayList<Jugador> objetivosTotales = tablero.getArrayListJugador();
 
-			limiteSuperiorRand = objetivosTotales.size();
+				objetivosTotales.removeLast();
 
-			int cantidadDeDisparos = rand.nextInt(inventarioFoca.getBolas().size());
+				limiteSuperiorRand = objetivosTotales.size();
 
-			ArrayList<Integer> listaDisparos = new ArrayList<>();
+				int cantidadDeDisparos = rand.nextInt(inventarioFoca.getBolas().size());
 
-			if (objetivosTotales.size() != 0) {
-				while (objetivosTotales.size() != 0 && cantidadDeDisparos > 0) {
-					int eleccion = rand.nextInt(limiteSuperiorRand);
+				ArrayList<Integer> listaDisparos = new ArrayList<>();
 
-					listaDisparos.add(objetivosTotales.get(eleccion).getTurnoEnArray());
+				if (objetivosTotales.size() != 0) {
+					while (objetivosTotales.size() != 0 && cantidadDeDisparos > 0) {
+						int eleccion = rand.nextInt(limiteSuperiorRand);
 
-					objetivosTotales.remove(eleccion);
-					cantidadDeDisparos--;
+						listaDisparos.add(objetivosTotales.get(eleccion).getTurnoEnArray());
+
+						objetivosTotales.remove(eleccion);
+						cantidadDeDisparos--;
+					}
+				}
+
+				// Usar bola de nieve antes o despues de los dados
+
+				boolean despues = rand.nextBoolean();
+
+				if (despues) {
+					acciones.add(listaDisparos);
+				} else {
+					acciones.add(0, listaDisparos);
 				}
 			}
-
-			// Usar bola de nieve antes o despues de los dados
-
-			boolean despues = rand.nextBoolean();
-
-			if (despues) {
-				acciones.add(listaDisparos);
-			} else {
-				acciones.add(0, listaDisparos);
-			}
 		}
-
+		
 		return acciones;
 	}
 
@@ -362,10 +365,9 @@ public class GestorTablero {
 
 	}
 
-
 	public void setTablero(Tablero tablero) {
-		
+
 		this.tablero = tablero;
-		
+
 	}
 }
