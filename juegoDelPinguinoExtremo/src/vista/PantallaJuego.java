@@ -756,7 +756,7 @@ public class PantallaJuego {
 				Casilla casillaSiguiente = gestorTablero.getPartida().getCasilla(posicionSiguiente);
 
 				getYProcesarTodosLosEstados();
-				
+
 				switch (casilla) {
 
 				case Agujero a -> {
@@ -808,6 +808,8 @@ public class PantallaJuego {
 	}
 
 	public void FinalizarTurno() {
+		
+		comprobarGanador();
 
 		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
 
@@ -923,6 +925,29 @@ public class PantallaJuego {
 		System.out.println("DESPUES DE SU TURNO FOCA ESTA EN " + foca.getPos());
 
 		animadorFoca.play();
+	}
+	
+	private void finalizarPartida(Jugador ganador) {
+		
+		gestorTablero.getPartida().setFinalizada(true);
+		
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/Victoria.fxml"));
+			Parent root = loader.load();
+
+			Victoria controller = loader.getController();
+
+			controller.setGanador(ganador);
+			controller.inicio();
+
+			Stage stage = (Stage) P1.getScene().getWindow();
+			stage.setScene(new Scene(root));
+			stage.show();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	// Funciones auxiliares
@@ -1106,6 +1131,18 @@ public class PantallaJuego {
 
 			jugadores.get(jugador.getTurnoEnArray()).getStyleClass().remove("obj-player");
 
+		}
+	}
+
+	private void comprobarGanador() {
+
+		ArrayList<Jugador> jugadores = gestorTablero.getPartida().getArrayListJugador();
+
+		for (Jugador jugador : jugadores) {
+			if (jugador.getPos() == 49) {
+				finalizarPartida(jugador);
+				return;
+			}
 		}
 	}
 
