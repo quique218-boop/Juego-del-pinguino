@@ -745,9 +745,18 @@ public class PantallaJuego {
 					posicionSiguiente = listaSaneada.get(i + 1);
 				}
 
+				if (posicion > 49)
+					posicion = 49;
+
 				Casilla casilla = gestorTablero.getPartida().getCasilla(posicion);
+
+				if (posicionSiguiente > 49)
+					posicionSiguiente = 49;
+
 				Casilla casillaSiguiente = gestorTablero.getPartida().getCasilla(posicionSiguiente);
 
+				getYProcesarTodosLosEstados();
+				
 				switch (casilla) {
 
 				case Agujero a -> {
@@ -785,13 +794,7 @@ public class PantallaJuego {
 				}
 			}
 
-			ArrayList<String> estadoPeleas = gestorTablero.estadoPeleas();
-
-			if (estadoPeleas != null) {
-				for (String pelea : estadoPeleas) {
-					AddEventoHistorial(pelea);
-				}
-			}
+			getYProcesarTodosLosEstados();
 
 			Foca foca = (Foca) gestorTablero.getPartida().getArrayListJugador().getLast();
 
@@ -1065,6 +1068,19 @@ public class PantallaJuego {
 
 		return null;
 
+	}
+
+	private void getYProcesarTodosLosEstados() {
+		ProcesarEstado(gestorTablero.estadoPeleas());
+		ProcesarEstado(gestorTablero.estadoGolpeos());
+	}
+
+	private void ProcesarEstado(ArrayList<String> estados) {
+		if (estados != null) {
+			for (String estado : estados) {
+				AddEventoHistorial(estado);
+			}
+		}
 	}
 
 	private void AddEventoHistorial(String evento) {
