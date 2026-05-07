@@ -103,7 +103,7 @@ public class PantallaJuego {
 	// Animacion: Relentiza al inicio y final para un poco mas de visibilidad
 	private final Interpolator interpolador = Interpolator.EASE_BOTH;
 
-	private final SequentialTransition animador = new SequentialTransition();
+	private final Timeline animadorFoca = new Timeline();
 
 	// Crear gestores
 	private GestorTablero gestorTablero;
@@ -307,7 +307,11 @@ public class PantallaJuego {
 		// Update the Text
 		dadoResultText.setText("Ha salido: " + resultado);
 
-		animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
+		if (focaJuega) {
+			animacionMoverTurnoFoca(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
+		} else {
+			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
+		}
 
 		System.out.println(jugador.getNombre() + " " + jugador.getPos());
 
@@ -331,7 +335,11 @@ public class PantallaJuego {
 			int resultado = resultadoYPosFinalDado[0];
 			int posFinalDado = resultadoYPosFinalDado[1];
 
-			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
+			if (focaJuega) {
+				animacionMoverTurnoFoca(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
+			} else {
+				animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
+			}
 
 			AddEventoHistorial("Usando dado rápido ha salido: " + resultado);
 
@@ -356,7 +364,11 @@ public class PantallaJuego {
 			int resultado = resultadoYPosFinalDado[0];
 			int posFinalDado = resultadoYPosFinalDado[1];
 
-			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
+			if (focaJuega) {
+				animacionMoverTurnoFoca(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
+			} else {
+				animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugador), posFinalDado, jugador);
+			}
 
 			AddEventoHistorial("Usando dado lento ha salido: " + resultado);
 
@@ -453,7 +465,11 @@ public class PantallaJuego {
 
 			objBola.moverPosicion(-1);
 
-			animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugadorAct), objBola.getPos(), objBola);
+			if (focaJuega) {
+				animacionMoverTurnoFoca(gestorTablero.procesarTurnoJugador(jugadorAct), objBola.getPos(), objBola);
+			} else {
+				animacionMoverJugadores(gestorTablero.procesarTurnoJugador(jugadorAct), objBola.getPos(), objBola);
+			}
 
 			AddEventoHistorial("¡¡Has acertado!!");
 
@@ -547,54 +563,143 @@ public class PantallaJuego {
 
 			jugadorActual = null;
 		}
-		if (focaJuega) {
-			timeline.setOnFinished(e -> {
 
-				for (int i = 0; i < jugadores.size(); i++) {
-					// reset translation
-					jugadores.get(i).setTranslateX(0);
-					jugadores.get(i).setTranslateY(0);
+		timeline.setOnFinished(e -> {
 
-					// set real position in grid
-					GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
-					GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
-				}
+			for (int i = 0; i < jugadores.size(); i++) {
+				// reset translation
+				jugadores.get(i).setTranslateX(0);
+				jugadores.get(i).setTranslateY(0);
 
-				MostrarEventos(listaMovimientos);
+				// set real position in grid
+				GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
+				GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
+			}
 
-				if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
-					FinalizarTurno();
+			MostrarEventos(listaMovimientos);
 
-				ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
-			});
+			finalizarTurno.setDisable(false);
 
-			animador.getChildren().addLast(timeline);
+			if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
+				FinalizarTurno();
 
-		} else {
-			timeline.setOnFinished(e -> {
+			ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
+		});
 
-				for (int i = 0; i < jugadores.size(); i++) {
-					// reset translation
-					jugadores.get(i).setTranslateX(0);
-					jugadores.get(i).setTranslateY(0);
+		timeline.play();
+	}
 
-					// set real position in grid
-					GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
-					GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
-				}
+	private void animacionMoverTurnoFoca(ArrayList<PairMovimiento> listaMovimientos, int posFinalDado,
+			Jugador jugador) {
 
-				MostrarEventos(listaMovimientos);
+		if (gestorTablero.getPartida().getFinalizada())
+			return;
 
-				finalizarTurno.setDisable(false);
+		finalizarTurno.setDisable(true);
+		rapido.setDisable(true);
+		lento.setDisable(true);
+		nieve.setDisable(true);
 
-				if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
-					FinalizarTurno();
+		listaMovimientos.add(0, new PairMovimiento(jugador.getNombre(), posFinalDado));
 
-				ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
-			});
+		animadorFoca.setRate(0.5); // Velocidad reducida para mayor visibilidad // TODO es una vez poner en global
 
-			timeline.play();
+		Jugador jugadorActual = null;
+
+		int[] dxTotal = { 0, 0, 0, 0, 0 };
+		int[] dyTotal = { 0, 0, 0, 0, 0 };
+
+		for (int i = 0; i < listaMovimientos.size(); i++) {
+
+			PairMovimiento jugadorYMovimiento = listaMovimientos.get(i);
+
+			for (int j = 0; jugadorActual == null; j++) {
+
+				jugadorActual = gestorTablero.getPartida().getJugador(j)
+						.devolverSiNombreCoincide(jugadorYMovimiento.jugador);
+			}
+
+			int jugadorActualIndice = jugadorActual.getTurnoEnArray();
+
+			int oldPosition = posiciones[jugadorActualIndice];
+
+			int movimiento = jugadorYMovimiento.posicion - oldPosition;
+
+			posiciones[jugadorActualIndice] += movimiento;
+
+			// Bound player
+			if (posiciones[jugadorActualIndice] >= 50) {
+				posiciones[jugadorActualIndice] = 49;
+			}
+
+			if (posiciones[jugadorActualIndice] < 0) {
+				posiciones[jugadorActualIndice] = 0;
+			}
+
+			// OLD position
+			int oldRow = oldPosition / COLUMNS;
+			int oldCol = oldPosition % COLUMNS;
+
+			// NEW position
+			int newRow = posiciones[jugadorActualIndice] / COLUMNS;
+			int newCol = posiciones[jugadorActualIndice] % COLUMNS;
+
+			dxTotal[jugadorActualIndice] += (newCol - oldCol) * cellWidth;
+			dyTotal[jugadorActualIndice] += (newRow - oldRow) * cellHeight;
+
+			if (i == 0) {
+				animadorFoca.getKeyFrames()
+						.add(new KeyFrame((animadorFoca.getTotalDuration()),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(), 0),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(), 0)));
+
+				animadorFoca.getKeyFrames()
+						.add(new KeyFrame(Duration.millis(700).add(animadorFoca.getTotalDuration()),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
+										dxTotal[jugadorActualIndice], interpolador),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
+										dyTotal[jugadorActualIndice], interpolador)));
+			} else {
+				animadorFoca.getKeyFrames()
+						.add(new KeyFrame(Duration.millis(700 * (i + 1)).add(animadorFoca.getTotalDuration()),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateXProperty(),
+										dxTotal[jugadorActualIndice], interpolador),
+								new KeyValue(jugadores.get(jugadorActualIndice).translateYProperty(),
+										dyTotal[jugadorActualIndice], interpolador)));
+			}
+
+			jugadorActual = null;
 		}
+
+		animadorFoca.setOnFinished(e -> {
+
+			for (int i = 0; i < jugadores.size(); i++) {
+				// reset translation
+				jugadores.get(i).setTranslateX(0);
+				jugadores.get(i).setTranslateY(0);
+
+				// set real position in grid
+				GridPane.setRowIndex(jugadores.get(i), posiciones[i] / COLUMNS);
+				GridPane.setColumnIndex(jugadores.get(i), posiciones[i] % COLUMNS);
+			}
+
+			MostrarEventos(listaMovimientos);
+
+			finalizarTurno.setDisable(false);
+
+			if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
+				FinalizarTurno();
+
+			ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
+
+			animadorFoca.getKeyFrames().removeAll(animadorFoca.getKeyFrames());
+
+			if (focaJuega) {
+				FinalizarTurno();
+			}
+			
+			System.out.println("Despues de borrado" + animadorFoca.getTotalDuration());
+		});
 	}
 
 	public void MostrarEventos(ArrayList<PairMovimiento> listaMovimientos) {
@@ -810,15 +915,7 @@ public class PantallaJuego {
 
 		System.out.println("DESPUES DE SU TURNO FOCA ESTA EN " + foca.getPos());
 
-		animador.setOnFinished(e -> {
-			for (Animation animacion : animador.getChildren()) {
-				animador.getChildren().remove(animacion);
-			}
-			
-			FinalizarTurno();
-		});
-
-		animador.play();
+		animadorFoca.play();
 	}
 
 	// Funciones auxiliares
