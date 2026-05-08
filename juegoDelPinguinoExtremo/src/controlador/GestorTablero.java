@@ -79,12 +79,12 @@ public class GestorTablero {
 
 		return estado;
 	}
-	
+
 	public ArrayList<String> estadoGolpeos() {
 
 		Foca foca = (Foca) tablero.getArrayListJugador().getLast();
 
-		ArrayList<String> estado = foca.getGolpeados(); 
+		ArrayList<String> estado = foca.getGolpeados();
 
 		return estado;
 	}
@@ -211,7 +211,7 @@ public class GestorTablero {
 				}
 			}
 		}
-		
+
 		return acciones;
 	}
 

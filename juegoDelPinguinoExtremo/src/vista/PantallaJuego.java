@@ -132,6 +132,8 @@ public class PantallaJuego {
 
 	public void inicio(Tablero tablero) {
 		
+		animadorFoca.setRate(0.5); // Velocidad reducida para mayor visibilidad
+		
 		boolean guardada = false;
 
 		if (!sonidosInicializados) {
@@ -200,9 +202,6 @@ public class PantallaJuego {
 
 			gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
 
-			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaDado(new DadoRapido());
-			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaDado(new DadoLento());
-
 		} else {
 			gestorTablero.setTablero(tablero);
 			guardada = true;
@@ -220,7 +219,7 @@ public class PantallaJuego {
 		// Borramos los circulos cuando no hay jugadores para ellos.
 		BorrarFichasSinJugador();
 		
-		if(guardada = true) {
+		if(guardada == true) {
 		    colocarJugadoresCargados();
 		}
 
@@ -638,8 +637,6 @@ public class PantallaJuego {
 
 		listaMovimientos.add(0, new PairMovimiento(jugador.getNombre(), posFinalDado));
 
-		animadorFoca.setRate(0.5); // Velocidad reducida para mayor visibilidad // TODO es una vez poner en global
-
 		Jugador jugadorActual = null;
 
 		for (int i = 0; i < listaMovimientos.size(); i++) {
@@ -719,8 +716,6 @@ public class PantallaJuego {
 			MostrarEventos(listaMovimientos);
 
 			finalizarTurno.setDisable(false);
-
-			((Foca) gestorTablero.getPartida().getJugadorActual()).resetGolpeados();
 			
 			if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
 				FinalizarTurno();
