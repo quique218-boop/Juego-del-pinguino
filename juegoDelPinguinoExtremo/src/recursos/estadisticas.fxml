@@ -60,6 +60,12 @@
                        styleClass="ranking-label"
                        wrapText="true"
                        prefWidth="500"/>
+                       
+                <Label text="Media partidas ganadas:"
+       					styleClass="label"/>
+
+				<Label fx:id="mediaGanadasLabel"
+      					 styleClass="valor"/>
 
                 <!-- JUGADORES SOBRE MEDIA -->
                 <Label text="Jugadores por encima de la media:"
@@ -101,11 +107,13 @@
                         onAction="#consultarUsuario"
                         styleClass="btn-azul"/>
 
-                <Label fx:id="resultadoUsuario"
-                       styleClass="ranking-label"
-                       wrapText="true"
-                       prefWidth="450"
-                       prefHeight="220"/>
+                <TextArea fx:id="resultadoUsuario"
+          				editable="false"
+			          	wrapText="true"
+			          	focusTraversable="false"
+			          	prefWidth="420"
+			          	prefHeight="260"
+			          	styleClass="stats-area"/>
 
             </VBox>
 

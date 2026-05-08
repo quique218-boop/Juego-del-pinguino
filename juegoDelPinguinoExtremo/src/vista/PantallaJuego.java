@@ -184,10 +184,14 @@ public class PantallaJuego {
 
 		// Creacion gestor tablero y crear un nuevo tablero
 		gestorTablero = new GestorTablero();
+		
+		
 		if (tablero == null) {
 			gestorTablero.NuevoTablero();
 
 			for (int i = 0; i < usuarios.size(); i++) {
+				
+				GestorBBDD.sumarPartidaJugada(usuarios.get(i).getNombre());
 
 				gestorTablero.añadirJugador(
 						new Pinguino(usuarios.get(i).getNombre(), "Azul", new Inventario(), usuarios.get(i)));
@@ -492,6 +496,8 @@ public class PantallaJuego {
 		ActualizarInventarioGUI(jugadorAct);
 
 		if (CalcularExito(distancia)) {
+			
+			((Pinguino) jugadorAct).sumarPuntos(40);
 
 			objBola.moverPosicion(-1);
 
@@ -959,7 +965,31 @@ public class PantallaJuego {
 	
 	private void finalizarPartida(Jugador ganador) {
 		
+		if(ganador instanceof Pinguino p) {
+			
+		    p.sumarPuntos(500);
+		    
+		    GestorBBDD.sumarPartidaGanada( p.getUsuario().getNombre());
+		
+		}
+		
 		gestorTablero.getPartida().setFinalizada(true);
+		
+		
+		for(Jugador j : gestorTablero.getPartida().getArrayListJugador()) {
+			
+			if(j instanceof Pinguino p) {
+				
+				GestorBBDD.sumarPuntuacion(
+				        p.getUsuario().getNombre(),
+				        p.getPuntuacion()
+				    );
+						
+			}
+
+		}
+		
+		
 		
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/Victoria.fxml"));
@@ -1034,6 +1064,12 @@ public class PantallaJuego {
 		}
 
 		int PosFinalDado = oldPos + resultado;
+		
+		if(jugador instanceof Pinguino p) {
+
+	        p.sumarPuntos(resultado * 10);
+
+	    }
 
 		int[] resultadoYPosFinalDado = { resultado, PosFinalDado };
 

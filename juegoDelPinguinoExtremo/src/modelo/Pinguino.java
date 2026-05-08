@@ -7,6 +7,7 @@ public class Pinguino extends Jugador {
 	
 	private int puntuacion;
 	private Usuario usuario;
+	
 
 
 	public Pinguino(String nombre, String color, Inventario inventario, Usuario usuario) {
@@ -46,6 +47,11 @@ public class Pinguino extends Jugador {
 	public void setPuntuacion(int puntuacion) {
 		
 		this.puntuacion = puntuacion;
+	}
+	
+	public void sumarPuntos(int puntuacion) {
+		
+		this.puntuacion += puntuacion;
 	}
 	
 

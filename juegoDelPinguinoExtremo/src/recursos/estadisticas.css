@@ -80,3 +80,28 @@
 
     -fx-alignment: center;
 }
+
+.stats-area {
+
+    -fx-background-color: #0d2b3e;
+    -fx-border-color: #00d9ff;
+    -fx-border-width: 3;
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+
+    -fx-text-fill: white;
+
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 20;
+
+}
+
+.stats-area .content {
+    -fx-background-color: #0d2b3e;
+}
+
+.stats-area .text {
+    -fx-fill: white;
+}

@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+
 public class GestorBBDD {
 
 	public static Connection con;
@@ -811,5 +812,106 @@ public class GestorBBDD {
 
 		    return porcentaje;
 		}
+	
+	public static void sumarPartidaJugada(
+	        String nombreUsuario) {
+
+	    Connection con =
+	            BBDD.conectarBaseDatos();
+
+	    try {
+
+	        String sql =
+	                "UPDATE USUARIO " +
+	                "SET PARTIDASJUGADAS = " +
+	                "PARTIDASJUGADAS + 1 " +
+	                "WHERE NOMBRE = ?";
+
+	        PreparedStatement ps =
+	                con.prepareStatement(sql);
+
+	        ps.setString(1, nombreUsuario);
+
+	        ps.executeUpdate();
+
+	        ps.close();
+	        con.close();
+
+	    } catch(Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	public static void sumarPartidaGanada(
+	        String nombreUsuario) {
+
+	    Connection con =
+	            BBDD.conectarBaseDatos();
+
+	    try {
+
+	        String sql =
+	                "UPDATE USUARIO " +
+	                "SET PARTIDASGANADAS = " +
+	                "PARTIDASGANADAS + 1 " +
+	                "WHERE NOMBRE = ?";
+
+	        PreparedStatement ps =
+	                con.prepareStatement(sql);
+
+	        ps.setString(1, nombreUsuario);
+
+	        ps.executeUpdate();
+
+	        ps.close();
+	        con.close();
+
+	    } catch(Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	public static void sumarPuntuacion(String nombre, int puntos) {
+
+	    String sql = "UPDATE USUARIO " +
+	                 "SET PUNTUACIONTOTAL = PUNTUACIONTOTAL + ? " +
+	                 "WHERE NOMBRE = ?";
+
+	    try (Connection con = BBDD.conectarBaseDatos();
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+
+	        ps.setInt(1, puntos);
+	        ps.setString(2, nombre);
+
+	        ps.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	public static double mediaPartidasGanadas() {
+
+	    double media = 0;
+
+	    try (Connection conn = BBDD.conectarBaseDatos()) {
+
+	        CallableStatement stmt =
+	            conn.prepareCall("{ ? = call MEDIA_PARTIDAS_GANADAS() }");
+
+	        stmt.registerOutParameter(1, java.sql.Types.NUMERIC);
+
+	        stmt.execute();
+
+	        media = stmt.getDouble(1);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return media;
+	}
+	
+	
 
 }

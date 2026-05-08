@@ -26,11 +26,13 @@ public class EstadisticasController {
     @FXML private Label recordGlobalLabel;
     @FXML private Label jugadoresRecordLabel;
     @FXML private Label superioresMediaLabel;
+    @FXML private Label mediaGanadasLabel;
 
     // USUARIO
     @FXML private TextField userField;
     @FXML private PasswordField passField;
-    @FXML private Label resultadoUsuario;
+    @FXML private TextArea resultadoUsuario;
+    
 
     // =========================
     // CAMBIO DE VISTAS
@@ -78,6 +80,12 @@ public class EstadisticasController {
             jugadoresRecordLabel.setText(
                 GestorBBDD.obtenerJugadoresRecord()
             );
+            
+            mediaGanadasLabel.setText(
+            	    String.valueOf(
+            	        GestorBBDD.mediaPartidasGanadas()
+            	    )
+            	);
 
             // JUGADORES SOBRE MEDIA
             superioresMediaLabel.setText(
