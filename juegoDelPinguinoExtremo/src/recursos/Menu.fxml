@@ -4,29 +4,84 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="root" stylesheets="@Menu.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vista.Menu">
-   <children>
-      <Label alignment="CENTER" layoutX="102.0" layoutY="14.0" prefHeight="50.0" prefWidth="396.0" text="EL JOC DEL PINGÜÍ">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
-      <Button layoutX="116.0" layoutY="150.0" mnemonicParsing="false" onAction="#nuevaPartida" prefHeight="50.0" prefWidth="115.0" styleClass="NuevaPartida" text="NUEVA PARTIDA" />
-      <Button layoutX="367.0" layoutY="150.0" mnemonicParsing="false" onAction="#cargarPartida" prefHeight="50.0" prefWidth="131.0" styleClass="CargarPartida" text="CARGAR PARTIDA" />
-      <Button layoutX="108.0" layoutY="246.0" mnemonicParsing="false" onAction="#irEstadisticas" prefHeight="50.0" prefWidth="131.0" text="ESTADISTICAS" />
-      <Button layoutX="367.0" layoutY="246.0" mnemonicParsing="false" onAction="#Salir" prefHeight="50.0" prefWidth="131.0" styleClass="Salir" text="SALIR DEL JUEGO" />
-      <ImageView fitHeight="142.0" fitWidth="148.0" layoutX="55.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../../../Downloads/durisimo.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="142.0" fitWidth="95.0" layoutX="448.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../../../Downloads/2.png" />
-         </image>
-      </ImageView>
-   </children>
-</AnchorPane>
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="vista.Menu"
+           stylesheets="@Menu.css"
+           styleClass="root">
+
+    <!-- DECORACIÓN -->
+
+    <AnchorPane pickOnBounds="false">
+
+        <ImageView fitWidth="170"
+                   preserveRatio="true"
+                   layoutX="30"
+                   layoutY="20"
+                   opacity="0.85">
+
+            <image>
+                <Image url="@../../../../../../Downloads/durisimo.png"/>
+            </image>
+
+        </ImageView>
+
+        <ImageView fitWidth="120"
+                   preserveRatio="true"
+                   layoutX="470"
+                   layoutY="260"
+                   opacity="0.75">
+
+            <image>
+                <Image url="@../../../../../../Downloads/2.png"/>
+            </image>
+
+        </ImageView>
+
+    </AnchorPane>
+
+    <!-- CONTENIDO -->
+
+    <VBox alignment="CENTER"
+          spacing="35">
+
+        <!-- TÍTULO -->
+
+        <Label text="EL JOC DEL PINGÜÍ"
+               styleClass="titulo"/>
+
+        <!-- PANEL CENTRAL -->
+
+        <VBox alignment="CENTER"
+              spacing="20"
+              styleClass="panel">
+
+           <Button fx:id="playBtn"
+        text="NUEVA PARTIDA"
+        onAction="#nuevaPartida"
+        styleClass="menu-btn"/>
+
+<Button fx:id="loadBtn"
+        text="CARGAR PARTIDA"
+        onAction="#cargarPartida"
+        styleClass="menu-btn"/>
+
+<Button fx:id="statsBtn"
+        text="ESTADÍSTICAS"
+        onAction="#irEstadisticas"
+        styleClass="menu-btn"/>
+
+<Button fx:id="exitBtn"
+        text="SALIR DEL JUEGO"
+        onAction="#Salir"
+        styleClass="menu-btn"/>
+
+        </VBox>
+
+    </VBox>
+
+</StackPane>

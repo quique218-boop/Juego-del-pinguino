@@ -19,7 +19,6 @@ public class GestorBBDD {
 
 	public static Connection con;
 	
-	private static int count;
 
 	
 	public GestorBBDD() {
@@ -55,7 +54,6 @@ public class GestorBBDD {
 
 		int turnos_tablero = t1.getTurnos();
 
-		Jugador jugador_actual = t1.getJugadorActual();
 
 		ArrayList<Casilla> casillas = t1.getArrayListCasilla();
 		

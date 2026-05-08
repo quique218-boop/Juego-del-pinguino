@@ -118,7 +118,7 @@ public class PantallaJuego {
 	private boolean focaSobornadaEsteTurno = false;
 	private boolean focaJuega = false;
 
-	private static boolean sonidosInicializados = false;
+	private static boolean sonidosInicializados = true;
 
 	private ArrayList<Usuario> usuarios;
 
