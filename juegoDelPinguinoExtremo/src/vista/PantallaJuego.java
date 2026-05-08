@@ -131,6 +131,8 @@ public class PantallaJuego {
 	}
 
 	public void inicio(Tablero tablero) {
+		
+		boolean guardada = false;
 
 		if (!sonidosInicializados) {
 			efectos_de_sonido.init();
@@ -213,6 +215,11 @@ public class PantallaJuego {
 
 		// Borramos los circulos cuando no hay jugadores para ellos.
 		BorrarFichasSinJugador();
+		
+		if(guardada = true) {
+		    colocarJugadoresCargados();
+		}
+
 		// Poner el menu acorde al inventario del jugador actual (Jugador 1)
 		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
 
