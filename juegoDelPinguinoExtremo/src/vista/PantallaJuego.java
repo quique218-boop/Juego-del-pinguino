@@ -107,7 +107,6 @@ public class PantallaJuego {
 
 	// Crear gestores
 	private GestorTablero gestorTablero;
-	private GestorBBDD gestorBBDD;
 
 	// Variables modificables
 	private ArrayList<Circle> jugadores = new ArrayList<>();
@@ -177,9 +176,6 @@ public class PantallaJuego {
 		P1.getStyleClass().add("current-player"); // Pone el efecto del jugador actual al jugador 1
 
 		finalizarTurno.setDisable(true); // Desactivamos el boton de pasar de turno al principio
-
-		// Creacion gestor Base de datos
-		gestorBBDD = new GestorBBDD();
 
 		// Creacion gestor tablero y crear un nuevo tablero
 		gestorTablero = new GestorTablero();
@@ -265,16 +261,20 @@ public class PantallaJuego {
 	@FXML
 	private void handleNewGame() throws IOException {
 
-		// TODO
-		System.out.println("New game.");
 
-		Parent root = FXMLLoader.load(getClass().getResource("/recursos/PantallaJuego.fxml"));
+    	FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/PantallaJuego.fxml"));
+        Parent root = loader.load();
+        
+        PantallaJuego controller = loader.getController();
+        controller.setUsuarios(usuarios);
+        
+        controller.inicio(null);
 
-		Stage stage = (Stage) P1.getScene().getWindow();
-		stage.setScene(new Scene(root));
 
-		stage.show();
-
+        Stage stage = (Stage) tablero.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Juego");
+        stage.show();
 	}
 
 	@FXML
