@@ -501,7 +501,8 @@ public class PantallaJuego {
 
 		if (CalcularExito(distancia)) {
 
-			// ((Pinguino) jugadorAct).sumarPuntos(40);
+			if (jugadorAct instanceof Pinguino)
+				((Pinguino) jugadorAct).sumarPuntos(40);
 
 			objBola.moverPosicion(-1);
 
