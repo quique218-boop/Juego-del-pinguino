@@ -186,7 +186,9 @@ public class PantallaJuego {
 						new Pinguino(usuarios.get(i).getNombre(), "Azul", new Inventario(), usuarios.get(i)));
 
 			}
-
+			
+			gestorTablero.añadirJugador(new Foca("Foca", "Rojo", new Inventario()));
+			
 			// Asignar el jugador actual como el primero de la lista (Jugador 1)
 			gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
 		} else {

@@ -12,7 +12,7 @@ public class seleccionJugador {
 	
     private void cambiar(ActionEvent event, int numJugadores) throws IOException {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/Login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/login.fxml"));
         Parent root = loader.load();
 
         LoginMultipleController controller = loader.getController();

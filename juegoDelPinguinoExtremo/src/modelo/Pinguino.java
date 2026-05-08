@@ -1,8 +1,6 @@
 
 package modelo;
 
-import java.util.ArrayList;
-
 public class Pinguino extends Jugador {
 	
 	private int puntuacion;
