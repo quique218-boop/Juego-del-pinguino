@@ -84,7 +84,6 @@ public class PantallaJuego {
 	private Circle P4;
 	@FXML
 	private Circle FOCA;
-	
 
 	// Lista de eventos
 	@FXML
@@ -123,17 +122,15 @@ public class PantallaJuego {
 	private static boolean sonidosInicializados = false;
 
 	private ArrayList<Usuario> usuarios;
-	
-	
 
 	public void setUsuarios(ArrayList<Usuario> usuarios) {
 		this.usuarios = usuarios;
 	}
 
 	public void inicio(Tablero tablero) {
-		
+
 		animadorFoca.setRate(0.5); // Velocidad reducida para mayor visibilidad
-		
+
 		boolean guardada = false;
 
 		if (!sonidosInicializados) {
@@ -186,13 +183,12 @@ public class PantallaJuego {
 
 		// Creacion gestor tablero y crear un nuevo tablero
 		gestorTablero = new GestorTablero();
-		
-		
+
 		if (tablero == null) {
 			gestorTablero.NuevoTablero();
 
 			for (int i = 0; i < usuarios.size(); i++) {
-				
+
 				GestorBBDD.sumarPartidaJugada(usuarios.get(i).getNombre());
 
 				gestorTablero.añadirJugador(
@@ -202,6 +198,15 @@ public class PantallaJuego {
 
 			gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
 
+			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
+			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
+			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
+			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
+			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
+			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
+
+			gestorTablero.getPartida().getArrayListJugador().getFirst().getInventario()
+					.addListaBolas(new BolaDeNieve());
 		} else {
 			gestorTablero.setTablero(tablero);
 			guardada = true;
@@ -218,9 +223,9 @@ public class PantallaJuego {
 
 		// Borramos los circulos cuando no hay jugadores para ellos.
 		BorrarFichasSinJugador();
-		
-		if(guardada == true) {
-		    colocarJugadoresCargados();
+
+		if (guardada == true) {
+			colocarJugadoresCargados();
 		}
 
 		// Poner el menu acorde al inventario del jugador actual (Jugador 1)
@@ -281,9 +286,9 @@ public class PantallaJuego {
 
 			Slots controller = loader.getController();
 
-	        controller.setModo(false);
-	        controller.setPartida(gestorTablero.getPartida());
-	        controller.setEscenaAnterior(P1.getScene());
+			controller.setModo(false);
+			controller.setPartida(gestorTablero.getPartida());
+			controller.setEscenaAnterior(P1.getScene());
 
 			Stage stage = (Stage) P1.getScene().getWindow();
 			stage.setScene(new Scene(root));
@@ -296,25 +301,25 @@ public class PantallaJuego {
 
 	@FXML
 	private void handleLoadGame() {
-		
+
 		try {
-			
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/slots.fxml"));
-	        Parent root = loader.load();
 
-	        Slots controller = loader.getController();
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/slots.fxml"));
+			Parent root = loader.load();
 
-	        controller.setModo(true);
-	        controller.setPartida(gestorTablero.getPartida());
-	        controller.setEscenaAnterior(P1.getScene());
+			Slots controller = loader.getController();
 
-	        Stage stage = (Stage) P1.getScene().getWindow();
-	        stage.setScene(new Scene(root));
-	        stage.show();
+			controller.setModo(true);
+			controller.setPartida(gestorTablero.getPartida());
+			controller.setEscenaAnterior(P1.getScene());
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+			Stage stage = (Stage) P1.getScene().getWindow();
+			stage.setScene(new Scene(root));
+			stage.show();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -495,8 +500,8 @@ public class PantallaJuego {
 		ActualizarInventarioGUI(jugadorAct);
 
 		if (CalcularExito(distancia)) {
-			
-			((Pinguino) jugadorAct).sumarPuntos(40);
+
+			// ((Pinguino) jugadorAct).sumarPuntos(40);
 
 			objBola.moverPosicion(-1);
 
@@ -716,7 +721,7 @@ public class PantallaJuego {
 			MostrarEventos(listaMovimientos);
 
 			finalizarTurno.setDisable(false);
-			
+
 			if (gestorTablero.getPartida().getJugadorActual().getDeudaTurnos() > 0)
 				FinalizarTurno();
 
@@ -839,7 +844,7 @@ public class PantallaJuego {
 	}
 
 	public void FinalizarTurno() {
-		
+
 		comprobarGanador();
 
 		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
@@ -891,7 +896,7 @@ public class PantallaJuego {
 
 		boolean ArrayDados;
 
-		if (acciones.getFirst().contains(4))
+		if (acciones.getFirst().contains(9))
 			ArrayDados = false;
 		else
 			ArrayDados = true;
@@ -932,19 +937,26 @@ public class PantallaJuego {
 
 				for (int objetivo : tirarBolas) {
 
-					this.nieve.fire();
+					if (objetivo != 9) {
 
-					switch (objetivo) {
+						handleNieve();
 
-					case 0:
-						selecP1();
-					case 1:
-						selecP2();
-					case 2:
-						selecP3();
-					case 3:
-						selecP4();
+						switch (objetivo) {
 
+						case 0:
+							selecP1();
+							break;
+						case 1:
+							selecP2();
+							break;
+						case 2:
+							selecP3();
+							break;
+						case 3:
+							selecP4();
+							break;
+
+						}
 					}
 				}
 			}
@@ -957,35 +969,29 @@ public class PantallaJuego {
 
 		animadorFoca.play();
 	}
-	
+
 	private void finalizarPartida(Jugador ganador) {
-		
-		if(ganador instanceof Pinguino p) {
-			
-		    p.sumarPuntos(500);
-		    
-		    GestorBBDD.sumarPartidaGanada( p.getUsuario().getNombre());
-		
+
+		if (ganador instanceof Pinguino p) {
+
+			p.sumarPuntos(500);
+
+			GestorBBDD.sumarPartidaGanada(p.getUsuario().getNombre());
+
 		}
-		
+
 		gestorTablero.getPartida().setFinalizada(true);
-		
-		
-		for(Jugador j : gestorTablero.getPartida().getArrayListJugador()) {
-			
-			if(j instanceof Pinguino p) {
-				
-				GestorBBDD.sumarPuntuacion(
-				        p.getUsuario().getNombre(),
-				        p.getPuntuacion()
-				    );
-						
+
+		for (Jugador j : gestorTablero.getPartida().getArrayListJugador()) {
+
+			if (j instanceof Pinguino p) {
+
+				GestorBBDD.sumarPuntuacion(p.getUsuario().getNombre(), p.getPuntuacion());
+
 			}
 
 		}
-		
-		
-		
+
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/Victoria.fxml"));
 			Parent root = loader.load();
@@ -1002,7 +1008,7 @@ public class PantallaJuego {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// Funciones auxiliares
@@ -1059,12 +1065,12 @@ public class PantallaJuego {
 		}
 
 		int PosFinalDado = oldPos + resultado;
-		
-		if(jugador instanceof Pinguino p) {
 
-	        p.sumarPuntos(resultado * 10);
+		if (jugador instanceof Pinguino p) {
 
-	    }
+			p.sumarPuntos(resultado * 10);
+
+		}
 
 		int[] resultadoYPosFinalDado = { resultado, PosFinalDado };
 
@@ -1215,19 +1221,19 @@ public class PantallaJuego {
 
 		}
 	}
-	
+
 	private void colocarJugadoresCargados() {
 
-	    for (int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
+		for (int i = 0; i < gestorTablero.getPartida().getArrayListJugador().size(); i++) {
 
-	        Jugador jugador = gestorTablero.getPartida().getJugador(i);
+			Jugador jugador = gestorTablero.getPartida().getJugador(i);
 
-	        int pos = jugador.getPos();
+			int pos = jugador.getPos();
 
-	        posiciones[i] = pos;
+			posiciones[i] = pos;
 
-	        GridPane.setRowIndex(jugadores.get(i), pos / COLUMNS);
-	        GridPane.setColumnIndex(jugadores.get(i), pos % COLUMNS);
-	    }
+			GridPane.setRowIndex(jugadores.get(i), pos / COLUMNS);
+			GridPane.setColumnIndex(jugadores.get(i), pos % COLUMNS);
+		}
 	}
 }

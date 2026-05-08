@@ -179,9 +179,13 @@ public class GestorTablero {
 
 			if (usarBola) {
 
-				ArrayList<Jugador> objetivosTotales = tablero.getArrayListJugador();
+				ArrayList<Jugador> objetivosTotales = new ArrayList<>();
+						
+				objetivosTotales.addAll(tablero.getArrayListJugador());
 
 				objetivosTotales.removeLast();
+				
+				System.out.println(tablero.getArrayListJugador());
 
 				limiteSuperiorRand = objetivosTotales.size();
 
@@ -197,9 +201,12 @@ public class GestorTablero {
 
 						objetivosTotales.remove(eleccion);
 						cantidadDeDisparos--;
+						limiteSuperiorRand--;
 					}
 				}
 
+				listaDisparos.add(9); // Identificador de que la lista de numeros es de objetivos y no dados
+				
 				// Usar bola de nieve antes o despues de los dados
 
 				boolean despues = rand.nextBoolean();
@@ -332,7 +339,7 @@ public class GestorTablero {
 		ArrayList<Jugador> listaJugadores = new ArrayList<>();
 
 		int jugadorPrincipalPos = jugador.getPos();
-		
+
 		if (jugadorPrincipalPos != 0) {
 			for (Jugador jugadorEnCasilla : tablero.getArrayListJugador()) {
 
@@ -346,7 +353,7 @@ public class GestorTablero {
 				}
 			}
 		}
-		
+
 		return listaJugadores;
 	}
 
