@@ -14,7 +14,6 @@
            stylesheets="@Menu.css"
            styleClass="root">
 
-    <!-- DECORACIÓN -->
 
     <AnchorPane pickOnBounds="false">
 
@@ -44,14 +43,13 @@
 
     </AnchorPane>
 
-    <!-- CONTENIDO -->
 
     <VBox alignment="CENTER"
           spacing="35">
 
         <!-- TÍTULO -->
 
-        <Label text="EL JOC DEL PINGÜÍ"
+        <Label text="EL JUEGO DEL PINGÜINO"
                styleClass="titulo"/>
 
         <!-- PANEL CENTRAL -->

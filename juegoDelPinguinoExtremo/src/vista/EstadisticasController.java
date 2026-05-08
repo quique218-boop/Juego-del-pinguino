@@ -34,10 +34,6 @@ public class EstadisticasController {
     @FXML private TextArea resultadoUsuario;
     
 
-    // =========================
-    // CAMBIO DE VISTAS
-    // =========================
-
     @FXML
     private void mostrarGlobales() {
 
@@ -60,23 +56,17 @@ public class EstadisticasController {
         panelGlobal.setVisible(false);
     }
 
-    // =========================
-    // ESTADÍSTICAS GLOBALES
-    // =========================
 
     private void cargarGlobales() {
 
         try {
 
-            // MEDIA
             double media = GestorBBDD.obtenerMediaPuntuacion();
             mediaLabel.setText(String.format("%.2f", media));
 
-            // RECORD GLOBAL
             int record = GestorBBDD.obtenerRecordGlobal();
             recordGlobalLabel.setText(String.valueOf(record));
 
-            // JUGADORES RECORD
             jugadoresRecordLabel.setText(
                 GestorBBDD.obtenerJugadoresRecord()
             );
@@ -87,12 +77,10 @@ public class EstadisticasController {
             	    )
             	);
 
-            // JUGADORES SOBRE MEDIA
             superioresMediaLabel.setText(
                 GestorBBDD.obtenerJugadoresSuperiorMedia()
             );
 
-            // RANKING
             rankingArea.setText(
                 GestorBBDD.obtenerRankingTexto()
             );
@@ -104,9 +92,7 @@ public class EstadisticasController {
         }
     }
 
-    // =========================
-    // ESTADÍSTICAS USUARIO
-    // =========================
+ 
 
     @FXML
     private void consultarUsuario() {
@@ -118,7 +104,6 @@ public class EstadisticasController {
 
             Usuario u = new Usuario(user, pass);
 
-            // VALIDAR
             if (!GestorBBDD.validarUsuario(u)) {
 
                 resultadoUsuario.setText(
@@ -130,18 +115,15 @@ public class EstadisticasController {
 
             int id = GestorBBDD.obtenerIdUsuario(u);
 
-            // DATOS
             int ganadas = GestorBBDD.partidasGanadas(id);
             int jugadas = GestorBBDD.partidasJugadas(id);
             int record = GestorBBDD.recordUsuario(id);
 
-            // NUEVO
             int posicion = GestorBBDD.obtenerPosicionRanking(id);
 
             double porcentaje =
                 GestorBBDD.obtenerPorcentajeInferior(ganadas);
 
-            // MOSTRAR
             resultadoUsuario.setText(
 
                 "👤 Usuario: " + user +
@@ -170,10 +152,7 @@ public class EstadisticasController {
         }
     }
 
-    // =========================
-    // VOLVER
-    // =========================
-
+    
     @FXML
     private void volver(ActionEvent event) {
 
