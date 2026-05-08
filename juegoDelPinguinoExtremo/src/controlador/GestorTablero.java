@@ -79,15 +79,6 @@ public class GestorTablero {
 
 		return estado;
 	}
-	
-	public ArrayList<String> estadoGolpeos() {
-
-		Foca foca = (Foca) tablero.getArrayListJugador().getLast();
-
-		ArrayList<String> estado = foca.getGolpeados(); 
-
-		return estado;
-	}
 
 	public ArrayList<ArrayList<Integer>> ejecutarTurnoCompleto(Foca foca) {
 
@@ -171,47 +162,44 @@ public class GestorTablero {
 
 		acciones.add(dadoUsar);
 
-		if (inventarioFoca.getBolas().size() != 0) {
+		// Usar bola de nieve
 
-			// Usar bola de nieve
+		boolean usarBola = rand.nextBoolean();
 
-			boolean usarBola = rand.nextBoolean();
+		if (usarBola) {
 
-			if (usarBola) {
+			ArrayList<Jugador> objetivosTotales = tablero.getArrayListJugador();
 
-				ArrayList<Jugador> objetivosTotales = tablero.getArrayListJugador();
+			objetivosTotales.removeLast();
 
-				objetivosTotales.removeLast();
+			limiteSuperiorRand = objetivosTotales.size();
 
-				limiteSuperiorRand = objetivosTotales.size();
+			int cantidadDeDisparos = rand.nextInt(inventarioFoca.getBolas().size());
 
-				int cantidadDeDisparos = rand.nextInt(inventarioFoca.getBolas().size());
+			ArrayList<Integer> listaDisparos = new ArrayList<>();
 
-				ArrayList<Integer> listaDisparos = new ArrayList<>();
+			if (objetivosTotales.size() != 0) {
+				while (objetivosTotales.size() != 0 && cantidadDeDisparos > 0) {
+					int eleccion = rand.nextInt(limiteSuperiorRand);
 
-				if (objetivosTotales.size() != 0) {
-					while (objetivosTotales.size() != 0 && cantidadDeDisparos > 0) {
-						int eleccion = rand.nextInt(limiteSuperiorRand);
+					listaDisparos.add(objetivosTotales.get(eleccion).getTurnoEnArray());
 
-						listaDisparos.add(objetivosTotales.get(eleccion).getTurnoEnArray());
-
-						objetivosTotales.remove(eleccion);
-						cantidadDeDisparos--;
-					}
-				}
-
-				// Usar bola de nieve antes o despues de los dados
-
-				boolean despues = rand.nextBoolean();
-
-				if (despues) {
-					acciones.add(listaDisparos);
-				} else {
-					acciones.add(0, listaDisparos);
+					objetivosTotales.remove(eleccion);
+					cantidadDeDisparos--;
 				}
 			}
+
+			// Usar bola de nieve antes o despues de los dados
+
+			boolean despues = rand.nextBoolean();
+
+			if (despues) {
+				acciones.add(listaDisparos);
+			} else {
+				acciones.add(0, listaDisparos);
+			}
 		}
-		
+
 		return acciones;
 	}
 
@@ -374,9 +362,10 @@ public class GestorTablero {
 
 	}
 
+
 	public void setTablero(Tablero tablero) {
-
+		
 		this.tablero = tablero;
-
+		
 	}
 }
