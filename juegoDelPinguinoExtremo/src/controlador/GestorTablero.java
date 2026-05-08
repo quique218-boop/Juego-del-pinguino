@@ -12,8 +12,6 @@ public class GestorTablero {
 
 	private GestorJugador gestorjugador;
 
-	private GestorBBDD gestorbbdd;
-
 	private GestorCasilla gestorcasilla;
 
 	public GestorTablero() {
@@ -21,8 +19,6 @@ public class GestorTablero {
 		this.tablero = new Tablero();
 
 		this.gestorjugador = new GestorJugador(this.tablero);
-
-		this.gestorbbdd = new GestorBBDD();
 
 		this.gestorcasilla = new GestorCasilla();
 

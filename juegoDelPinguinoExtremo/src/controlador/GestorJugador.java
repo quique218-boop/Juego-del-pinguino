@@ -1,8 +1,5 @@
 package controlador;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import modelo.*;
 
 public class GestorJugador {

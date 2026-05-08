@@ -1,11 +1,8 @@
 package vista;
 
-import javafx.animation.Animation;
 import javafx.animation.Interpolator;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
-import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -173,8 +170,6 @@ public class PantallaJuego {
 
 		AddEventoHistorial("¡El juego ha comenzado!");
 
-		P1.getStyleClass().add("current-player"); // Pone el efecto del jugador actual al jugador 1
-
 		finalizarTurno.setDisable(true); // Desactivamos el boton de pasar de turno al principio
 
 		// Creacion gestor tablero y crear un nuevo tablero
@@ -192,17 +187,8 @@ public class PantallaJuego {
 
 			}
 
-			gestorTablero.añadirJugador(new Foca("Foca", "Amarillo", new Inventario()));
-
-			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
-			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
-			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
-			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
-			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
-			gestorTablero.getPartida().getArrayListJugador().getLast().getInventario().addListaBolas(new BolaDeNieve());
-
-			gestorTablero.getPartida().getArrayListJugador().getFirst().getInventario()
-					.addListaBolas(new BolaDeNieve());
+			// Asignar el jugador actual como el primero de la lista (Jugador 1)
+			gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
 		} else {
 			gestorTablero.setTablero(tablero);
 			guardada = true;
@@ -210,9 +196,6 @@ public class PantallaJuego {
 
 		// Pone el texto del tipo de casilla
 		mostrarTiposDeCasillasEnTablero(gestorTablero.getPartida());
-
-		// Asignar el jugador actual como el primero de la lista (Jugador 1)
-		gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
 
 		// Definir el atributo del orden de turno de jugadores
 		ponerTurnoEnArray();
@@ -224,6 +207,16 @@ public class PantallaJuego {
 			colocarJugadoresCargados();
 		}
 
+		int jugadorActualTurno = gestorTablero.getPartida().getJugadorActual().getTurnoEnArray();
+
+		// Pone el efecto del jugador actual al jugador actual
+		
+		jugadores.get(jugadorActualTurno).getStyleClass().add("current-player"); 
+		
+		// Inicia el turno en el del jugador actual
+		
+		turno = jugadorActualTurno;
+		
 		// Poner el menu acorde al inventario del jugador actual (Jugador 1)
 		ActualizarInventarioGUI(gestorTablero.getPartida().getJugadorActual());
 
@@ -261,20 +254,18 @@ public class PantallaJuego {
 	@FXML
 	private void handleNewGame() throws IOException {
 
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/PantallaJuego.fxml"));
+		Parent root = loader.load();
 
-    	FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/PantallaJuego.fxml"));
-        Parent root = loader.load();
-        
-        PantallaJuego controller = loader.getController();
-        controller.setUsuarios(usuarios);
-        
-        controller.inicio(null);
+		PantallaJuego controller = loader.getController();
+		controller.setUsuarios(usuarios);
 
+		controller.inicio(null);
 
-        Stage stage = (Stage) tablero.getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Juego");
-        stage.show();
+		Stage stage = (Stage) tablero.getScene().getWindow();
+		stage.setScene(new Scene(root));
+		stage.setTitle("Juego");
+		stage.show();
 	}
 
 	@FXML
@@ -845,9 +836,9 @@ public class PantallaJuego {
 	}
 
 	public void FinalizarTurno() {
-		
+
 		gestorTablero.getPartida().addTurnos();
-		
+
 		comprobarGanador();
 
 		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
