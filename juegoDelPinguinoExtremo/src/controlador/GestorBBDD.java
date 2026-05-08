@@ -24,7 +24,6 @@ public class GestorBBDD {
 	public GestorBBDD() {
 		
 	}
-
 	
 	public static void guardar(Tablero t1, int slot) {
 		
