@@ -150,7 +150,7 @@ public class EstadisticasController {
 
                 "\n🏆 Partidas ganadas: " + ganadas +
 
-                "\n⭐ Récord usuario: " + record +
+                "\n⭐ Récord usuario: " + record + " Pts" +
 
                 "\n📈 Posición ranking: #" + posicion +
 

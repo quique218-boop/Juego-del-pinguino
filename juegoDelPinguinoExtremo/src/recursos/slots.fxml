@@ -3,40 +3,141 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
+<BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="vista.Slots"
             stylesheets="@slots.css"
             style="-fx-background-color: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);">
 
+    <!-- TÍTULO -->
     <top>
         <Label text="Seleccionar Slot"
                BorderPane.alignment="CENTER"
-               style="-fx-text-fill: white; -fx-font-size: 26; -fx-padding: 20;"/>
+               style="-fx-text-fill: white;
+                      -fx-font-size: 26;
+                      -fx-font-weight: bold;
+                      -fx-padding: 20;"/>
     </top>
 
+    <!-- SLOTS -->
     <center>
-        <GridPane hgap="20" vgap="20" alignment="CENTER">
+        <GridPane hgap="20"
+                  vgap="20"
+                  alignment="CENTER">
 
-            <Button fx:id="slot1" text="Slot 1" onAction="#handleSlot" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="slot"/>
-            <Button fx:id="slot2" text="Slot 2" onAction="#handleSlot" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="slot"/>
-            <Button fx:id="slot3" text="Slot 3" onAction="#handleSlot" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="slot"/>
-            <Button fx:id="slot4" text="Slot 4" onAction="#handleSlot" GridPane.rowIndex="0" GridPane.columnIndex="3" styleClass="slot"/>
+            <!-- FILA 1 -->
 
-            <Button fx:id="slot5" text="Slot 5" onAction="#handleSlot" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="slot"/>
-            <Button fx:id="slot6" text="Slot 6" onAction="#handleSlot" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="slot"/>
-            <Button fx:id="slot7" text="Slot 7" onAction="#handleSlot" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="slot"/>
-            <Button fx:id="slot8" text="Slot 8" onAction="#handleSlot" GridPane.rowIndex="1" GridPane.columnIndex="3" styleClass="slot"/>
+            <Button fx:id="slot1"
+                    id="slot1"
+                    text="Slot 1"
+                    wrapText="true"
+                    prefWidth="180"
+                    prefHeight="90"
+                    onAction="#handleSlot"
+                    GridPane.rowIndex="0"
+                    GridPane.columnIndex="0"
+                    styleClass="slot"/>
+
+            <Button fx:id="slot2"
+                    id="slot2"
+                    text="Slot 2"
+                    wrapText="true"
+                    prefWidth="180"
+                    prefHeight="90"
+                    onAction="#handleSlot"
+                    GridPane.rowIndex="0"
+                    GridPane.columnIndex="1"
+                    styleClass="slot"/>
+
+            <Button fx:id="slot3"
+                    id="slot3"
+                    text="Slot 3"
+                    wrapText="true"
+                    prefWidth="180"
+                    prefHeight="90"
+                    onAction="#handleSlot"
+                    GridPane.rowIndex="0"
+                    GridPane.columnIndex="2"
+                    styleClass="slot"/>
+
+            <Button fx:id="slot4"
+                    id="slot4"
+                    text="Slot 4"
+                    wrapText="true"
+                    prefWidth="180"
+                    prefHeight="90"
+                    onAction="#handleSlot"
+                    GridPane.rowIndex="0"
+                    GridPane.columnIndex="3"
+                    styleClass="slot"/>
+
+            <!-- FILA 2 -->
+
+            <Button fx:id="slot5"
+                    id="slot5"
+                    text="Slot 5"
+                    wrapText="true"
+                    prefWidth="180"
+                    prefHeight="90"
+                    onAction="#handleSlot"
+                    GridPane.rowIndex="1"
+                    GridPane.columnIndex="0"
+                    styleClass="slot"/>
+
+            <Button fx:id="slot6"
+                    id="slot6"
+                    text="Slot 6"
+                    wrapText="true"
+                    prefWidth="180"
+                    prefHeight="90"
+                    onAction="#handleSlot"
+                    GridPane.rowIndex="1"
+                    GridPane.columnIndex="1"
+                    styleClass="slot"/>
+
+            <Button fx:id="slot7"
+                    id="slot7"
+                    text="Slot 7"
+                    wrapText="true"
+                    prefWidth="180"
+                    prefHeight="90"
+                    onAction="#handleSlot"
+                    GridPane.rowIndex="1"
+                    GridPane.columnIndex="2"
+                    styleClass="slot"/>
+
+            <Button fx:id="slot8"
+                    id="slot8"
+                    text="Slot 8"
+                    wrapText="true"
+                    prefWidth="180"
+                    prefHeight="90"
+                    onAction="#handleSlot"
+                    GridPane.rowIndex="1"
+                    GridPane.columnIndex="3"
+                    styleClass="slot"/>
 
         </GridPane>
     </center>
 
-
+    <!-- PARTE INFERIOR -->
     <bottom>
-        <VBox alignment="CENTER" spacing="10" style="-fx-padding: 20;">
-            <Label fx:id="mensaje" style="-fx-text-fill: red;"/>
-            <Button text="Volver" onAction="#volver"
-                    style="-fx-background-color: #444; -fx-text-fill: white; -fx-pref-width: 150;"/>
+        <VBox alignment="CENTER"
+              spacing="10"
+              style="-fx-padding: 20;">
+
+            <Label fx:id="mensaje"
+                   style="-fx-text-fill: #ff6b6b;
+                          -fx-font-size: 14;"/>
+
+            <Button text="Volver"
+                    onAction="#volver"
+                    prefWidth="160"
+                    style="-fx-background-color: #444;
+                           -fx-text-fill: white;
+                           -fx-font-size: 14;
+                           -fx-background-radius: 10;"/>
+
         </VBox>
     </bottom>
 

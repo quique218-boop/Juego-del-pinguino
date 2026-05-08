@@ -8,9 +8,9 @@ public class testetoBBDD {
 		
 		
 		
-		Usuario usuario = new Usuario("34", "34");
+		Tablero tablero = GestorBBDD.cargarTablero(8);
 		
-		System.out.println(GestorBBDD.obtenerJugadoresRecord());
+		System.out.println(tablero.getTurnos());
 
 	}
 }

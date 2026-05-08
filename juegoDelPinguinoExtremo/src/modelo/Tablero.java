@@ -39,6 +39,12 @@ public class Tablero {
 
 	}
 	
+	public void addTurnos() {
+		
+		 this.turnos += 1;
+		 
+	}
+	
 	public int getId() {
 		return this.idTablero;
 	}

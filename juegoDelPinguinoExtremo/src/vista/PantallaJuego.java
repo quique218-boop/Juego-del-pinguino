@@ -845,6 +845,8 @@ public class PantallaJuego {
 
 	public void FinalizarTurno() {
 		
+		gestorTablero.getPartida().addTurnos();
+		
 		comprobarGanador();
 
 		Jugador jugadorActual = gestorTablero.getPartida().getJugador(turno);
@@ -1000,7 +1002,7 @@ public class PantallaJuego {
 			controller.setGanador(ganador);
 			controller.inicio();
 
-			Stage stage = (Stage) P1.getScene().getWindow();
+			Stage stage = (Stage) tablero.getScene().getWindow();
 			stage.setScene(new Scene(root));
 			stage.show();
 

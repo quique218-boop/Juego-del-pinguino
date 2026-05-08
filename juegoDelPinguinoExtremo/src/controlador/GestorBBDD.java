@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -26,6 +28,26 @@ public class GestorBBDD {
 
 	
 	public static void guardar(Tablero t1, int slot) {
+		
+		if (existeSlot(slot)) {
+			
+				String deleteInventario =
+				    "DELETE FROM INVENTARIO " +
+				    "WHERE id_inventario IN (" +
+				    "SELECT id_inventario FROM JUGADOR " +
+				    "WHERE id_tablero = " + slot + ")";
+
+				String deleteJugadores =
+				    "DELETE FROM JUGADOR WHERE id_tablero = " + slot;
+
+				String deleteTablero =
+				    "DELETE FROM TABLERO WHERE id_tablero = " + slot;
+
+				BBDD.delete(con, deleteInventario);
+				BBDD.delete(con, deleteJugadores);
+				BBDD.delete(con, deleteTablero);
+				
+		}
 		
 		con = BBDD.conectarBaseDatos();
 
@@ -910,6 +932,44 @@ public class GestorBBDD {
 	    }
 
 	    return media;
+	}
+	
+	public static String obtenerInfoSlot(int slot) {
+
+	    con = BBDD.conectarBaseDatos();
+
+	    String sql = """
+	        SELECT turnos, fecha_inicio
+	        FROM TABLERO
+	        WHERE ID_TABLERO = ?
+	    """;
+
+	    try {
+
+	        PreparedStatement ps = con.prepareStatement(sql);
+
+	        ps.setInt(1, slot);
+
+	        ResultSet rs = ps.executeQuery();
+
+	        if (rs.next()) {
+
+	            int turno = rs.getInt("turnos");
+
+	            Timestamp fecha = rs.getTimestamp("fecha_inicio");
+
+	            SimpleDateFormat sdf =
+	                    new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+	            return "Turno " + turno + "\n" +
+	                   sdf.format(fecha);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return null;
 	}
 	
 	
