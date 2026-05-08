@@ -104,7 +104,7 @@ public class GestorBBDD {
 				
 				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 1, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
 						", "+slot+", '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
-						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", 0,  0)";
+						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", 1,  0)";
 				
 				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
 				           new String[]{"TOTAL"});
@@ -398,7 +398,7 @@ public class GestorBBDD {
 	}
 	
 	public static boolean crearUsuario(Usuario u) {
-	    String sql = "INSERT INTO USUARIO (ID_USUARIO, NOMBRE, CONTRASEÑA) VALUES (SEQ_USUARIO.NEXTVAL, ?, ?)";
+	    String sql = "INSERT INTO USUARIO VALUES (SEQ_USUARIO.NEXTVAL, ?, ?, 0, 0, 0)";
 
 	    try (Connection con = BBDD.conectarBaseDatos();
 	         PreparedStatement ps = con.prepareStatement(sql)) {
