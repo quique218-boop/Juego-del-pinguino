@@ -332,19 +332,21 @@ public class GestorTablero {
 		ArrayList<Jugador> listaJugadores = new ArrayList<>();
 
 		int jugadorPrincipalPos = jugador.getPos();
+		
+		if (jugadorPrincipalPos != 0) {
+			for (Jugador jugadorEnCasilla : tablero.getArrayListJugador()) {
 
-		for (Jugador jugadorEnCasilla : tablero.getArrayListJugador()) {
+				if (jugadorPrincipalPos == jugadorEnCasilla.getPos()) {
 
-			if (jugadorPrincipalPos == jugadorEnCasilla.getPos()) {
+					if (jugadorEnCasilla != jugador) {
 
-				if (jugadorEnCasilla != jugador) {
+						listaJugadores.add(jugadorEnCasilla);
 
-					listaJugadores.add(jugadorEnCasilla);
-
+					}
 				}
 			}
 		}
-
+		
 		return listaJugadores;
 	}
 
