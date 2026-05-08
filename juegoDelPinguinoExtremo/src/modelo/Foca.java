@@ -42,15 +42,15 @@ public class Foca extends Jugador {
 	}
 
 	public ArrayList<String> getGolpeados() {
+
+		ArrayList<String> golpeados = this.golpeados;
+
+		this.golpeados = new ArrayList<>();
+
 		return golpeados;
 	}
 
 	public void addGolpeados(Pinguino pinguino) {
 		golpeados.add(pinguino.getNombre() + " ha sido golpeado por " + this.getNombre());
 	}
-
-	public void resetGolpeados() {
-		golpeados = new ArrayList<>();
-	}
-
 }

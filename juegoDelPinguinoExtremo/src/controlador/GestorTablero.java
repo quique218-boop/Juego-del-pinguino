@@ -79,12 +79,12 @@ public class GestorTablero {
 
 		return estado;
 	}
-	
+
 	public ArrayList<String> estadoGolpeos() {
 
 		Foca foca = (Foca) tablero.getArrayListJugador().getLast();
 
-		ArrayList<String> estado = foca.getGolpeados(); 
+		ArrayList<String> estado = foca.getGolpeados();
 
 		return estado;
 	}
@@ -179,9 +179,13 @@ public class GestorTablero {
 
 			if (usarBola) {
 
-				ArrayList<Jugador> objetivosTotales = tablero.getArrayListJugador();
+				ArrayList<Jugador> objetivosTotales = new ArrayList<>();
+						
+				objetivosTotales.addAll(tablero.getArrayListJugador());
 
 				objetivosTotales.removeLast();
+				
+				System.out.println(tablero.getArrayListJugador());
 
 				limiteSuperiorRand = objetivosTotales.size();
 
@@ -197,9 +201,12 @@ public class GestorTablero {
 
 						objetivosTotales.remove(eleccion);
 						cantidadDeDisparos--;
+						limiteSuperiorRand--;
 					}
 				}
 
+				listaDisparos.add(9); // Identificador de que la lista de numeros es de objetivos y no dados
+				
 				// Usar bola de nieve antes o despues de los dados
 
 				boolean despues = rand.nextBoolean();
@@ -211,7 +218,7 @@ public class GestorTablero {
 				}
 			}
 		}
-		
+
 		return acciones;
 	}
 
@@ -333,14 +340,16 @@ public class GestorTablero {
 
 		int jugadorPrincipalPos = jugador.getPos();
 
-		for (Jugador jugadorEnCasilla : tablero.getArrayListJugador()) {
+		if (jugadorPrincipalPos != 0) {
+			for (Jugador jugadorEnCasilla : tablero.getArrayListJugador()) {
 
-			if (jugadorPrincipalPos == jugadorEnCasilla.getPos()) {
+				if (jugadorPrincipalPos == jugadorEnCasilla.getPos()) {
 
-				if (jugadorEnCasilla != jugador) {
+					if (jugadorEnCasilla != jugador) {
 
-					listaJugadores.add(jugadorEnCasilla);
+						listaJugadores.add(jugadorEnCasilla);
 
+					}
 				}
 			}
 		}
