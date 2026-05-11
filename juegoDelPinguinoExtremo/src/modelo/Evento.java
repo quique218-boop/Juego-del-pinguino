@@ -15,7 +15,7 @@ public class Evento extends Casilla {
 	@Override
 	public void realizarAccion(Tablero tablero, Jugador jugador) {
 
-		Random rand = new Random();
+		Random rand = new Random(); //Se selecciona un case random
 
 		switch (eventos[rand.nextInt(eventos.length)]) {
 
@@ -125,18 +125,18 @@ public class Evento extends Casilla {
 
 					this.resultado += "has perdido un dado de tipo: ";
 
-					this.resultado += (jugador.getInventario().getDado().get(posicionDado) instanceof DadoLento)
+					this.resultado += (jugador.getInventario().getDado().get(posicionDado) instanceof DadoLento)  //Se comprueba si el dado seleccionado es rapido o lento 
 							? "Lento"
 							: "Rapido";
 
-					jugador.getInventario().getDado().remove(posicionDado);
+					jugador.getInventario().getDado().remove(posicionDado); //Se elimina el seleccionado
 				}
 
 				System.out.println(this.resultado);
 				break;
 			}
 
-			default:
+			default: //Si se encuentra fuera de rango
 
 				System.out.println("Borrar inventario fuera de rango");
 

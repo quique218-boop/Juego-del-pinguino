@@ -85,7 +85,7 @@ public class Inventario {
 
 		int mBolas = listaBolas.size() / 2;
 
-		while (mDado > 0 || mPez > 0 || mBolas > 0) {
+		while (mDado > 0 || mPez > 0 || mBolas > 0) { //Se van borrando hasta que no hay mas de esta forma se ha quitado la mitad del inventario
 
 			if (!listaDado.isEmpty() && mDado > 0) {
 

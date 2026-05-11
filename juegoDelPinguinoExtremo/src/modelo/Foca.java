@@ -37,7 +37,7 @@ public class Foca extends Jugador {
 
 	public void esSobornado() {
 
-		this.setDeudaTurnos(2);
+		this.setDeudaTurnos(2); //Pierde 2 turnos
 
 	}
 
@@ -51,6 +51,6 @@ public class Foca extends Jugador {
 	}
 
 	public void addGolpeados(Pinguino pinguino) {
-		golpeados.add(pinguino.getNombre() + " ha sido golpeado por " + this.getNombre());
+		golpeados.add(pinguino.getNombre() + " ha sido golpeado por " + this.getNombre()); //Se muestra en el nombre del jugador golpeado en el historial de partida
 	}
 }

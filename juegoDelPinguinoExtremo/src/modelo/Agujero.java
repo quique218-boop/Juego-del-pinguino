@@ -10,6 +10,20 @@ public class Agujero extends Casilla {
 
 		boolean encontrado = false;
 
+		/*
+		 * Cuando un jugador cae en un agujero se realiza un bucle
+		 * que recorre el tablero hacia atrás desde la posición actual
+		 * del jugador buscando otro agujero.
+		 *
+		 * Si encuentra otro agujero:
+		 * - Se reproduce el sonido.
+		 * - Se mueve al jugador a esa posición.
+		 * - Se cambia la variable "encontrado" para detener el bucle.
+		 *
+		 * En caso contrario, el jugador vuelve al inicio del tablero.
+		 */
+
+		
 		for (int i = jugador.getPos() - 1; i > 0 && encontrado == false; i--) {
 
 			if (tablero.getCasilla(i) instanceof Agujero) {

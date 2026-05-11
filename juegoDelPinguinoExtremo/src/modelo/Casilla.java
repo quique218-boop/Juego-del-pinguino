@@ -8,6 +8,8 @@ public abstract class Casilla {
 	
 	public abstract void realizarAccion(Tablero tablero, Jugador jugador);
 	
+	//Modificamos y obtenemos la posicion del jugadorb  en el tablero
+	
 	public void setPosicion(int posicion) {
 		this.posicion = posicion;
 	}

@@ -10,7 +10,9 @@ public class efectos_de_sonido {
 
     private static final Map<String, AudioClip> sonidos = new HashMap<>();
 
-    public static void init() {
+    public static void init() { //Carga todos los archivos de audio
+    	
+    	//Guardamos los efectos en un Hashmap para cargarlos facilmente
     	
         cargar("bola", "/recursos/BoladeNieve.mp3");
         
@@ -37,7 +39,7 @@ public class efectos_de_sonido {
         cargar("perdida", "/recursos/Perdida.mp3");
     }
 
-    private static void cargar(String nombre, String ruta) {
+    private static void cargar(String nombre, String ruta) {	// obtiene la ruta del sonido, crea el * AudioClip y lo guarda en el mapa de sonidos.
     	
         try {
         	
@@ -59,7 +61,7 @@ public class efectos_de_sonido {
         
     }
 
-    public static void reproducir(String nombre) {
+    public static void reproducir(String nombre) { //Busca el sonido por su nombre si existe se reproduce
     	
         try {
         	
