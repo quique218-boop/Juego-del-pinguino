@@ -726,7 +726,6 @@ public class GestorBBDD {
 			ps.executeUpdate();
 
 			ps.close();
-			con.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -746,7 +745,6 @@ public class GestorBBDD {
 			ps.executeUpdate();
 
 			ps.close();
-			con.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
