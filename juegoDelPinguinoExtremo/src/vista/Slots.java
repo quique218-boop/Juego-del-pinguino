@@ -24,8 +24,11 @@ public class Slots {
 	@FXML private Button slot7;
 	@FXML private Button slot8;
 	
+	GestorBBDD gestorBBDD;
+	
 	@FXML
 	public void initialize() {
+		gestorBBDD = new GestorBBDD();
 	    actualizarSlots();
 	}
 
@@ -81,7 +84,7 @@ public class Slots {
     private void guardar(int slot) {
         try {
 
-            GestorBBDD.guardar(tableroActual, slot);
+            gestorBBDD.guardar(tableroActual, slot);
 
             actualizarSlots();
 
@@ -96,12 +99,12 @@ public class Slots {
 
     private void cargar(int slot) {
         try {
-            if (!GestorBBDD.existeSlot(slot)) {
+            if (!gestorBBDD.existeSlot(slot)) {
                 mensaje.setText("No hay partida en este slot");
                 return;
             }
 
-            Tablero p = GestorBBDD.cargarTablero(slot);
+            Tablero p = gestorBBDD.cargarTablero(slot);
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/PantallaJuego.fxml"));
 	        Parent root = loader.load();
@@ -155,10 +158,10 @@ public class Slots {
 
             int numSlot = i + 1;
 
-            if (GestorBBDD.existeSlot(numSlot)) {
+            if (gestorBBDD.existeSlot(numSlot)) {
 
                 String info =
-                        GestorBBDD.obtenerInfoSlot(numSlot);
+                        gestorBBDD.obtenerInfoSlot(numSlot);
 
                 botones[i].setText(info);
 

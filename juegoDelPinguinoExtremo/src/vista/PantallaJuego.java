@@ -104,6 +104,7 @@ public class PantallaJuego {
 
 	// Crear gestores
 	private GestorTablero gestorTablero;
+	private GestorBBDD gestorBBDD;
 
 	// Variables modificables
 	private ArrayList<Circle> jugadores = new ArrayList<>();
@@ -174,13 +175,16 @@ public class PantallaJuego {
 
 		// Creacion gestor tablero y crear un nuevo tablero
 		gestorTablero = new GestorTablero();
+		
+		// Creacion gestor base de datos
+		gestorBBDD = new GestorBBDD();
 
 		if (tablero == null) {
 			gestorTablero.NuevoTablero();
 
 			for (int i = 0; i < usuarios.size(); i++) {
 
-				GestorBBDD.sumarPartidaJugada(usuarios.get(i).getNombre());
+				gestorBBDD.sumarPartidaJugada(usuarios.get(i).getNombre());
 
 				gestorTablero.añadirJugador(
 						new Pinguino(usuarios.get(i).getNombre(), "Azul", new Inventario(), usuarios.get(i)));
@@ -989,7 +993,7 @@ public class PantallaJuego {
 
 			p.sumarPuntos(500);
 
-			GestorBBDD.sumarPartidaGanada(p.getUsuario().getNombre());
+			gestorBBDD.sumarPartidaGanada(p.getUsuario().getNombre());
 
 		}
 
@@ -999,7 +1003,7 @@ public class PantallaJuego {
 
 			if (j instanceof Pinguino p) {
 
-				GestorBBDD.sumarPuntuacion(p.getUsuario().getNombre(), p.getPuntuacion());
+				gestorBBDD.sumarPuntuacion(p.getUsuario().getNombre(), p.getPuntuacion());
 
 			}
 
