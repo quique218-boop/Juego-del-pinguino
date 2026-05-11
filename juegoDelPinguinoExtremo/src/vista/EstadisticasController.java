@@ -102,9 +102,9 @@ public class EstadisticasController {
             String user = userField.getText();
             String pass = passField.getText();
 
-            Usuario u = new Usuario(user, pass);
+            Usuario u = new Usuario(user);
 
-            if (!GestorBBDD.validarUsuario(u)) {
+            if (!GestorBBDD.validarUsuario(u, pass)) {
 
                 resultadoUsuario.setText(
                     "❌ Usuario incorrecto"

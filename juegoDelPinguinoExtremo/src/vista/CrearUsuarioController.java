@@ -40,7 +40,7 @@ public class CrearUsuarioController {
         String user = userField.getText();
         String pass = passField.getText();
         String confirm = confirmField.getText();
-        Usuario usuario = new Usuario(user, pass);
+        Usuario usuario = new Usuario(user);
 
         if (user.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
             mensajeError.setText("Rellena todos los campos");
@@ -52,14 +52,14 @@ public class CrearUsuarioController {
             return;
         }
 
-        if (GestorBBDD.validarUsuario(usuario)) {
+        if (GestorBBDD.validarUsuario(usuario, pass)) {
             mensajeError.setText("El usuario ya existe");
             return;
         }
 
-        Usuario u = new Usuario(user, pass);
+        Usuario u = new Usuario(user);
 
-        if (GestorBBDD.crearUsuario(u)) {
+        if (GestorBBDD.crearUsuario(u, pass)) {
             mensajeError.setText("Usuario creado correctamente");
         } else {
             mensajeError.setText("Error al crear usuario");

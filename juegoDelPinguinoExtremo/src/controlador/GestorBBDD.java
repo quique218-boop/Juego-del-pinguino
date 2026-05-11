@@ -394,11 +394,18 @@ public class GestorBBDD {
 			
 	}
 	
-	public static boolean validarUsuario(Usuario usuario) {
+	public static boolean validarUsuario(Usuario usuario, String pass) {
 	    
 	    Connection con = BBDD.conectarBaseDatos();
 	    
-	    String sql = "SELECT EXISTE('" + usuario.getNombre() + "', '" + usuario.getContraseña() + "') AS RES FROM dual";
+	    String hash = Seguridad.hashPassword(pass);
+
+	    String sql =
+	        "SELECT EXISTE('" +
+	        usuario.getNombre() +
+	        "', '" +
+	        hash +
+	        "') AS RES FROM dual";
 	    
 	    ArrayList<LinkedHashMap<String, String>> res = BBDD.select(con, sql);
 	    
@@ -417,15 +424,14 @@ public class GestorBBDD {
 	    
 	}
 	
-	public static boolean crearUsuario(Usuario u) {
+	public static boolean crearUsuario(Usuario u, String pass) {
 	    String sql = "INSERT INTO USUARIO VALUES (SEQ_USUARIO.NEXTVAL, ?, ?, 0, 0, 0)";
 
 	    try (Connection con = BBDD.conectarBaseDatos();
 	         PreparedStatement ps = con.prepareStatement(sql)) {
 
 	        ps.setString(1, u.getNombre());
-	        ps.setString(2, u.getContraseña());
-
+	        ps.setString(2, Seguridad.hashPassword(pass));
 	        ps.executeUpdate();
 	        return true;
 
@@ -461,7 +467,7 @@ public class GestorBBDD {
 	
 	public static Usuario obtenerUsuario(int idUsuario) {
 
-	    String sql = "SELECT NOMBRE, CONTRASEÑA FROM USUARIO WHERE ID_USUARIO = ?";
+	    String sql = "SELECT NOMBRE FROM USUARIO WHERE ID_USUARIO = ?";
 
 	    try (Connection con = BBDD.conectarBaseDatos();
 	         PreparedStatement ps = con.prepareStatement(sql)) {
@@ -472,9 +478,8 @@ public class GestorBBDD {
 
 	        if (rs.next()) {
 	            String nombre = rs.getString("NOMBRE");
-	            String contrasena = rs.getString("CONTRASEÑA");
 
-	            return new Usuario(nombre, contrasena);
+	            return new Usuario(nombre);
 	        }
 
 	    } catch (Exception e) {

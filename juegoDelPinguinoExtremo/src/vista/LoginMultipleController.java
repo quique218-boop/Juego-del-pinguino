@@ -40,9 +40,9 @@ public class LoginMultipleController {
 	            String user = userField.getText().trim();
 	            String pass = passField.getText().trim();
 
-	            Usuario u = new Usuario(user, pass);
+	            Usuario u = new Usuario(user);
 
-	            if (!GestorBBDD.validarUsuario(u)) {
+	            if (!GestorBBDD.validarUsuario(u, pass)) {
 	                textoJugador.setText("Usuario incorrecto");
 	                return;
 	            }
