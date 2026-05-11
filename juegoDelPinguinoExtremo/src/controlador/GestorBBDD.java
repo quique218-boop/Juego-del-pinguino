@@ -173,7 +173,7 @@ public class GestorBBDD {
 
 	}
 
-	public   Tablero cargarTablero(int indice) {
+	public Tablero cargarTablero(int indice) {
 
 		// HACEMOS EL SELECT QUE NECESITAMOS DE LA TABLA TABLERO
 
@@ -356,7 +356,7 @@ public class GestorBBDD {
 
 	}
 
-	public   boolean validarUsuario(Usuario usuario, String pass) {
+	public boolean validarUsuario(Usuario usuario, String pass) {
 
 		String hash = Seguridad.hashPassword(pass);
 
@@ -377,7 +377,7 @@ public class GestorBBDD {
 
 	}
 
-	public   boolean crearUsuario(Usuario u, String pass) {
+	public boolean crearUsuario(Usuario u, String pass) {
 		String sql = "INSERT INTO USUARIO VALUES (SEQ_USUARIO.NEXTVAL, ?, ?, 0, 0, 0)";
 
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -393,7 +393,7 @@ public class GestorBBDD {
 		}
 	}
 
-	public   int obtenerIdUsuario(Usuario usuario) {
+	public int obtenerIdUsuario(Usuario usuario) {
 
 		String sql = "SELECT ID_USUARIO " + "FROM USUARIO " + "WHERE NOMBRE = ? ";
 
@@ -414,7 +414,7 @@ public class GestorBBDD {
 		return -1; // no encontrado
 	}
 
-	public   Usuario obtenerUsuario(int idUsuario) {
+	public Usuario obtenerUsuario(int idUsuario) {
 
 		String sql = "SELECT NOMBRE FROM USUARIO WHERE ID_USUARIO = ?";
 
@@ -437,7 +437,7 @@ public class GestorBBDD {
 		return null; // no encontrado
 	}
 
-	public   boolean existeSlot(int slot) {
+	public boolean existeSlot(int slot) {
 
 		String sql = "SELECT COUNT(*) FROM TABLERO WHERE ID_TABLERO = ?";
 
@@ -459,7 +459,7 @@ public class GestorBBDD {
 
 	// FUNCIONES PL/SQL PARA LAS ESTADÍSTICAS
 
-	public   int partidasGanadas(int id) {
+	public int partidasGanadas(int id) {
 
 		int ganadas = 0;
 
@@ -481,7 +481,7 @@ public class GestorBBDD {
 
 	}
 
-	public   int partidasJugadas(int id) {
+	public int partidasJugadas(int id) {
 
 		int jugadas = 0;
 
@@ -502,7 +502,7 @@ public class GestorBBDD {
 		return jugadas;
 	}
 
-	public   int recordUsuario(int id) {
+	public int recordUsuario(int id) {
 
 		int record = 0;
 
@@ -524,7 +524,7 @@ public class GestorBBDD {
 
 	}
 
-	public   double obtenerMediaPuntuacion() {
+	public double obtenerMediaPuntuacion() {
 
 		double media = 0;
 
@@ -546,7 +546,7 @@ public class GestorBBDD {
 
 	}
 
-	public   String obtenerRankingTexto() {
+	public String obtenerRankingTexto() {
 
 		StringBuilder resultado = new StringBuilder();
 
@@ -577,7 +577,7 @@ public class GestorBBDD {
 		return resultado.toString();
 	}
 
-	public   int obtenerRecordGlobal() {
+	public int obtenerRecordGlobal() {
 
 		int record = 0;
 
@@ -601,7 +601,7 @@ public class GestorBBDD {
 		return record;
 	}
 
-	public   String obtenerJugadoresRecord() {
+	public String obtenerJugadoresRecord() {
 
 		String texto = "";
 
@@ -631,7 +631,7 @@ public class GestorBBDD {
 		return texto;
 	}
 
-	public   String obtenerJugadoresSuperiorMedia() {
+	public String obtenerJugadoresSuperiorMedia() {
 
 		String texto = "";
 
@@ -661,7 +661,7 @@ public class GestorBBDD {
 		return texto;
 	}
 
-	public   int obtenerPosicionRanking(int idUsuario) {
+	public int obtenerPosicionRanking(int idUsuario) {
 
 		int posicion = -1;
 
@@ -687,7 +687,7 @@ public class GestorBBDD {
 		return posicion;
 	}
 
-	public   double obtenerPorcentajeInferior(int ganadas) {
+	public double obtenerPorcentajeInferior(int ganadas) {
 
 		double porcentaje = 0;
 
@@ -713,7 +713,7 @@ public class GestorBBDD {
 		return porcentaje;
 	}
 
-	public   void sumarPartidaJugada(String nombreUsuario) {
+	public void sumarPartidaJugada(String nombreUsuario) {
 
 		try {
 
@@ -732,7 +732,7 @@ public class GestorBBDD {
 		}
 	}
 
-	public   void sumarPartidaGanada(String nombreUsuario) {
+	public void sumarPartidaGanada(String nombreUsuario) {
 
 		try {
 
@@ -751,7 +751,7 @@ public class GestorBBDD {
 		}
 	}
 
-	public   void sumarPuntuacion(String nombre, int puntos) {
+	public void sumarPuntuacion(String nombre, int puntos) {
 
 		String sql = "UPDATE USUARIO " + "SET PUNTUACIONTOTAL = PUNTUACIONTOTAL + ? " + "WHERE NOMBRE = ?";
 
@@ -767,7 +767,7 @@ public class GestorBBDD {
 		}
 	}
 
-	public   double mediaPartidasGanadas() {
+	public double mediaPartidasGanadas() {
 
 		double media = 0;
 
@@ -788,7 +788,7 @@ public class GestorBBDD {
 		return media;
 	}
 
-	public   String obtenerInfoSlot(int slot) {
+	public String obtenerInfoSlot(int slot) {
 
 		String sql = """
 				    SELECT turnos, fecha_inicio

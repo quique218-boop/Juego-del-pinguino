@@ -18,6 +18,8 @@ public class LoginMultipleController {
 	 @FXML private TextField userField;
 	    @FXML private PasswordField passField;
 	    @FXML private Label textoJugador;
+	    
+	    private GestorBBDD gestorBBDD;
 
 	    private int totalJugadores;
 	    private int actual = 0;
@@ -30,6 +32,7 @@ public class LoginMultipleController {
 
 	    @FXML
 	    public void initialize() {
+	    	gestorBBDD = new GestorBBDD();
 	        actualizarTexto();
 	    }
 
@@ -42,7 +45,7 @@ public class LoginMultipleController {
 
 	            Usuario u = new Usuario(user);
 
-	            if (!GestorBBDD.validarUsuario(u, pass)) {
+	            if (!gestorBBDD.validarUsuario(u, pass)) {
 	                textoJugador.setText("Usuario incorrecto");
 	                return;
 	            }
