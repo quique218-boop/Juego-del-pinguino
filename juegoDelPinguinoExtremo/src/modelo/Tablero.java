@@ -169,13 +169,14 @@ public class Tablero {
 		
 		tablero.add(new Agujero());
 		
+		// Se crean 48 casillas aleatorias según el número generado.
 		for(int i = 0; i < 48; i++) {
 			
 			int opcion = rand.nextInt(10);
 			
 			switch(opcion){
 			
-				case 1, 3, 5, 7, 9 :{
+				case 1, 3, 5, 7, 9 :{ //Depende el número generado se añadira una casilla o otra
 					
 					tablero.add(new Normal());
 					break;

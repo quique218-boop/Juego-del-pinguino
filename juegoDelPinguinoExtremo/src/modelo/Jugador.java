@@ -92,7 +92,7 @@ public abstract class Jugador {
 
 	public void moverPosicion(int nDado) {
 
-		this.posicion += nDado;
+		this.posicion += nDado; //Suma a la posicion el numero del dado
 
 		if (this.posicion >= 50)
 			this.posicion = 49;
@@ -156,7 +156,7 @@ public abstract class Jugador {
 		if (inventario == null)
 			return;
 
-		while (inventario.getBolas().size() != 0) {
+		while (inventario.getBolas().size() != 0) { //Mientras no este vacio se ira quitando
 			inventario.getBolas().removeFirst();
 		}
 
@@ -182,7 +182,7 @@ public abstract class Jugador {
 			inventario = new Inventario(new ArrayList<Dado>(), new ArrayList<Pez>(), new ArrayList<BolaDeNieve>());
 
 		if (item instanceof BolaDeNieve)
-			inventario.addListaBolas((BolaDeNieve) item);
+			inventario.addListaBolas((BolaDeNieve) item); //Añadimos bola de nieve
 
 		else if (item instanceof Pez)
 			inventario.addListaPez((Pez) item);
@@ -198,7 +198,7 @@ public abstract class Jugador {
 	public void quitarItem(Item item) {
 
 		if (item instanceof BolaDeNieve)
-			inventario.getBolas().removeFirst();
+			inventario.getBolas().removeFirst(); //Quitamos bola de nieve
 
 		else if (item instanceof Pez)
 			inventario.getPez().removeFirst();

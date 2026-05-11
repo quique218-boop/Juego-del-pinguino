@@ -13,7 +13,7 @@ public class SueloQuebradizo extends Casilla {
 		int numeroItemsTotal = jugador.getInventario().getBolas().size() + jugador.getInventario().getPez().size()
 				+ jugador.getInventario().getDado().size();
 
-		if (numeroItemsTotal > 5) {
+		if (numeroItemsTotal > 5) { //Si tiene mas de 5 objetos
 
 			efectos_de_sonido.sonidoHielo();
 			
@@ -24,7 +24,7 @@ public class SueloQuebradizo extends Casilla {
 			jugador.setPos(0);
 
 			
-		} else if (numeroItemsTotal > 0 && numeroItemsTotal <= 5) {
+		} else if (numeroItemsTotal > 0 && numeroItemsTotal <= 5) { //De 1 a 5 objetos
 
 			this.resultado = "El suelo se ha partido un poco y te has quedado atascado";
 

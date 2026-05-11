@@ -1,3 +1,6 @@
+/*Guarda el nombre del jugador y la posición a la que
+ * se ha movido.*/
+
 package modelo;
 
 public class PairMovimiento {

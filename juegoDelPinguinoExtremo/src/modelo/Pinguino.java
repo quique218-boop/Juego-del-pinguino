@@ -62,9 +62,9 @@ public class Pinguino extends Jugador {
 
 		int susBolas = jugador.contarBolasdeNieve();
 
-		if (misBolas > susBolas) {
+		if (misBolas > susBolas) { 
 
-			jugador.moverPosicion(susBolas - misBolas);
+			jugador.moverPosicion(susBolas - misBolas); //El jugador que gane la guerra retrocedera la diferencia de bolas de nieve
 			
 
 		} else if (susBolas > misBolas) {

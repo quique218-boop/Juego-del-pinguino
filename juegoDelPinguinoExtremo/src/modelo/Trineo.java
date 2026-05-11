@@ -9,7 +9,7 @@ public class Trineo extends Casilla {
 		
 		boolean encontrado = false;
 
-		for (int i = jugador.getPos() + 1; i < tablero.getArrayListCasilla().size() && encontrado == false; i++) {
+		for (int i = jugador.getPos() + 1; i < tablero.getArrayListCasilla().size() && encontrado == false; i++) { //Mira de la posición del jugador hacia adelante para encontrar otro trineo y mover al jugador allí
 
 			if (tablero.getCasilla(i) instanceof Trineo) {
 				jugador.setPos(i);
