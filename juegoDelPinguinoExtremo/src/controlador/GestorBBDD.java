@@ -376,23 +376,6 @@ public class GestorBBDD {
 			
 	}
 	
-	public void actualizarTablero(Tablero tablero, int id) {
-		
-		
-		con = BBDD.conectarBaseDatos();
-
-		BBDD.update(con, "DELETE FROM INVENTARIO WHERE ID_JUGADOR IN (SELECT ID_JUGADOR FROM JUGADOR WHERE ID_TABLERO = " + id + ")");
-	    
-	    BBDD.update(con, "DELETE FROM JUGADOR WHERE ID_TABLERO = " + id);
-	    
-	    BBDD.update(con, "DELETE FROM TABLERO WHERE ID_TABLERO = " + id);
-
-
-	    guardar(tablero, id);
-
-	    BBDD.cerrar(con);
-			
-	}
 	
 	public static boolean validarUsuario(Usuario usuario, String pass) {
 	    

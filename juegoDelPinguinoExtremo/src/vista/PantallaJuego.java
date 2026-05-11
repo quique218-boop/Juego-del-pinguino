@@ -192,8 +192,25 @@ public class PantallaJuego {
 			// Asignar el jugador actual como el primero de la lista (Jugador 1)
 			gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
 		} else {
+			
+			ArrayList<Usuario> u = new ArrayList<>();
+			
+			for (int i = 0; i < tablero.getArrayListJugador().size(); i++) {
+				
+				if(tablero.getArrayListJugador().get(i) instanceof Pinguino) {
+
+				u.add(((Pinguino)tablero.getArrayListJugador().get(i)).getUsuario());
+				
+				}
+
+			}
+			
+			usuarios = u;
+			
 			gestorTablero.setTablero(tablero);
+			
 			guardada = true;
+			
 		}
 
 		// Pone el texto del tipo de casilla
