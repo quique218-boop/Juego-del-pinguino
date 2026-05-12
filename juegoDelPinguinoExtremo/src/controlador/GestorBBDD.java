@@ -355,6 +355,55 @@ public class GestorBBDD {
 		return tablero;
 
 	}
+	
+	public static void borrarPartida(int slot) {
+
+	    try (Connection con = BBDD.conectarBaseDatos()) {
+
+	        // INVENTARIO
+	        String sqlInventario =
+	            "DELETE FROM INVENTARIO " +
+	            "WHERE ID_JUGADOR IN (" +
+	            "SELECT ID_JUGADOR FROM JUGADOR " +
+	            "WHERE ID_TABLERO = ?)";
+
+	        PreparedStatement ps1 =
+	            con.prepareStatement(sqlInventario);
+
+	        ps1.setInt(1, slot);
+
+	        ps1.executeUpdate();
+
+	        // JUGADORES
+	        String sqlJugadores =
+	            "DELETE FROM JUGADOR " +
+	            "WHERE ID_TABLERO = ?";
+
+	        PreparedStatement ps2 =
+	            con.prepareStatement(sqlJugadores);
+
+	        ps2.setInt(1, slot);
+
+	        ps2.executeUpdate();
+
+	        // TABLERO
+	        String sqlTablero =
+	            "DELETE FROM TABLERO " +
+	            "WHERE ID_TABLERO = ?";
+
+	        PreparedStatement ps3 =
+	            con.prepareStatement(sqlTablero);
+
+	        ps3.setInt(1, slot);
+
+	        ps3.executeUpdate();
+
+	        System.out.println("Partida borrada");
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
 
 	public boolean validarUsuario(Usuario usuario, String pass) {
 

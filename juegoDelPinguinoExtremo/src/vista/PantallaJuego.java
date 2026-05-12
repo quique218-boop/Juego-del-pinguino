@@ -750,8 +750,8 @@ public class PantallaJuego {
 				FinalizarTurno();
 			}
 
-			dxTotalFoca = new int[] { 0, 0, 0, 0 };
-			dyTotalFoca = new int[] { 0, 0, 0, 0 };
+			dxTotalFoca = new int[] { 0, 0, 0, 0, 0 };
+			dyTotalFoca = new int[] { 0, 0, 0, 0, 0 };
 
 			System.out.println("Despues de borrado" + animadorFoca.getTotalDuration());
 		});
@@ -1008,6 +1008,15 @@ public class PantallaJuego {
 			}
 
 		}
+		
+		int slot =
+		        gestorTablero.getPartida().getId();
+
+		    if (slot > 0) {
+
+		        GestorBBDD.borrarPartida(slot);
+
+		    }
 
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/Victoria.fxml"));
