@@ -24,10 +24,17 @@ public class CrearUsuarioController {
     @FXML private PasswordField confirmField;
     @FXML private Label mensajeError;
     
+    private GestorBBDD gestorBBDD;
+    
     private int totalJugadores;
     private int actual;
     private ArrayList<Usuario> usuarios;
 
+    @FXML
+    private void initialize() {
+    	gestorBBDD = new GestorBBDD();
+    }
+    
     public void setContextoLogin(int total, int act, ArrayList<Usuario> users) {
         this.totalJugadores = total;
         this.actual = act;
@@ -40,7 +47,7 @@ public class CrearUsuarioController {
         String user = userField.getText();
         String pass = passField.getText();
         String confirm = confirmField.getText();
-        Usuario usuario = new Usuario(user, pass);
+        Usuario usuario = new Usuario(user);
 
         if (user.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
             mensajeError.setText("Rellena todos los campos");
@@ -52,14 +59,14 @@ public class CrearUsuarioController {
             return;
         }
 
-        if (GestorBBDD.validarUsuario(usuario)) {
+        if (gestorBBDD.validarUsuario(usuario, pass)) {
             mensajeError.setText("El usuario ya existe");
             return;
         }
 
-        Usuario u = new Usuario(user, pass);
+        Usuario u = new Usuario(user);
 
-        if (GestorBBDD.crearUsuario(u)) {
+        if (gestorBBDD.crearUsuario(u, pass)) {
             mensajeError.setText("Usuario creado correctamente");
         } else {
             mensajeError.setText("Error al crear usuario");

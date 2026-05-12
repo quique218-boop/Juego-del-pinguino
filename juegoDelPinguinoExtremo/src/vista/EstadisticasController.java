@@ -33,7 +33,14 @@ public class EstadisticasController {
     @FXML private PasswordField passField;
     @FXML private TextArea resultadoUsuario;
     
-
+    private GestorBBDD gestorBBDD;
+    
+    @FXML
+    private void initialize() {
+    	gestorBBDD = new GestorBBDD();
+    }
+    
+    
     @FXML
     private void mostrarGlobales() {
 
@@ -61,28 +68,28 @@ public class EstadisticasController {
 
         try {
 
-            double media = GestorBBDD.obtenerMediaPuntuacion();
+            double media = gestorBBDD.obtenerMediaPuntuacion();
             mediaLabel.setText(String.format("%.2f", media));
 
-            int record = GestorBBDD.obtenerRecordGlobal();
+            int record = gestorBBDD.obtenerRecordGlobal();
             recordGlobalLabel.setText(String.valueOf(record));
 
             jugadoresRecordLabel.setText(
-                GestorBBDD.obtenerJugadoresRecord()
+                gestorBBDD.obtenerJugadoresRecord()
             );
             
             mediaGanadasLabel.setText(
             	    String.valueOf(
-            	        GestorBBDD.mediaPartidasGanadas()
+            	        gestorBBDD.mediaPartidasGanadas()
             	    )
             	);
 
             superioresMediaLabel.setText(
-                GestorBBDD.obtenerJugadoresSuperiorMedia()
+                gestorBBDD.obtenerJugadoresSuperiorMedia()
             );
 
             rankingArea.setText(
-                GestorBBDD.obtenerRankingTexto()
+                gestorBBDD.obtenerRankingTexto()
             );
 
         } catch (Exception e) {
@@ -102,9 +109,9 @@ public class EstadisticasController {
             String user = userField.getText();
             String pass = passField.getText();
 
-            Usuario u = new Usuario(user, pass);
+            Usuario u = new Usuario(user);
 
-            if (!GestorBBDD.validarUsuario(u)) {
+            if (!gestorBBDD.validarUsuario(u, pass)) {
 
                 resultadoUsuario.setText(
                     "❌ Usuario incorrecto"
@@ -113,16 +120,16 @@ public class EstadisticasController {
                 return;
             }
 
-            int id = GestorBBDD.obtenerIdUsuario(u);
+            int id = gestorBBDD.obtenerIdUsuario(u);
 
-            int ganadas = GestorBBDD.partidasGanadas(id);
-            int jugadas = GestorBBDD.partidasJugadas(id);
-            int record = GestorBBDD.recordUsuario(id);
+            int ganadas = gestorBBDD.partidasGanadas(id);
+            int jugadas = gestorBBDD.partidasJugadas(id);
+            int record = gestorBBDD.recordUsuario(id);
 
-            int posicion = GestorBBDD.obtenerPosicionRanking(id);
+            int posicion = gestorBBDD.obtenerPosicionRanking(id);
 
             double porcentaje =
-                GestorBBDD.obtenerPorcentajeInferior(ganadas);
+                gestorBBDD.obtenerPorcentajeInferior(ganadas);
 
             resultadoUsuario.setText(
 

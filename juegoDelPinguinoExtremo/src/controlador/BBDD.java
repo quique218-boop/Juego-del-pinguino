@@ -20,7 +20,6 @@ public class BBDD {
 	 *         FUNCIONES
 	 */
 	public static Connection conectarBaseDatos() {
-		System.out.println("Intentando conectarse a la base de datos...");
 
 		// 1) Elegir entorno con validación
 		String entorno = "";
@@ -31,7 +30,6 @@ public class BBDD {
 			//System.out.println("Selecciona centro o fuera de centro (CENTRO/FUERA):");
 			// entorno = scan.nextLine().trim().toLowerCase();
 			
-			System.out.println("SI NO FUNCIONA ES POR QUE ESTA HARDCODEADO A CENTRO!");
 			
 			entorno = "Centro";
 			
@@ -39,7 +37,6 @@ public class BBDD {
 				valido = true;
 			} 
 			else {
-				System.out.println("Entrada no válida. Escribe CENTRO o FUERA.");
 			}
 		}
 

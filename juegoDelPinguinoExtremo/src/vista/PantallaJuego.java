@@ -104,6 +104,7 @@ public class PantallaJuego {
 
 	// Crear gestores
 	private GestorTablero gestorTablero;
+	private GestorBBDD gestorBBDD;
 
 	// Variables modificables
 	private ArrayList<Circle> jugadores = new ArrayList<>();
@@ -174,13 +175,16 @@ public class PantallaJuego {
 
 		// Creacion gestor tablero y crear un nuevo tablero
 		gestorTablero = new GestorTablero();
+		
+		// Creacion gestor base de datos
+		gestorBBDD = new GestorBBDD();
 
 		if (tablero == null) {
 			gestorTablero.NuevoTablero();
 
 			for (int i = 0; i < usuarios.size(); i++) {
 
-				GestorBBDD.sumarPartidaJugada(usuarios.get(i).getNombre());
+				gestorBBDD.sumarPartidaJugada(usuarios.get(i).getNombre());
 
 				gestorTablero.añadirJugador(
 						new Pinguino(usuarios.get(i).getNombre(), "Azul", new Inventario(), usuarios.get(i)));
@@ -192,8 +196,25 @@ public class PantallaJuego {
 			// Asignar el jugador actual como el primero de la lista (Jugador 1)
 			gestorTablero.getPartida().setJugadorActual((gestorTablero.getPartida().getArrayListJugador().getFirst()));
 		} else {
+			
+			ArrayList<Usuario> u = new ArrayList<>();
+			
+			for (int i = 0; i < tablero.getArrayListJugador().size(); i++) {
+				
+				if(tablero.getArrayListJugador().get(i) instanceof Pinguino) {
+
+				u.add(((Pinguino)tablero.getArrayListJugador().get(i)).getUsuario());
+				
+				}
+
+			}
+			
+			usuarios = u;
+			
 			gestorTablero.setTablero(tablero);
+			
 			guardada = true;
+			
 		}
 
 		// Pone el texto del tipo de casilla
@@ -729,8 +750,8 @@ public class PantallaJuego {
 				FinalizarTurno();
 			}
 
-			dxTotalFoca = new int[] { 0, 0, 0, 0 };
-			dyTotalFoca = new int[] { 0, 0, 0, 0 };
+			dxTotalFoca = new int[] { 0, 0, 0, 0, 0 };
+			dyTotalFoca = new int[] { 0, 0, 0, 0, 0 };
 
 			System.out.println("Despues de borrado" + animadorFoca.getTotalDuration());
 		});
@@ -972,7 +993,7 @@ public class PantallaJuego {
 
 			p.sumarPuntos(500);
 
-			GestorBBDD.sumarPartidaGanada(p.getUsuario().getNombre());
+			gestorBBDD.sumarPartidaGanada(p.getUsuario().getNombre());
 
 		}
 
@@ -982,11 +1003,20 @@ public class PantallaJuego {
 
 			if (j instanceof Pinguino p) {
 
-				GestorBBDD.sumarPuntuacion(p.getUsuario().getNombre(), p.getPuntuacion());
+				gestorBBDD.sumarPuntuacion(p.getUsuario().getNombre(), p.getPuntuacion());
 
 			}
 
 		}
+		
+		int slot =
+		        gestorTablero.getPartida().getId();
+
+		    if (slot > 0) {
+
+		        GestorBBDD.borrarPartida(slot);
+
+		    }
 
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/Victoria.fxml"));

@@ -14,198 +14,132 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-
 public class GestorBBDD {
 
-	public static Connection con; //Guarda la conexión con la base de datos
-	
+	public static Connection con;
 
-	
-	public GestorBBDD() { //Costructor vacio
-		
+	public GestorBBDD() {
+		con = BBDD.conectarBaseDatos();
 	}
-	
-	public static void guardar(Tablero t1, int slot) { //Guarda un tablero en la base de datos
-		
-		if (existeSlot(slot)) { 
-			
-			//Si el slot ya está ocupado, borramos la partida guardada anteriormente
-			// para poder guardar la nueva partida en ese mismo slot.
-			
-				String deleteInventario =
-				    "DELETE FROM INVENTARIO " +
-				    "WHERE id_inventario IN (" +
-				    "SELECT id_inventario FROM JUGADOR " +
-				    "WHERE id_tablero = " + slot + ")";
 
-				String deleteJugadores =
-				    "DELETE FROM JUGADOR WHERE id_tablero = " + slot;
+	public void guardar(Tablero t1, int slot) {
 
-				String deleteTablero =
-				    "DELETE FROM TABLERO WHERE id_tablero = " + slot;
+		if (existeSlot(slot)) {
 
-				BBDD.delete(con, deleteInventario);
-				BBDD.delete(con, deleteJugadores);
-				BBDD.delete(con, deleteTablero);
-				
+			borrarPartida(slot);
+
 		}
-		
-		con = BBDD.conectarBaseDatos(); //Abre la conexión con la base de datos
 
-		//Iniciamos INSERT de la tabla TABLERO
+		// Iniciamos INSERT de la tabla TABLERO
 
-		int turnos_tablero = t1.getTurnos(); //Guardamos número de turnos actuales de la partida
+		int turnos_tablero = t1.getTurnos();
 
+		ArrayList<Casilla> casillas = t1.getArrayListCasilla();
 
-		ArrayList<Casilla> casillas = t1.getArrayListCasilla(); //Obtiene todas las casillas del tablero
-		
-		
-		ArrayList<Jugador> jugadores = t1.getArrayListJugador(); //Obtiene todos los jugadores
-		
+		ArrayList<Jugador> jugadores = t1.getArrayListJugador();
+
 		int posActual = 0;
-		
-		/*
-		 * Recorremos la lista de jugadores para saber cuál es el jugador actual.
-		 * Cuando lo encontramos, guardamos su índice en posActual.
-		 */
-		
-		for(int i = 0; i < jugadores.size(); i++) {
-			
-			if(jugadores.get(i) == t1.getJugadorActual()) {
-				
+
+		for (int i = 0; i < jugadores.size(); i++) {
+
+			if (jugadores.get(i) == t1.getJugadorActual()) {
+
 				posActual = i;
-				
+
 			}
 		}
-		
-		ArrayList<String> casillasBBDD = new ArrayList<>(); // Lista donde guardaremos las casillas como texto
-		
-		//La BBDD no puede guardar objetos Java por lo tanto lo convertimos en String
-		
-		for(int i = 0; i < casillas.size(); i++) {
-			
+
+		ArrayList<String> casillasBBDD = new ArrayList<>();
+
+		for (int i = 0; i < casillas.size(); i++) {
+
 			switch (casillas.get(i)) {
-			
-			case Agujero a -> casillasBBDD.add("Agujero");  // Si es Agujero, guardamos el texto "Agujero"
-			
+
+			case Agujero a -> casillasBBDD.add("Agujero");
+
 			case Evento e -> casillasBBDD.add("Evento");
-			
+
 			case SueloQuebradizo s -> casillasBBDD.add("SueloQuebradizo");
-			
+
 			case Trineo t -> casillasBBDD.add("Trineo");
-			
+
 			case Normal n -> casillasBBDD.add("Normal");
-			
+
 			case Oso o -> casillasBBDD.add("Oso");
-			
+
 			default -> throw new IllegalArgumentException("Unexpected value: " + casillas.get(i));
-			
-			
+
 			}
 		}
-		
-		String varray = ""; // String que tendrá el contenido del ARRAY_CASILLAS para Oracle
-		
-		// Añadimos todas las casillas menos la última con una coma al final.
-		 
-		
-		for(int i = 0; i < casillasBBDD.size()-1; i++) {
-			
-			 varray+= " '"+casillasBBDD.get(i)+"',";
-			
+
+		String varray = "";
+
+		for (int i = 0; i < casillasBBDD.size() - 1; i++) {
+
+			varray += " '" + casillasBBDD.get(i) + "',";
+
 		}
-		
-		varray += " '"+casillasBBDD.get(49)+"'";
-		
-		/*
-		 * Creamos el INSERT del tablero.
-		 *
-		 * Guarda:
-		 * - id del tablero/slot
-		 * - número de turnos
-		 * - jugador actual
-		 * - array con los tipos de casillas
-		 * - fecha actual con SYSDATE
-		 */
-		
-		String sqlTablero = "INSERT INTO TABLERO VALUES("+ slot+", "
-		+turnos_tablero+", "+posActual+", ARRAY_CASILLAS("+varray+"), SYSDATE)";
-		
+
+		varray += " '" + casillasBBDD.get(49) + "'";
+
+		String sqlTablero = "INSERT INTO TABLERO VALUES(" + slot + ", " + turnos_tablero + ", " + posActual
+				+ ", ARRAY_CASILLAS(" + varray + "), SYSDATE)";
+
 		System.out.println(sqlTablero);
 
-		
-		BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
-		           new String[]{"TOTAL"});
+		BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO", new String[] { "TOTAL" });
 
-		BBDD.insert(con, sqlTablero); //Termina el insert de la tabla TABLERO
-		
-		
-		//Hacemos el insert de jugador
-		
-		for(int i = 0; i < t1.getArrayListJugador().size(); i++) {
-			
-			if(t1.getArrayListJugador().get(i) instanceof Foca) {
-				
-				/*
-				 * Si el jugador es una Foca:
-				 * - FOCA se guarda como 1
-				 * - ID_USUARIO se pone como 1
-				 * - PUNTUACION se pone como 0
-				 */
-				
-				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 1, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
-						", "+slot+", '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
-						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", 1,  0)";
-				
-				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
-				           new String[]{"TOTAL"});
-				
-				System.out.println(sqlJugador); //Imprime el INSERT
-				
-				BBDD.insert(con, sqlJugador); //Inserta foca en la tabla Jugador
-				
-				
-			}
-			
-			else {
-				
-				/*
-				 * Si no es Foca, se considera que es un Pinguino.
-				 * En este caso también se guarda:
-				 * - el usuario asociado
-				 * - la puntuación del pingüino
-				 */
-				
-				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 0, " + t1.getArrayListJugador().get(i).getPos() + ", "+i+
-						", "+slot+", '" + t1.getArrayListJugador().get(i).getNombre() +"', '" +  t1.getArrayListJugador().get(i).getColor() + 
-						"', " +  t1.getArrayListJugador().get(i).getDeudaTurnos() + ", " + obtenerIdUsuario(((Pinguino)t1.getArrayListJugador().get(i)).getUsuario()) + ", " +
-						((Pinguino)t1.getArrayListJugador().get(i)).getPuntuacion() +")";		
-				
-				//BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
-				  //         new String[]{"TOTAL"});
-				
+		BBDD.insert(con, sqlTablero); // Termina el insert de la tabla TABLERO
+
+		// Hacemos el insert de jugador
+
+		for (int i = 0; i < t1.getArrayListJugador().size(); i++) {
+
+			if (t1.getArrayListJugador().get(i) instanceof Foca) {
+
+				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 1, "
+						+ t1.getArrayListJugador().get(i).getPos() + ", " + i + ", " + slot + ", '"
+						+ t1.getArrayListJugador().get(i).getNombre() + "', '"
+						+ t1.getArrayListJugador().get(i).getColor() + "', "
+						+ t1.getArrayListJugador().get(i).getDeudaTurnos() + ", 1,  0)";
+
+				BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO", new String[] { "TOTAL" });
+
 				System.out.println(sqlJugador);
-				
+
 				BBDD.insert(con, sqlJugador);
-				
+
 			}
-			
-			//Hacemos el insert de inventario a la vez que el de jugador
-			
+
+			else {
+
+				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 0, "
+						+ t1.getArrayListJugador().get(i).getPos() + ", " + i + ", " + slot + ", '"
+						+ t1.getArrayListJugador().get(i).getNombre() + "', '"
+						+ t1.getArrayListJugador().get(i).getColor() + "', "
+						+ t1.getArrayListJugador().get(i).getDeudaTurnos() + ", "
+						+ obtenerIdUsuario(((Pinguino) t1.getArrayListJugador().get(i)).getUsuario()) + ", "
+						+ ((Pinguino) t1.getArrayListJugador().get(i)).getPuntuacion() + ")";
+
+				// BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
+				// new String[]{"TOTAL"});
+
+				System.out.println(sqlJugador);
+
+				BBDD.insert(con, sqlJugador);
+
+			}
+
+			// Hacemos el insert de inventario a la vez que el de jugador
+
 			int n_peces = t1.getJugador(i).getInventario().getPez().size();
 
 			int n_bolas = t1.getJugador(i).getInventario().getBolas().size();
 
 			int n_dadoR = 0;
-			
+
 			int n_dadoL = 0;
 
-			/*
-			 * Recorremos todos los dados del inventario.
-			 * Si es DadoRapido, aumentamos n_dadoR.
-			 * Si es DadoLento, aumentamos n_dadoL.
-			 */
-			
 			for (Dado dado : t1.getJugador(i).getInventario().getDado()) {
 
 				if (dado instanceof DadoRapido) {
@@ -218,189 +152,171 @@ public class GestorBBDD {
 
 				}
 			}
-			
-			/*
-			 * Insertamos el inventario.
-			 *
-			 * seq_inventario.NEXTVAL genera un nuevo ID para el inventario.
-			 * seq_jugador.CURRVAL usa el ID del último jugador insertado,
-			 * para relacionar este inventario con ese jugador.
-			 */
-			
-			String sqlInventario = "INSERT INTO INVENTARIO VALUES(seq_inventario.NEXTVAL, "+ n_peces + ",  "+ n_bolas + ", "+ n_dadoR +
-					", "+ n_dadoL +", seq_jugador.CURRVAL)";
-			
-			BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO",
-			           new String[]{"TOTAL"});
+
+			String sqlInventario = "INSERT INTO INVENTARIO VALUES(seq_inventario.NEXTVAL, " + n_peces + ",  " + n_bolas
+					+ ", " + n_dadoR + ", " + n_dadoL + ", seq_jugador.CURRVAL)";
+
+			BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO", new String[] { "TOTAL" });
 			System.out.println(sqlInventario);
-			
+
 			BBDD.insert(con, sqlInventario);
 		}
-		
-		
-	}
-	
-	
 
-	public static Tablero cargarTablero(int indice) { //Cargamos tablero
-		
-		con = BBDD.conectarBaseDatos();
-		
-		//HACEMOS EL SELECT QUE NECESITAMOS DE LA TABLA TABLERO ---2
-		
-		ArrayList<LinkedHashMap<String, String>> partida =
-			    BBDD.select(con, "SELECT ID_TABLERO, TURNOS, JUGADOR_ACTUAL, FECHA_INICIO FROM TABLERO WHERE ID_TABLERO = "+indice);
-		
-		LinkedHashMap<String, String> fila = partida.get(0); //Cogemos la primera fila del resultado
+	}
+
+	public Tablero cargarTablero(int indice) {
+
+		// HACEMOS EL SELECT QUE NECESITAMOS DE LA TABLA TABLERO
+
+		ArrayList<LinkedHashMap<String, String>> partida = BBDD.select(con,
+				"SELECT ID_TABLERO, TURNOS, JUGADOR_ACTUAL, FECHA_INICIO FROM TABLERO WHERE ID_TABLERO = " + indice);
+
+		LinkedHashMap<String, String> fila = partida.get(0);
 
 		int idTablero = Integer.parseInt(fila.get("ID_TABLERO"));
-		
+
 		int turnos = Integer.parseInt(fila.get("TURNOS"));
-		
+
 		int jugadorActual = Integer.parseInt(fila.get("JUGADOR_ACTUAL"));
-		
+
 		String fecha = fila.get("FECHA_INICIO");
-         
-        ArrayList <Casilla> casilla = new ArrayList <>(); //Reconstruimos casillas del tablero
-		
-        /*
-    	 * Cargamos el ARRAY de casillas guardado en Oracle.
-    	 * "Normal", "Evento", "Agujero", etc.
-    	 */
+
+		ArrayList<Casilla> casilla = new ArrayList<>();
+
 		try (Statement st = con.createStatement();
-				
-			     ResultSet rs = st.executeQuery("SELECT CASILLAS FROM TABLERO WHERE ID_TABLERO = " + indice)) {
 
-			    if (rs.next()) {
-			    	
-			        Array array = rs.getArray("CASILLAS"); //Obtenemos el Array
-			        
-			        ArrayList<String> casillas = new ArrayList<>(); //Lista temporal de casillas
-			        
-			        Object[] casillaProv = (Object[]) array.getArray(); //de array SQL a array Java
+				ResultSet rs = st.executeQuery("SELECT CASILLAS FROM TABLERO WHERE ID_TABLERO = " + indice)) {
 
-			        for (Object c : casillaProv) {
-			            String tipo = c.toString(); //Cada elemento se convierte a String
-			            casillas.add(tipo); 
-			        }
-			        
-			       
-			        for (int i = 0; i < casillas.size(); i++) { //Recorremos
-			        	
-			        	switch (casillas.get(i)) {
-			        	
-			        	case "Normal":
-			        		casilla.add(new Normal()); //Reconstruimos casilla normal
-			        		break;
-			        	
-			        	case "Evento":
-			        		casilla.add(new Evento());
-			        		break;
-			        	
-			        	case "Agujero":
-			        		casilla.add(new Agujero());
-			        		break;
-			        		
-			        	case "SueloQuebradizo":
-			        		casilla.add(new SueloQuebradizo());
-			        		break;
-			        		
-			        	case "Trineo":
-			        		casilla.add(new Trineo());
-			        		break;
-			        		
-			        	case "Oso":
-			        		casilla.add(new Oso());
-			        		break;
+			if (rs.next()) {
 
-			        	}
-			        }
-			    }
+				Array array = rs.getArray("CASILLAS");
 
-			} catch (SQLException e) {
-			    e.printStackTrace(); //En caso de que falle da error
+				ArrayList<String> casillas = new ArrayList<>();
+
+				Object[] casillaProv = (Object[]) array.getArray();
+
+				for (Object c : casillaProv) {
+					String tipo = c.toString();
+					casillas.add(tipo);
+				}
+
+				for (int i = 0; i < casillas.size(); i++) {
+
+					switch (casillas.get(i)) {
+
+					case "Normal":
+						casilla.add(new Normal());
+						break;
+
+					case "Evento":
+						casilla.add(new Evento());
+						break;
+
+					case "Agujero":
+						casilla.add(new Agujero());
+						break;
+
+					case "SueloQuebradizo":
+						casilla.add(new SueloQuebradizo());
+						break;
+
+					case "Trineo":
+						casilla.add(new Trineo());
+						break;
+
+					case "Oso":
+						casilla.add(new Oso());
+						break;
+
+					}
+				}
 			}
-		//TERMINAMOS EL SELECT DE TABLERO
-		
-		//Empezamos el SELECT de jugadores
-		
-		ArrayList<Jugador>jugadores = new ArrayList<>(); //Donde guardaremos jugadores
-		
-		ArrayList<LinkedHashMap<String, String>> jugador =
-			    BBDD.select(con, "SELECT * FROM JUGADOR WHERE ID_TABLERO = " + indice + " ORDER BY TURNO ASC");
-		
-		for(LinkedHashMap<String, String> entrada : jugador) { //Recorremos a todos los jugadores y Order by turno ASC hace que salgan ordenados por el turno
-			
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		// TERMINAMOS EL SELECT DE TABLERO
+
+		// Empezamos el SELECT de jugadores
+
+		ArrayList<Jugador> jugadores = new ArrayList<>();
+
+		ArrayList<LinkedHashMap<String, String>> jugador = BBDD.select(con,
+				"SELECT * FROM JUGADOR WHERE ID_TABLERO = " + indice + " ORDER BY TURNO ASC");
+
+		for (LinkedHashMap<String, String> entrada : jugador) {
+
 			int idJugador = Integer.parseInt(entrada.get("ID_JUGADOR"));
-			
+
 			ArrayList<LinkedHashMap<String, String>> inventario =
-				   
-					BBDD.select(con, "SELECT NUM_PECES, NUM_BOLAS, NUM_DADOR, NUM_DADOL FROM INVENTARIO WHERE ID_JUGADOR = " + idJugador);
-			
-			
-			//Realizamos para cada jugador un SELECT de su inventario
-			
+
+					BBDD.select(con,
+							"SELECT NUM_PECES, NUM_BOLAS, NUM_DADOR, NUM_DADOL FROM INVENTARIO WHERE ID_JUGADOR = "
+									+ idJugador);
+
+			// Realizamos para cada jugador un SELECT de su inventario
+
 			LinkedHashMap<String, String> Objeto = inventario.get(0);
 
 			int num_peces = Integer.parseInt(Objeto.get("NUM_PECES"));
-			
+
 			ArrayList<Pez> peces = new ArrayList<>();
-			
-			for(int i = 0; i < num_peces; i++) {
-				
+
+			for (int i = 0; i < num_peces; i++) {
+
 				peces.add(new Pez());
-				
+
 			}
-			
+
 			int num_bolas = Integer.parseInt(Objeto.get("NUM_BOLAS"));
-			
+
 			ArrayList<BolaDeNieve> bolas = new ArrayList<>();
-			
-			for(int i = 0; i < num_bolas; i++) {
-				
+
+			for (int i = 0; i < num_bolas; i++) {
+
 				bolas.add(new BolaDeNieve());
-				
+
 			}
-			
+
 			int num_dador = Integer.parseInt(Objeto.get("NUM_DADOR"));
-			
+
 			ArrayList<Dado> dados = new ArrayList<>();
-			
-			for(int i = 0; i < num_dador; i++) {
-				
+
+			for (int i = 0; i < num_dador; i++) {
+
 				dados.add(new DadoRapido());
-				
+
 			}
-			
+
 			int num_dadoL = Integer.parseInt(Objeto.get("NUM_DADOL"));
-			
-			for(int i = 0; i < num_dadoL; i++) {
-				
+
+			for (int i = 0; i < num_dadoL; i++) {
+
 				dados.add(new DadoLento());
-				
+
 			}
-			
-			Inventario inventarios = new Inventario(dados, peces, bolas); //reconstruimos inventario completo
-			
-			//terminamos el SELECT de inventario
-			
-			int foca = Integer.parseInt(entrada.get("FOCA")); //Indica si es foca o pingüino
-			
-			if(foca == 1) { //Si  es foca creamos foca
+
+			Inventario inventarios = new Inventario(dados, peces, bolas);
+
+			// terminamos el SELECT de inventario
+
+			int foca = Integer.parseInt(entrada.get("FOCA"));
+
+			if (foca == 1) {
 				int posicion = Integer.parseInt(entrada.get("POSICION"));
 				int turno = Integer.parseInt(entrada.get("TURNO"));
 				String nombre = entrada.get("NOMBRE");
 				String color = entrada.get("COLOR");
 				int turnoPerdido = Integer.parseInt(entrada.get("TURNOSPERDIDOS"));
-				
+
 				Foca nuevo = new Foca(posicion, nombre, color, inventarios, turnoPerdido, turno);
-				
+
 				jugadores.add(nuevo);
 
 			}
-			
-			else { //creamos pinguino
-				
+
+			else {
+
 				int posicion = Integer.parseInt(entrada.get("POSICION"));
 				int turno = Integer.parseInt(entrada.get("TURNO"));
 				String nombre = entrada.get("NOMBRE");
@@ -408,636 +324,507 @@ public class GestorBBDD {
 				int turnoPerdido = Integer.parseInt(entrada.get("TURNOSPERDIDOS"));
 				int puntuacion = Integer.parseInt(entrada.get("PUNTUACION"));
 				int id_usuario = Integer.parseInt(entrada.get("ID_USUARIO"));
-				
+
 				Usuario usuario = obtenerUsuario(id_usuario);
-				
-				Pinguino nuevo = new Pinguino(posicion, nombre, color, inventarios, turnoPerdido, turno, puntuacion, usuario);
-				
+
+				Pinguino nuevo = new Pinguino(posicion, nombre, color, inventarios, turnoPerdido, turno, puntuacion,
+						usuario);
+
 				jugadores.add(nuevo);
-				
+
 			}
 
 		}
-		
-		//Terminamos el SELECT de Jugador; Ya tenemos el ArrayList DE Jugadores con sus respectivos inventarios
 
-		
+		// Terminamos el SELECT de Jugador; Ya tenemos el ArrayList DE Jugadores con sus
+		// respectivos inventarios
+
 		Jugador jugActual = jugadores.get(jugadorActual);
-		
-		
-		Tablero	tablero = new Tablero(jugadores, casilla, fecha, turnos, jugActual, idTablero);
-		
-		
+
+		Tablero tablero = new Tablero(jugadores, casilla, fecha, turnos, jugActual, idTablero);
+
 		return tablero;
-			
+
 	}
 	
-	public void actualizarTablero(Tablero tablero, int id) { //Actualiza partida ya guardada
-		
-		
-		con = BBDD.conectarBaseDatos();
+	public static void borrarPartida(int slot) {
 
-		//Borramos inventario de todos los jugadores
-		
-		BBDD.update(con, "DELETE FROM INVENTARIO WHERE ID_JUGADOR IN (SELECT ID_JUGADOR FROM JUGADOR WHERE ID_TABLERO = " + id + ")");
-	    
-	    BBDD.update(con, "DELETE FROM JUGADOR WHERE ID_TABLERO = " + id);
-	    
-	    BBDD.update(con, "DELETE FROM TABLERO WHERE ID_TABLERO = " + id);
+		String deleteInventario = "DELETE FROM INVENTARIO " + "WHERE id_inventario IN ("
+				+ "SELECT id_inventario FROM JUGADOR " + "WHERE id_tablero = " + slot + ")";
 
+		String deleteJugadores = "DELETE FROM JUGADOR WHERE id_tablero = " + slot;
 
-	    guardar(tablero, id);
+		String deleteTablero = "DELETE FROM TABLERO WHERE id_tablero = " + slot;
 
-	    BBDD.cerrar(con);
-			
+		BBDD.delete(con, deleteInventario);
+		BBDD.delete(con, deleteJugadores);
+		BBDD.delete(con, deleteTablero);
 	}
-	
-	public static boolean validarUsuario(Usuario usuario) {
-	    
-	    Connection con = BBDD.conectarBaseDatos();
-	    
-	    String sql = "SELECT EXISTE('" + usuario.getNombre() + "', '" + usuario.getContraseña() + "') AS RES FROM dual";
-	    
-	    ArrayList<LinkedHashMap<String, String>> res = BBDD.select(con, sql); //Ejecutamos Select
-	    
-	    BBDD.cerrar(con); //Cerramos conexión
-	    
-	    if (res.get(0).get("RES").toUpperCase().equals("S")) {
-	    	
-	        return true; //Usuario valido
-	        
-	    }
-	    
-	    else {
-	    	return false;
-	    
-	    }
-	    
+
+	public boolean validarUsuario(Usuario usuario, String pass) {
+
+		String hash = Seguridad.hashPassword(pass);
+
+		String sql = "SELECT EXISTE('" + usuario.getNombre() + "', '" + hash + "') AS RES FROM dual";
+
+		ArrayList<LinkedHashMap<String, String>> res = BBDD.select(con, sql);
+
+		if (res.get(0).get("RES").toUpperCase().equals("S")) {
+
+			return true;
+
+		}
+
+		else {
+			return false;
+
+		}
+
 	}
-	
-	public static boolean crearUsuario(Usuario u) {
-	    String sql = "INSERT INTO USUARIO VALUES (SEQ_USUARIO.NEXTVAL, ?, ?, 0, 0, 0)";
 
-	    try (Connection con = BBDD.conectarBaseDatos();
-	         PreparedStatement ps = con.prepareStatement(sql)) { 
+	public boolean crearUsuario(Usuario u, String pass) {
+		String sql = "INSERT INTO USUARIO VALUES (SEQ_USUARIO.NEXTVAL, ?, ?, 0, 0, 0)";
 
-	        ps.setString(1, u.getNombre());
-	        ps.setString(2, u.getContraseña());
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
 
-	        ps.executeUpdate(); //Insert
-	        return true; //Creado correctamente
+			ps.setString(1, u.getNombre());
+			ps.setString(2, Seguridad.hashPassword(pass));
+			ps.executeUpdate();
+			return true;
 
-	    } catch (Exception e) {
-	        e.printStackTrace(); //Muestra error
-	        return false;
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
-	
-	public static int obtenerIdUsuario(Usuario usuario) {
 
-	    String sql = "SELECT ID_USUARIO " +
-	                 "FROM USUARIO " +
-	                 "WHERE NOMBRE = ? ";
+	public int obtenerIdUsuario(Usuario usuario) {
 
-	    //Busca un usuario que el nombre coincida
-	    
-	    try (Connection con = BBDD.conectarBaseDatos();
-	         PreparedStatement ps = con.prepareStatement(sql)) {
+		String sql = "SELECT ID_USUARIO " + "FROM USUARIO " + "WHERE NOMBRE = ? ";
 
-	        ps.setString(1, usuario.getNombre());
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
 
-	        ResultSet rs = ps.executeQuery();
+			ps.setString(1, usuario.getNombre());
 
-	        if (rs.next()) {
-	            return rs.getInt("ID_USUARIO");
-	        }
+			ResultSet rs = ps.executeQuery();
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+			if (rs.next()) {
+				return rs.getInt("ID_USUARIO");
+			}
 
-	    return -1; // no encontrado
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return -1; // no encontrado
 	}
-	
-	public static Usuario obtenerUsuario(int idUsuario) {
 
-	    String sql = "SELECT NOMBRE, CONTRASEÑA FROM USUARIO WHERE ID_USUARIO = ?";
+	public Usuario obtenerUsuario(int idUsuario) {
 
-	    try (Connection con = BBDD.conectarBaseDatos();
-	         PreparedStatement ps = con.prepareStatement(sql)) {
+		String sql = "SELECT NOMBRE FROM USUARIO WHERE ID_USUARIO = ?";
 
-	        ps.setInt(1, idUsuario); //Sustituye el ? por el ID
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
 
-	        ResultSet rs = ps.executeQuery(); //Ejecuta consulta
+			ps.setInt(1, idUsuario);
 
-	        if (rs.next()) { //Si encuentra usuario
-	            String nombre = rs.getString("NOMBRE");
-	            String contrasena = rs.getString("CONTRASEÑA");
+			ResultSet rs = ps.executeQuery();
 
-	            return new Usuario(nombre, contrasena);
-	        }
+			if (rs.next()) {
+				String nombre = rs.getString("NOMBRE");
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+				return new Usuario(nombre);
+			}
 
-	    return null; // no encontrado
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null; // no encontrado
 	}
-	
-	public static boolean existeSlot(int slot) {
 
-	    String sql = "SELECT COUNT(*) FROM TABLERO WHERE ID_TABLERO = ?";
+	public boolean existeSlot(int slot) {
 
-	    try (Connection con = BBDD.conectarBaseDatos();
-	         PreparedStatement ps = con.prepareStatement(sql)) {
+		String sql = "SELECT COUNT(*) FROM TABLERO WHERE ID_TABLERO = ?";
 
-	        ps.setInt(1, slot); //Sustituye el ? por el numero de slot
-	        ResultSet rs = ps.executeQuery();
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
 
-	        if (rs.next()) {
-	            return rs.getInt(1) > 0; //Si es mayor que 0 existe el slot
-	        }
+			ps.setInt(1, slot);
+			ResultSet rs = ps.executeQuery();
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+			if (rs.next()) {
+				return rs.getInt(1) > 0;
+			}
 
-	    return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return false;
 	}
-	
-	
-	//FUNCIONES PL/SQL PARA LAS ESTADÍSTICAS
-	
-	public static int partidasGanadas(int id) {
-		
+
+	// FUNCIONES PL/SQL PARA LAS ESTADÍSTICAS
+
+	public int partidasGanadas(int id) {
+
 		int ganadas = 0;
 
-	    String sql =
-	        "SELECT PARTIDASGANADAS " +
-	        "FROM USUARIO " +
-	        "WHERE ID_USUARIO = " + id; //Busca partidas ganadas
+		String sql = "SELECT PARTIDASGANADAS " + "FROM USUARIO " + "WHERE ID_USUARIO = " + id;
 
-	    try (Connection con = BBDD.conectarBaseDatos()) {
+		try {
 
-	        ArrayList<LinkedHashMap<String, String>> res =
-	                BBDD.select(con, sql); //Ejecuta el select
-	        
+			ArrayList<LinkedHashMap<String, String>> res = BBDD.select(con, sql);
 
-	        if (!res.isEmpty()) { //Si devuelve resultados
-	            ganadas = Integer.parseInt(
-	                    res.get(0).get("PARTIDASGANADAS")
-	            );
-	        }
+			if (!res.isEmpty()) {
+				ganadas = Integer.parseInt(res.get(0).get("PARTIDASGANADAS"));
+			}
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-	    return ganadas;
-		
+		return ganadas;
+
 	}
-	
-	public static int partidasJugadas(int id) {
-		
+
+	public int partidasJugadas(int id) {
+
 		int jugadas = 0;
 
-	    String sql =
-	        "SELECT PARTIDASJUGADAS " +
-	        "FROM USUARIO " +
-	        "WHERE ID_USUARIO = " + id;
+		String sql = "SELECT PARTIDASJUGADAS " + "FROM USUARIO " + "WHERE ID_USUARIO = " + id;
 
-	    try (Connection con = BBDD.conectarBaseDatos()) {
+		try {
 
-	        ArrayList<LinkedHashMap<String, String>> res =
-	                BBDD.select(con, sql);
+			ArrayList<LinkedHashMap<String, String>> res = BBDD.select(con, sql);
 
-	        if (!res.isEmpty()) {
-	            jugadas = Integer.parseInt(
-	                    res.get(0).get("PARTIDASJUGADAS")
-	            );
-	        }
+			if (!res.isEmpty()) {
+				jugadas = Integer.parseInt(res.get(0).get("PARTIDASJUGADAS"));
+			}
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-	    return jugadas;
+		return jugadas;
 	}
-		
-	
 
-	public static int recordUsuario(int id) {
-		
+	public int recordUsuario(int id) {
+
 		int record = 0;
 
-	    String sql =
-	        "SELECT PUNTUACIONTOTAL " +
-	        "FROM USUARIO " +
-	        "WHERE ID_USUARIO = " + id;
+		String sql = "SELECT PUNTUACIONTOTAL " + "FROM USUARIO " + "WHERE ID_USUARIO = " + id;
 
-	    try (Connection con = BBDD.conectarBaseDatos()) {
+		try {
 
-	        ArrayList<LinkedHashMap<String, String>> res =
-	                BBDD.select(con, sql);
+			ArrayList<LinkedHashMap<String, String>> res = BBDD.select(con, sql);
 
-	        if (!res.isEmpty()) {
-	            record = Integer.parseInt(
-	                    res.get(0).get("PUNTUACIONTOTAL")
-	            );
-	        }
+			if (!res.isEmpty()) {
+				record = Integer.parseInt(res.get(0).get("PUNTUACIONTOTAL"));
+			}
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-	    return record;
-	
+		return record;
+
 	}
-	
-	public static double obtenerMediaPuntuacion() {
-		
+
+	public double obtenerMediaPuntuacion() {
+
 		double media = 0;
 
-	    try (Connection conn = BBDD.conectarBaseDatos()) {
+		try {
 
-	    	/*
-	         * CallableStatement se usa para llamar a funciones o procedimientos PL/SQL.
-	         * El ? representa el valor que devuelve la función.
-	         */
-	    	
-	        CallableStatement stmt = conn.prepareCall("{ ? = call MEDIAPUNTUACION() }");
+			CallableStatement stmt = con.prepareCall("{ ? = call MEDIAPUNTUACION() }");
 
-	        stmt.registerOutParameter(1, java.sql.Types.NUMERIC); //Indicamos que el resultado será numérico
+			stmt.registerOutParameter(1, java.sql.Types.NUMERIC);
 
-	        stmt.execute(); //Ejecuta la funcion PL/SQL
+			stmt.execute();
 
-	        media = stmt.getDouble(1); // Recoge el resultado devuelto por la función
+			media = stmt.getDouble(1);
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-
-	    return media;
-		
-	}
-	
-	
-	public static String obtenerRankingTexto() {
-	    
-		StringBuilder resultado = new StringBuilder(); // Sirve para construir un texto largo de forma eficiente
-
-	    try (Connection conn = BBDD.conectarBaseDatos()) {
-	    	//Devuelve una lista de filas
-	        CallableStatement stmt = conn.prepareCall("{ ? = call RANKING() }");
-	        stmt.registerOutParameter(1, oracle.jdbc.OracleTypes.CURSOR); // El resultado será un cursor
-
-	        stmt.execute();
-
-	        ResultSet rs = ((oracle.jdbc.OracleCallableStatement) stmt).getCursor(1);
-	        int posicion = 1; // Contador para numerar el ranking
-
-	        while (rs.next()) {
-	            String nombre = rs.getString("NOMBRE");
-	            int puntos = rs.getInt("PUNTUACIONTOTAL");
-
-	            resultado.append(posicion)
-	                     .append(". ")
-	                     .append(nombre)
-	                     .append(" - ")
-	                     .append(puntos)
-	                     .append(" pts\n");
-	            
-
-	            posicion++;
-	        }
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return "Error al cargar ranking";
-	    }
-
-	    return resultado.toString(); // Devuelve el ranking convertido a String
-	}
-	
-	
-	public static int obtenerRecordGlobal() {
-
-	    int record = 0;
-
-	    try {
-
-	        con = BBDD.conectarBaseDatos();
-
-	        //Esta función devuelve un número entero.
-	        
-	        
-	        CallableStatement cs =
-	            con.prepareCall("{ ? = call RECORD_GANADAS() }");
-
-	        cs.registerOutParameter(1, java.sql.Types.INTEGER); //Resultado sera un entero
-
-	        cs.execute();
-
-	        record = cs.getInt(1);
-
-	        cs.close();
-
-	    } catch (Exception e) {
-
-	        e.printStackTrace();
-	    }
-
-	    return record;
-	}
-	
-	public static String obtenerJugadoresRecord() {
-
-	    String texto = "";
-
-	    try {
-
-	        con = BBDD.conectarBaseDatos();
-//Devuelve un cursor con los jugadores que tienen el record
-	        CallableStatement cs =
-	            con.prepareCall("{ ? = call JUGADORES_RECORD() }"); 
-
-	        cs.registerOutParameter(
-	            1,
-	            oracle.jdbc.OracleTypes.CURSOR
-	        );
-
-	        cs.execute();
-
-	        ResultSet rs =
-	            (ResultSet) cs.getObject(1); //Obtiene el cursor
-
-	        while (rs.next()) {
-
-	            texto += "🏆 "
-	                   + rs.getString("NOMBRE")
-	                   + "\n";
-	        }
-
-	        rs.close();
-	        cs.close();
-
-	    } catch (Exception e) {
-
-	        e.printStackTrace();
-	    }
-
-	    return texto;
-	}
-	
-	
-	public static String obtenerJugadoresSuperiorMedia() {
-
-	    String texto = "";
-
-	    try {
-
-	        con = BBDD.conectarBaseDatos();
-
-	        CallableStatement cs =
-	            con.prepareCall(
-	                "{ ? = call JUGADORES_SUPERIOR_MEDIA() }"
-	            );
-
-	        cs.registerOutParameter(
-	            1,
-	            oracle.jdbc.OracleTypes.CURSOR
-	        );
-
-	        cs.execute();
-
-	        ResultSet rs =
-	            (ResultSet) cs.getObject(1);
-
-	        while (rs.next()) {
-
-	            texto += "⭐ "
-	                   + rs.getString("NOMBRE")
-	                   + " ("
-	                   + rs.getInt("PARTIDASGANADAS")
-	                   + ")\n";
-	        }
-
-	        rs.close();
-	        cs.close();
-
-	    } catch (Exception e) {
-
-	        e.printStackTrace();
-	    }
-
-	    return texto;
-	}
-	
-	public static int obtenerPosicionRanking(int idUsuario) { //Devuelve posición del usuario en el ranking
-
-	    int posicion = -1; //Indica que no se ha encontrado o ha fallado
-
-	    try {
-
-	        con = BBDD.conectarBaseDatos();
-
-	        CallableStatement cs =
-	            con.prepareCall(
-	                "{ ? = call POSICION_RANKING(?) }"
-	            );
-
-	        cs.registerOutParameter(
-	            1,
-	            java.sql.Types.INTEGER //Valor devuelto a la funcion
-	        );
-
-	        cs.setInt(2, idUsuario); //id de usuario que se pasa a la funcion
-
-	        cs.execute();
-
-	        posicion = cs.getInt(1); //resultado
-
-	        cs.close();
-
-	    } catch (Exception e) {
-
-	        e.printStackTrace();
-	    }
-
-	    return posicion;
-	}
-	
-	public static double obtenerPorcentajeInferior(int ganadas) { //Menos partidas ganadas
-
-		    double porcentaje = 0;
-
-		    try {
-
-		        con = BBDD.conectarBaseDatos();
-//Recibe un número de partidas ganadas y se devuelve el % que esta por debajo
-		        CallableStatement cs =
-		            con.prepareCall(
-		                "{ ? = call PORCENTAJE_INFERIOR(?) }"
-		            );
-
-		        cs.registerOutParameter(
-		            1,
-		            java.sql.Types.DOUBLE
-		        );
-
-		        cs.setInt(2, ganadas);
-
-		        cs.execute();
-
-		        porcentaje = cs.getDouble(1);
-
-		        cs.close();
-
-		    } catch (Exception e) {
-
-		        e.printStackTrace();
-		    }
-
-		    return porcentaje;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-	
-	public static void sumarPartidaJugada( //Suma una partida jugada al usuario
-	        String nombreUsuario) {
 
-	    Connection con =
-	            BBDD.conectarBaseDatos();
+		return media;
 
-	    try {
-
-	        String sql =
-	                "UPDATE USUARIO " +
-	                "SET PARTIDASJUGADAS = " +
-	                "PARTIDASJUGADAS + 1 " +
-	                "WHERE NOMBRE = ?";
-
-	        PreparedStatement ps =
-	                con.prepareStatement(sql);
-
-	        ps.setString(1, nombreUsuario); //Sustituye el ? por el nombre del usuario
-
-	        ps.executeUpdate();
-
-	        ps.close();
-	        con.close();
-
-	    } catch(Exception e) {
-	        e.printStackTrace();
-	    }
 	}
-	
-	public static void sumarPartidaGanada(
-	        String nombreUsuario) {
 
-	    Connection con =
-	            BBDD.conectarBaseDatos();
+	public String obtenerRankingTexto() {
 
-	    try {
+		StringBuilder resultado = new StringBuilder();
 
-	        String sql =
-	                "UPDATE USUARIO " +
-	                "SET PARTIDASGANADAS = " +
-	                "PARTIDASGANADAS + 1 " +
-	                "WHERE NOMBRE = ?";
+		try {
 
-	        PreparedStatement ps =
-	                con.prepareStatement(sql);
+			CallableStatement stmt = con.prepareCall("{ ? = call RANKING() }");
+			stmt.registerOutParameter(1, oracle.jdbc.OracleTypes.CURSOR);
 
-	        ps.setString(1, nombreUsuario);
+			stmt.execute();
 
-	        ps.executeUpdate();
+			ResultSet rs = ((oracle.jdbc.OracleCallableStatement) stmt).getCursor(1);
+			int posicion = 1;
 
-	        ps.close();
-	        con.close();
+			while (rs.next()) {
+				String nombre = rs.getString("NOMBRE");
+				int puntos = rs.getInt("PUNTUACIONTOTAL");
 
-	    } catch(Exception e) {
-	        e.printStackTrace();
-	    }
+				resultado.append(posicion).append(". ").append(nombre).append(" - ").append(puntos).append(" pts\n");
+
+				posicion++;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error al cargar ranking";
+		}
+
+		return resultado.toString();
 	}
-	
-	public static void sumarPuntuacion(String nombre, int puntos) {
 
-	    String sql = "UPDATE USUARIO " +
-	                 "SET PUNTUACIONTOTAL = PUNTUACIONTOTAL + ? " +
-	                 "WHERE NOMBRE = ?";
+	public int obtenerRecordGlobal() {
 
-	    try (Connection con = BBDD.conectarBaseDatos();
-	         PreparedStatement ps = con.prepareStatement(sql)) {
+		int record = 0;
 
-	        ps.setInt(1, puntos); //Puntos que se suman
-	        ps.setString(2, nombre); //nombre del usuario
+		try {
 
-	        ps.executeUpdate();
+			CallableStatement cs = con.prepareCall("{ ? = call RECORD_GANADAS() }");
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+			cs.registerOutParameter(1, java.sql.Types.INTEGER);
+
+			cs.execute();
+
+			record = cs.getInt(1);
+
+			cs.close();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		return record;
 	}
-	
-	public static double mediaPartidasGanadas() {
 
-	    double media = 0;
+	public String obtenerJugadoresRecord() {
 
-	    try (Connection conn = BBDD.conectarBaseDatos()) {
+		String texto = "";
 
-	        CallableStatement stmt =
-	            conn.prepareCall("{ ? = call MEDIA_PARTIDAS_GANADAS() }");
+		try {
 
-	        stmt.registerOutParameter(1, java.sql.Types.NUMERIC);
+			CallableStatement cs = con.prepareCall("{ ? = call JUGADORES_RECORD() }");
 
-	        stmt.execute();
+			cs.registerOutParameter(1, oracle.jdbc.OracleTypes.CURSOR);
 
-	        media = stmt.getDouble(1); //Devuelve numero con la media de partidas ganadas
+			cs.execute();
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+			ResultSet rs = (ResultSet) cs.getObject(1);
 
-	    return media;
+			while (rs.next()) {
+
+				texto += "🏆 " + rs.getString("NOMBRE") + "\n";
+			}
+
+			rs.close();
+			cs.close();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		return texto;
 	}
-	
-	public static String obtenerInfoSlot(int slot) { // Devuelve información resumida de una partida guardada
 
-	    con = BBDD.conectarBaseDatos();
+	public String obtenerJugadoresSuperiorMedia() {
 
-	    String sql = """
-	        SELECT turnos, fecha_inicio
-	        FROM TABLERO
-	        WHERE ID_TABLERO = ?
-	    """;
+		String texto = "";
 
-	    try {
+		try {
 
-	        PreparedStatement ps = con.prepareStatement(sql);
+			CallableStatement cs = con.prepareCall("{ ? = call JUGADORES_SUPERIOR_MEDIA() }");
 
-	        ps.setInt(1, slot); // Sustituye el ? por el número de slot
+			cs.registerOutParameter(1, oracle.jdbc.OracleTypes.CURSOR);
 
-	        ResultSet rs = ps.executeQuery();
+			cs.execute();
 
-	        if (rs.next()) {
+			ResultSet rs = (ResultSet) cs.getObject(1);
 
-	            int turno = rs.getInt("turnos"); // Obtiene el número de turnos
+			while (rs.next()) {
 
-	            Timestamp fecha = rs.getTimestamp("fecha_inicio");
+				texto += "⭐ " + rs.getString("NOMBRE") + " (" + rs.getInt("PARTIDASGANADAS") + ")\n";
+			}
 
-	            SimpleDateFormat sdf =
-	                    new SimpleDateFormat("dd/MM/yyyy HH:mm");
+			rs.close();
+			cs.close();
 
-	            return "Turno " + turno + "\n" +
-	                   sdf.format(fecha); // Devuelve texto para mostrar en pantalla
-	        }
+		} catch (Exception e) {
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+			e.printStackTrace();
+		}
 
-	    return null; // Si no encuentra información del slot
+		return texto;
 	}
-	
-	
+
+	public int obtenerPosicionRanking(int idUsuario) {
+
+		int posicion = -1;
+
+		try {
+
+			CallableStatement cs = con.prepareCall("{ ? = call POSICION_RANKING(?) }");
+
+			cs.registerOutParameter(1, java.sql.Types.INTEGER);
+
+			cs.setInt(2, idUsuario);
+
+			cs.execute();
+
+			posicion = cs.getInt(1);
+
+			cs.close();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		return posicion;
+	}
+
+	public double obtenerPorcentajeInferior(int ganadas) {
+
+		double porcentaje = 0;
+
+		try {
+
+			CallableStatement cs = con.prepareCall("{ ? = call PORCENTAJE_INFERIOR(?) }");
+
+			cs.registerOutParameter(1, java.sql.Types.DOUBLE);
+
+			cs.setInt(2, ganadas);
+
+			cs.execute();
+
+			porcentaje = cs.getDouble(1);
+
+			cs.close();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		return porcentaje;
+	}
+
+	public void sumarPartidaJugada(String nombreUsuario) {
+
+		try {
+
+			String sql = "UPDATE USUARIO " + "SET PARTIDASJUGADAS = " + "PARTIDASJUGADAS + 1 " + "WHERE NOMBRE = ?";
+
+			PreparedStatement ps = con.prepareStatement(sql);
+
+			ps.setString(1, nombreUsuario);
+
+			ps.executeUpdate();
+
+			ps.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sumarPartidaGanada(String nombreUsuario) {
+
+		try {
+
+			String sql = "UPDATE USUARIO " + "SET PARTIDASGANADAS = " + "PARTIDASGANADAS + 1 " + "WHERE NOMBRE = ?";
+
+			PreparedStatement ps = con.prepareStatement(sql);
+
+			ps.setString(1, nombreUsuario);
+
+			ps.executeUpdate();
+
+			ps.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sumarPuntuacion(String nombre, int puntos) {
+
+		String sql = "UPDATE USUARIO " + "SET PUNTUACIONTOTAL = PUNTUACIONTOTAL + ? " + "WHERE NOMBRE = ?";
+
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+			ps.setInt(1, puntos);
+			ps.setString(2, nombre);
+
+			ps.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public double mediaPartidasGanadas() {
+
+		double media = 0;
+
+		try {
+
+			CallableStatement stmt = con.prepareCall("{ ? = call MEDIA_PARTIDAS_GANADAS() }");
+
+			stmt.registerOutParameter(1, java.sql.Types.NUMERIC);
+
+			stmt.execute();
+
+			media = stmt.getDouble(1);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return media;
+	}
+
+	public String obtenerInfoSlot(int slot) {
+
+		String sql = """
+				    SELECT turnos, fecha_inicio
+				    FROM TABLERO
+				    WHERE ID_TABLERO = ?
+				""";
+
+		try {
+
+			PreparedStatement ps = con.prepareStatement(sql);
+
+			ps.setInt(1, slot);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+
+				int turno = rs.getInt("turnos");
+
+				Timestamp fecha = rs.getTimestamp("fecha_inicio");
+
+				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+				return "Turno " + turno + "\n" + sdf.format(fecha);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 
 }
