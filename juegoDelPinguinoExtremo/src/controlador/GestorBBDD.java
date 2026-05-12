@@ -22,15 +22,15 @@ public class GestorBBDD {
 		con = BBDD.conectarBaseDatos();
 	}
 
-	public void guardar(Tablero t1, int slot) {
+	public void guardar(Tablero t1, int slot) { //Guardamos una partida completa
 
-		if (existeSlot(slot)) {
+		if (existeSlot(slot)) { // Si ya existe una partida en ese slot, se borra antes de guardar la nueva.
 
 			borrarPartida(slot);
 
 		}
 
-		// Iniciamos INSERT de la tabla TABLERO
+		// Obtenemos los datos principales del tablero
 
 		int turnos_tablero = t1.getTurnos();
 
@@ -38,6 +38,8 @@ public class GestorBBDD {
 
 		ArrayList<Jugador> jugadores = t1.getArrayListJugador();
 
+		//Busca la posición del jugador actual dentro del ArrayList de jugadores.
+		
 		int posActual = 0;
 
 		for (int i = 0; i < jugadores.size(); i++) {
@@ -49,6 +51,8 @@ public class GestorBBDD {
 			}
 		}
 
+		//Convierte cada tipo de casilla en texto para poder guardarlo en la base de datos. 
+		
 		ArrayList<String> casillasBBDD = new ArrayList<>();
 
 		for (int i = 0; i < casillas.size(); i++) {
@@ -72,6 +76,7 @@ public class GestorBBDD {
 			}
 		}
 
+		//Construye el array de casillas en formato SQL para insertarlo en Oracle.
 		String varray = "";
 
 		for (int i = 0; i < casillasBBDD.size() - 1; i++) {
@@ -82,20 +87,24 @@ public class GestorBBDD {
 
 		varray += " '" + casillasBBDD.get(49) + "'";
 
+		// Crea la sentencia SQL para insertar los datos del tablero.
+		
 		String sqlTablero = "INSERT INTO TABLERO VALUES(" + slot + ", " + turnos_tablero + ", " + posActual
 				+ ", ARRAY_CASILLAS(" + varray + "), SYSDATE)";
 
 		System.out.println(sqlTablero);
 
+		//Muestra informacion de prueba y ejecuta el INSERT del tablero
 		BBDD.print(con, "SELECT COUNT(*) AS TOTAL FROM TABLERO", new String[] { "TOTAL" });
 
 		BBDD.insert(con, sqlTablero); // Termina el insert de la tabla TABLERO
 
 		// Hacemos el insert de jugador
 
+		//Recorre a todos los jugadores para guardarlos en la tabla jugador
 		for (int i = 0; i < t1.getArrayListJugador().size(); i++) {
 
-			if (t1.getArrayListJugador().get(i) instanceof Foca) {
+			if (t1.getArrayListJugador().get(i) instanceof Foca) { //Si el jugador es foca se guarda como FOCA = 1
 
 				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 1, "
 						+ t1.getArrayListJugador().get(i).getPos() + ", " + i + ", " + slot + ", '"
@@ -112,7 +121,9 @@ public class GestorBBDD {
 			}
 
 			else {
-
+				
+				//Si el jugador es un Pingüino, se guarda con FOCA = 0, usuario y puntuación.
+				
 				String sqlJugador = "INSERT INTO JUGADOR VALUES(seq_jugador.NEXTVAL, 0, "
 						+ t1.getArrayListJugador().get(i).getPos() + ", " + i + ", " + slot + ", '"
 						+ t1.getArrayListJugador().get(i).getNombre() + "', '"
@@ -140,7 +151,7 @@ public class GestorBBDD {
 
 			int n_dadoL = 0;
 
-			for (Dado dado : t1.getJugador(i).getInventario().getDado()) {
+			for (Dado dado : t1.getJugador(i).getInventario().getDado()) { //Diferenciamos si es dado rapido o lento
 
 				if (dado instanceof DadoRapido) {
 
@@ -152,7 +163,7 @@ public class GestorBBDD {
 
 				}
 			}
-
+			//Inserta el inventario asociado al último jugador insertado a partir de CURRVAL
 			String sqlInventario = "INSERT INTO INVENTARIO VALUES(seq_inventario.NEXTVAL, " + n_peces + ",  " + n_bolas
 					+ ", " + n_dadoR + ", " + n_dadoL + ", seq_jugador.CURRVAL)";
 
@@ -164,9 +175,9 @@ public class GestorBBDD {
 
 	}
 
-	public Tablero cargarTablero(int indice) {
+	public Tablero cargarTablero(int indice) { //Carga una partida guardada desde la base de datos y reconstruye el objeto Tablero.
 
-		// HACEMOS EL SELECT QUE NECESITAMOS DE LA TABLA TABLERO
+		// Obtiene los datos principales del tablero guardado
 
 		ArrayList<LinkedHashMap<String, String>> partida = BBDD.select(con,
 				"SELECT ID_TABLERO, TURNOS, JUGADOR_ACTUAL, FECHA_INICIO FROM TABLERO WHERE ID_TABLERO = " + indice);
@@ -181,9 +192,11 @@ public class GestorBBDD {
 
 		String fecha = fila.get("FECHA_INICIO");
 
-		ArrayList<Casilla> casilla = new ArrayList<>();
+		ArrayList<Casilla> casilla = new ArrayList<>(); //Se reconstruyen las casillas del tablero
 
-		try (Statement st = con.createStatement();
+		//Recuperamos el array de casillas desde Oracle
+		
+		try (Statement st = con.createStatement(); 
 
 				ResultSet rs = st.executeQuery("SELECT CASILLAS FROM TABLERO WHERE ID_TABLERO = " + indice)) {
 
@@ -200,7 +213,7 @@ public class GestorBBDD {
 					casillas.add(tipo);
 				}
 
-				for (int i = 0; i < casillas.size(); i++) {
+				for (int i = 0; i < casillas.size(); i++) { // Crea objetos Casilla según el texto guardado en la base de datos.
 
 					switch (casillas.get(i)) {
 
@@ -239,15 +252,17 @@ public class GestorBBDD {
 
 		// Empezamos el SELECT de jugadores
 
-		ArrayList<Jugador> jugadores = new ArrayList<>();
+		ArrayList<Jugador> jugadores = new ArrayList<>(); //Lista donde se reconstruiran los jugadores
 
 		ArrayList<LinkedHashMap<String, String>> jugador = BBDD.select(con,
-				"SELECT * FROM JUGADOR WHERE ID_TABLERO = " + indice + " ORDER BY TURNO ASC");
+				"SELECT * FROM JUGADOR WHERE ID_TABLERO = " + indice + " ORDER BY TURNO ASC"); //Recuperamos todos los jugadores del tablero, ordenados por turno
 
-		for (LinkedHashMap<String, String> entrada : jugador) {
+		for (LinkedHashMap<String, String> entrada : jugador) { //Recorremos cada jugador recuperado
 
 			int idJugador = Integer.parseInt(entrada.get("ID_JUGADOR"));
 
+			//Recuperamos el inventario
+			
 			ArrayList<LinkedHashMap<String, String>> inventario =
 
 					BBDD.select(con,
@@ -296,13 +311,13 @@ public class GestorBBDD {
 
 			}
 
-			Inventario inventarios = new Inventario(dados, peces, bolas);
+			Inventario inventarios = new Inventario(dados, peces, bolas); //Creamos inventario completo del jugador
 
-			// terminamos el SELECT de inventario
+			
 
-			int foca = Integer.parseInt(entrada.get("FOCA"));
+			int foca = Integer.parseInt(entrada.get("FOCA")); //Comprobamos si el jugador es foca o pinguino
 
-			if (foca == 1) {
+			if (foca == 1) { //Si es foca
 				int posicion = Integer.parseInt(entrada.get("POSICION"));
 				int turno = Integer.parseInt(entrada.get("TURNO"));
 				String nombre = entrada.get("NOMBRE");
@@ -315,7 +330,7 @@ public class GestorBBDD {
 
 			}
 
-			else {
+			else { //Si es pinguino
 
 				int posicion = Integer.parseInt(entrada.get("POSICION"));
 				int turno = Integer.parseInt(entrada.get("TURNO"));
@@ -341,14 +356,16 @@ public class GestorBBDD {
 
 		Jugador jugActual = jugadores.get(jugadorActual);
 
-		Tablero tablero = new Tablero(jugadores, casilla, fecha, turnos, jugActual, idTablero);
+		Tablero tablero = new Tablero(jugadores, casilla, fecha, turnos, jugActual, idTablero); //Creamos tablero final cargado
 
 		return tablero;
 
 	}
 	
-	public static void borrarPartida(int slot) {
+	public static void borrarPartida(int slot) { 
 
+		//Borramos una partida completa: primero inventarios, luego jugadores y finalmente tablero.
+		
 		String deleteInventario = "DELETE FROM INVENTARIO " + "WHERE id_inventario IN ("
 				+ "SELECT id_inventario FROM JUGADOR " + "WHERE id_tablero = " + slot + ")";
 
@@ -361,7 +378,7 @@ public class GestorBBDD {
 		BBDD.delete(con, deleteTablero);
 	}
 
-	public boolean validarUsuario(Usuario usuario, String pass) {
+	public boolean validarUsuario(Usuario usuario, String pass) { //Comprobamos si un usuario existe
 
 		String hash = Seguridad.hashPassword(pass);
 
@@ -382,14 +399,15 @@ public class GestorBBDD {
 
 	}
 
-	public boolean crearUsuario(Usuario u, String pass) {
-		String sql = "INSERT INTO USUARIO VALUES (SEQ_USUARIO.NEXTVAL, ?, ?, 0, 0, 0)";
+	public boolean crearUsuario(Usuario u, String pass) { //Creamos un nuevo usuario en la base de datos
+		
+		String sql = "INSERT INTO USUARIO VALUES (SEQ_USUARIO.NEXTVAL, ?, ?, 0, 0, 0)"; //Escribimos la consulta
 
-		try (PreparedStatement ps = con.prepareStatement(sql)) {
+		try (PreparedStatement ps = con.prepareStatement(sql)) { //Preparamos la consulta
 
-			ps.setString(1, u.getNombre());
-			ps.setString(2, Seguridad.hashPassword(pass));
-			ps.executeUpdate();
+			ps.setString(1, u.getNombre()); //El primer ? se sustituye por el nombre de usuario
+			ps.setString(2, Seguridad.hashPassword(pass)); //el segundo ? se sustituye por la contraselña
+			ps.executeUpdate(); //Ejecuta la consulta Select preparada en el PreparedStatement
 			return true;
 
 		} catch (Exception e) {
@@ -398,17 +416,17 @@ public class GestorBBDD {
 		}
 	}
 
-	public int obtenerIdUsuario(Usuario usuario) {
+	public int obtenerIdUsuario(Usuario usuario) { //Obtenemos el ID de un usuario a partir de su nombre
 
 		String sql = "SELECT ID_USUARIO " + "FROM USUARIO " + "WHERE NOMBRE = ? ";
 
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
 
-			ps.setString(1, usuario.getNombre());
+			ps.setString(1, usuario.getNombre()); //El ? se sustituye por el nombre de usuario
 
 			ResultSet rs = ps.executeQuery();
 
-			if (rs.next()) {
+			if (rs.next()) { //Intenta colocarse en la primera fila del resultado si existe fila devuelve true
 				return rs.getInt("ID_USUARIO");
 			}
 
@@ -419,7 +437,7 @@ public class GestorBBDD {
 		return -1; // no encontrado
 	}
 
-	public Usuario obtenerUsuario(int idUsuario) {
+	public Usuario obtenerUsuario(int idUsuario) { //Obtenemos a un usuario a partir de su ID
 
 		String sql = "SELECT NOMBRE FROM USUARIO WHERE ID_USUARIO = ?";
 
@@ -442,7 +460,7 @@ public class GestorBBDD {
 		return null; // no encontrado
 	}
 
-	public boolean existeSlot(int slot) {
+	public boolean existeSlot(int slot) { //Comprobamos si ya existe una partida guardada en un slot concreto
 
 		String sql = "SELECT COUNT(*) FROM TABLERO WHERE ID_TABLERO = ?";
 
@@ -464,7 +482,7 @@ public class GestorBBDD {
 
 	// FUNCIONES PL/SQL PARA LAS ESTADÍSTICAS
 
-	public int partidasGanadas(int id) {
+	public int partidasGanadas(int id) { //Devolvemos el número de partidas ganadas por un usuario
 
 		int ganadas = 0;
 
@@ -486,7 +504,7 @@ public class GestorBBDD {
 
 	}
 
-	public int partidasJugadas(int id) {
+	public int partidasJugadas(int id) { //Devuelve el número de partidas jugadas por un usuario
 
 		int jugadas = 0;
 
@@ -507,7 +525,7 @@ public class GestorBBDD {
 		return jugadas;
 	}
 
-	public int recordUsuario(int id) {
+	public int recordUsuario(int id) { //Devuelve la puntuacion total de un usuario
 
 		int record = 0;
 
@@ -529,7 +547,7 @@ public class GestorBBDD {
 
 	}
 
-	public double obtenerMediaPuntuacion() {
+	public double obtenerMediaPuntuacion() { //Llamamos a una función PL/SQL para que calcule la media
 
 		double media = 0;
 
@@ -551,7 +569,7 @@ public class GestorBBDD {
 
 	}
 
-	public String obtenerRankingTexto() {
+	public String obtenerRankingTexto() { //Obtenemos el ranking de usuarios desde una función que devuelve un cursor.
 
 		StringBuilder resultado = new StringBuilder();
 
@@ -582,7 +600,7 @@ public class GestorBBDD {
 		return resultado.toString();
 	}
 
-	public int obtenerRecordGlobal() {
+	public int obtenerRecordGlobal() { //Obtenemos el record global de partidas ganadas a partir de una funcion PL/SQL
 
 		int record = 0;
 
@@ -606,7 +624,7 @@ public class GestorBBDD {
 		return record;
 	}
 
-	public String obtenerJugadoresRecord() {
+	public String obtenerJugadoresRecord() { //Obtenemos los jugadores que tienen el récord global
 
 		String texto = "";
 
@@ -636,7 +654,7 @@ public class GestorBBDD {
 		return texto;
 	}
 
-	public String obtenerJugadoresSuperiorMedia() {
+	public String obtenerJugadoresSuperiorMedia() { //Obtenemos los jugadores que stán por encima de la media de partidas ganadas
 
 		String texto = "";
 
@@ -666,7 +684,7 @@ public class GestorBBDD {
 		return texto;
 	}
 
-	public int obtenerPosicionRanking(int idUsuario) {
+	public int obtenerPosicionRanking(int idUsuario) { //A partir de una ID obtenemos la posición de un usuario dentro del ranking
 
 		int posicion = -1;
 
@@ -692,7 +710,7 @@ public class GestorBBDD {
 		return posicion;
 	}
 
-	public double obtenerPorcentajeInferior(int ganadas) {
+	public double obtenerPorcentajeInferior(int ganadas) { //Calcula qué porcentaje de usuarios tiene menos partidas ganadas que el valor indicado.
 
 		double porcentaje = 0;
 
@@ -718,7 +736,7 @@ public class GestorBBDD {
 		return porcentaje;
 	}
 
-	public void sumarPartidaJugada(String nombreUsuario) {
+	public void sumarPartidaJugada(String nombreUsuario) { //Sumamos una partida jugada al usuario indicado
 
 		try {
 
@@ -737,7 +755,7 @@ public class GestorBBDD {
 		}
 	}
 
-	public void sumarPartidaGanada(String nombreUsuario) {
+	public void sumarPartidaGanada(String nombreUsuario) { //Sumamos una partida ganada al usuario indicado
 
 		try {
 
@@ -756,7 +774,7 @@ public class GestorBBDD {
 		}
 	}
 
-	public void sumarPuntuacion(String nombre, int puntos) {
+	public void sumarPuntuacion(String nombre, int puntos) { //Sumamos la puntuacion total de los usuarios
 
 		String sql = "UPDATE USUARIO " + "SET PUNTUACIONTOTAL = PUNTUACIONTOTAL + ? " + "WHERE NOMBRE = ?";
 
@@ -772,7 +790,7 @@ public class GestorBBDD {
 		}
 	}
 
-	public double mediaPartidasGanadas() {
+	public double mediaPartidasGanadas() { //Calculamos la media de partidas ganadas llamando a PL/SQL
 
 		double media = 0;
 
@@ -793,7 +811,7 @@ public class GestorBBDD {
 		return media;
 	}
 
-	public String obtenerInfoSlot(int slot) {
+	public String obtenerInfoSlot(int slot) { //Obtenemos información resumida de un slot
 
 		String sql = """
 				    SELECT turnos, fecha_inicio
