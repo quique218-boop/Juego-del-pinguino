@@ -29,7 +29,6 @@ public class CrearUsuarioController {
     private int totalJugadores;
     private int actual;
     private ArrayList<Usuario> usuarios;
-    private GestorBBDD gestorbbdd;
 
     @FXML
     private void initialize() {
@@ -60,14 +59,14 @@ public class CrearUsuarioController {
             return;
         }
 
-        if (gestorbbdd.validarUsuario(usuario, pass)) {
+        if (gestorBBDD.validarUsuario(usuario, pass)) {
             mensajeError.setText("El usuario ya existe");
             return;
         }
 
         Usuario u = new Usuario(user);
 
-        if (gestorbbdd.crearUsuario(u, pass)) {
+        if (gestorBBDD.crearUsuario(u, pass)) {
             mensajeError.setText("Usuario creado correctamente");
         } else {
             mensajeError.setText("Error al crear usuario");

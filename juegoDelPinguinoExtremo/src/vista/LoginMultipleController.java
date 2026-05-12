@@ -23,7 +23,6 @@ public class LoginMultipleController {
 
 	    private int totalJugadores;
 	    private int actual = 0;
-	    private GestorBBDD gestorbbdd;
 
 	    private ArrayList<Usuario> usuarios = new ArrayList<>();
 
