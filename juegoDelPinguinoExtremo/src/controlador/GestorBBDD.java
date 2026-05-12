@@ -26,16 +26,7 @@ public class GestorBBDD {
 
 		if (existeSlot(slot)) {
 
-			String deleteInventario = "DELETE FROM INVENTARIO " + "WHERE id_inventario IN ("
-					+ "SELECT id_inventario FROM JUGADOR " + "WHERE id_tablero = " + slot + ")";
-
-			String deleteJugadores = "DELETE FROM JUGADOR WHERE id_tablero = " + slot;
-
-			String deleteTablero = "DELETE FROM TABLERO WHERE id_tablero = " + slot;
-
-			BBDD.delete(con, deleteInventario);
-			BBDD.delete(con, deleteJugadores);
-			BBDD.delete(con, deleteTablero);
+			borrarPartida(slot);
 
 		}
 
@@ -358,51 +349,16 @@ public class GestorBBDD {
 	
 	public static void borrarPartida(int slot) {
 
-	    try (Connection con = BBDD.conectarBaseDatos()) {
+		String deleteInventario = "DELETE FROM INVENTARIO " + "WHERE id_inventario IN ("
+				+ "SELECT id_inventario FROM JUGADOR " + "WHERE id_tablero = " + slot + ")";
 
-	        // INVENTARIO
-	        String sqlInventario =
-	            "DELETE FROM INVENTARIO " +
-	            "WHERE ID_JUGADOR IN (" +
-	            "SELECT ID_JUGADOR FROM JUGADOR " +
-	            "WHERE ID_TABLERO = ?)";
+		String deleteJugadores = "DELETE FROM JUGADOR WHERE id_tablero = " + slot;
 
-	        PreparedStatement ps1 =
-	            con.prepareStatement(sqlInventario);
+		String deleteTablero = "DELETE FROM TABLERO WHERE id_tablero = " + slot;
 
-	        ps1.setInt(1, slot);
-
-	        ps1.executeUpdate();
-
-	        // JUGADORES
-	        String sqlJugadores =
-	            "DELETE FROM JUGADOR " +
-	            "WHERE ID_TABLERO = ?";
-
-	        PreparedStatement ps2 =
-	            con.prepareStatement(sqlJugadores);
-
-	        ps2.setInt(1, slot);
-
-	        ps2.executeUpdate();
-
-	        // TABLERO
-	        String sqlTablero =
-	            "DELETE FROM TABLERO " +
-	            "WHERE ID_TABLERO = ?";
-
-	        PreparedStatement ps3 =
-	            con.prepareStatement(sqlTablero);
-
-	        ps3.setInt(1, slot);
-
-	        ps3.executeUpdate();
-
-	        System.out.println("Partida borrada");
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		BBDD.delete(con, deleteInventario);
+		BBDD.delete(con, deleteJugadores);
+		BBDD.delete(con, deleteTablero);
 	}
 
 	public boolean validarUsuario(Usuario usuario, String pass) {
