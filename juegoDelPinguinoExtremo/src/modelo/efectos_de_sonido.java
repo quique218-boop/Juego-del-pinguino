@@ -12,29 +12,29 @@ public class efectos_de_sonido {
 
     public static void init() {
     	
-        cargar("bola", "/recursos/BoladeNieve.mp3");
+        cargar("bola", "/BoladeNieve.mp3");
         
-        cargar("agujero", "/recursos/Agujero.mp3");
+        cargar("agujero", "/Agujero.mp3");
         
-        cargar("dados", "/recursos/Dados.mp3");
+        cargar("dados", "/Dados.mp3");
         
-        cargar("foca", "/recursos/Foca.mp3");
+        cargar("foca", "/Foca.mp3");
         
-        cargar("golpe", "/recursos/Golpe.mp3");
+        cargar("golpe", "/Golpe.mp3");
         
-        cargar("moto", "/recursos/MotodeNieve.mp3");
+        cargar("moto", "/MotodeNieve.mp3");
         
-        cargar("pez", "/recursos/Pez.mp3");
+        cargar("pez", "/Pez.mp3");
         
-        cargar("trineo", "/recursos/Trineo.mp3");
+        cargar("trineo", "/Trineo.mp3");
         
-        cargar("muerte", "/recursos/Death.mp3");
+        cargar("muerte", "/Death.mp3");
         
-        cargar("hielo", "/recursos/Hielo.mp3");
+        cargar("hielo", "/Hielo.mp3");
         
-        cargar("evento", "/recursos/Evento.mp3");
+        cargar("evento", "/Evento.mp3");
         
-        cargar("perdida", "/recursos/Perdida.mp3");
+        cargar("perdida", "/Perdida.mp3");
     }
 
     private static void cargar(String nombre, String ruta) {
