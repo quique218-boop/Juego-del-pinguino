@@ -12,10 +12,10 @@ import javafx.stage.Stage;
 
 public class Menu {
 
-	private boolean sAmbiental = false;
-	private double volumen = 0.5; // 50%
+	private boolean sAmbiental = false; //Indicamos si el sonido ambientar está activo o no
+	private double volumen = 0.5; // 50% //Volumen inicial
 
-	public static MediaPlayer musicaAmbiente;
+	public static MediaPlayer musicaAmbiente; //Reproductor estatico
 
 	private void cambiarVentana(ActionEvent event, String fxml) {
 		try {
@@ -56,17 +56,17 @@ public class Menu {
 
 	@FXML
 	private void nuevaPartida(ActionEvent event) {
-		cambiarVentana(event, "/recursos/seleccionJugadores.fxml");
+		cambiarVentana(event, "/recursos/seleccionJugadores.fxml"); //Cambiamos a la ventana de Seleccion de Jugadores
 	}
 
 	@FXML
 	private void irEstadisticas(ActionEvent event) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/recursos/estadisticas.fxml"));
-			Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-			stage.setScene(new Scene(root));
+			Parent root = FXMLLoader.load(getClass().getResource("/recursos/estadisticas.fxml")); //Carga el FXML de estadísticas
+			Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow(); //Obtiene la ventana actual
+			stage.setScene(new Scene(root)); //Cambia la escena actual por la de estadística
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(); //En caso de que haya un error se muestra por consola
 		}
 	}
 
@@ -79,11 +79,11 @@ public class Menu {
 
 			Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 			stage.setScene(new Scene(root));
-			stage.setX(200);
+			stage.setX(200); //Colocamos la pantalla en una posición concreta
 			stage.setY(40);
 			stage.show();
 
-			Slots controller = loader.getController();
+			Slots controller = loader.getController(); //Obtenemos el controlador de slots
 			controller.setModo(true);
 
 		} catch (Exception e) {
@@ -91,18 +91,9 @@ public class Menu {
 		}
 	}
 
-	@FXML
-	private void Personalizar(ActionEvent event) {
-		cambiarVentana(event, "/recursos/personalizar.fxml");
-	}
 
 	@FXML
-	private void Configuracion(ActionEvent event) {
-		cambiarVentana(event, "/recursos/Configuracion.fxml");
-	}
-
-	@FXML
-	private void Salir() {
+	private void Salir() { //Cerramos el juego
 		System.exit(0);
 	}
 }

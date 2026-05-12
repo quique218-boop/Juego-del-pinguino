@@ -42,7 +42,7 @@ public class EstadisticasController {
     
     
     @FXML
-    private void mostrarGlobales() {
+    private void mostrarGlobales() { //Mostramos el panel de estadísticas globales y oculta el panel del usuario
 
         panelGlobal.setManaged(true);
         panelGlobal.setVisible(true);
@@ -54,7 +54,7 @@ public class EstadisticasController {
     }
 
     @FXML
-    private void mostrarUsuario() {
+    private void mostrarUsuario() { //Muestra el panel de estadísticas de usuario y oculta el panel global.
 
         panelUsuario.setManaged(true);
         panelUsuario.setVisible(true);
@@ -64,11 +64,11 @@ public class EstadisticasController {
     }
 
 
-    private void cargarGlobales() {
+    private void cargarGlobales() { //Cargamos todas las estadísticas globales desde la BBDD
 
         try {
 
-            double media = gestorBBDD.obtenerMediaPuntuacion();
+            double media = gestorBBDD.obtenerMediaPuntuacion(); //Obtiene y muestra la media de puntuacion
             mediaLabel.setText(String.format("%.2f", media));
 
             int record = gestorBBDD.obtenerRecordGlobal();
@@ -92,7 +92,7 @@ public class EstadisticasController {
                 gestorBBDD.obtenerRankingTexto()
             );
 
-        } catch (Exception e) {
+        } catch (Exception e) { //En caso de que hubiera un error se muestra por pantalla y por consola
 
             mediaLabel.setText("Error");
             e.printStackTrace();
@@ -102,16 +102,17 @@ public class EstadisticasController {
  
 
     @FXML
-    private void consultarUsuario() {
+    private void consultarUsuario() { //Consultamos las estadisticas de un usuario en concreto
 
         try {
 
+        	//Obtenemos el nombre y la contraseña escritos por el usuario.
             String user = userField.getText();
             String pass = passField.getText();
 
-            Usuario u = new Usuario(user);
+            Usuario u = new Usuario(user); //Creamos un objeto Usuario con el nombre introducido
 
-            if (!gestorBBDD.validarUsuario(u, pass)) {
+            if (!gestorBBDD.validarUsuario(u, pass)) { //Comprobamos si el usuario y la contraseña son correctas
 
                 resultadoUsuario.setText(
                     "❌ Usuario incorrecto"
@@ -120,18 +121,18 @@ public class EstadisticasController {
                 return;
             }
 
-            int id = gestorBBDD.obtenerIdUsuario(u);
+            int id = gestorBBDD.obtenerIdUsuario(u); //Obtenemos el ID para poder consultar sus estadisticas
 
-            int ganadas = gestorBBDD.partidasGanadas(id);
+            int ganadas = gestorBBDD.partidasGanadas(id); 
             int jugadas = gestorBBDD.partidasJugadas(id);
             int record = gestorBBDD.recordUsuario(id);
 
             int posicion = gestorBBDD.obtenerPosicionRanking(id);
 
             double porcentaje =
-                gestorBBDD.obtenerPorcentajeInferior(ganadas);
+                gestorBBDD.obtenerPorcentajeInferior(ganadas); //Calculamos el porcentaje que están por debajo de sus victorias
 
-            resultadoUsuario.setText(
+            resultadoUsuario.setText( //Muestra todas las estadísticas del usuario
 
                 "👤 Usuario: " + user +
 
@@ -149,7 +150,7 @@ public class EstadisticasController {
 
             );
 
-        } catch (Exception e) {
+        } catch (Exception e) { 
 
             resultadoUsuario.setText(
                 "Error al consultar usuario"
@@ -161,11 +162,11 @@ public class EstadisticasController {
 
     
     @FXML
-    private void volver(ActionEvent event) {
+    private void volver(ActionEvent event) { //Carganis el mení cpn el archivo Menu.fxml
 
         try {
 
-            FXMLLoader loader =
+            FXMLLoader loader = 
                 new FXMLLoader(
                     getClass().getResource(
                         "/recursos/Menu.fxml"

@@ -35,10 +35,16 @@ public class Victoria {
 
     private Jugador ganador;
 
-    public void setGanador(Jugador ganador) {
+    public void setGanador(Jugador ganador) { //Recibe el ganador desde otra pantalla
         this.ganador = ganador;
     }
 
+    /*
+     * Inicializamos la pantalla de resultados.
+     * Comprobamos si el ganador es una Foca o un Pingüino
+     * dependiendo del ganador se cambiarán los textos e imagen.
+     */
+    
     public void inicio() {
 
         if (ganador instanceof Foca) {
@@ -57,7 +63,7 @@ public class Victoria {
                 new Image("/recursos/foca_victoria.jpg")
             );
 
-        } else {
+        } else { //Si la foca no ha ganado entonces es el pingüino
 
             Pinguino p = (Pinguino) ganador;
 
@@ -82,7 +88,7 @@ public class Victoria {
     }
 
     @FXML
-    private void volver() {
+    private void volver() { //Metodo que se ejecutara al pulsar el botón volver cargando el menú principal
 
         try {
 

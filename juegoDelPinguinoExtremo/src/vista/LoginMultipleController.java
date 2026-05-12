@@ -26,10 +26,15 @@ public class LoginMultipleController {
 
 	    private ArrayList<Usuario> usuarios = new ArrayList<>();
 
-	    public void setNumeroJugadores(int n) {
+	    public void setNumeroJugadores(int n) { //Guarda el n. total de jugadores que deben iniciar sesión
 	        this.totalJugadores = n;
 	    }
 
+	    /*
+		 * Método que se ejecuta automáticamente al cargar la vista.
+		 * Inicializa el gestor de base de datos y actualiza el texto del jugador.
+		 */
+	    
 	    @FXML
 	    public void initialize() {
 	    	gestorBBDD = new GestorBBDD();
@@ -37,33 +42,40 @@ public class LoginMultipleController {
 	    }
 
 	    @FXML
-	    private void onEnter(ActionEvent event) {
+	    private void onEnter(ActionEvent event) { //Se ejecutara al pulsar enter o el boton de login
 
-	        try {
+	        try { 
+	        	//Obtenemos el usuario y la contraseña escritos
 	            String user = userField.getText().trim();
 	            String pass = passField.getText().trim();
+ 
+	            Usuario u = new Usuario(user); //Creamos objeto usuario
 
-	            Usuario u = new Usuario(user);
-
-	            if (!gestorBBDD.validarUsuario(u, pass)) {
+	            if (!gestorBBDD.validarUsuario(u, pass)) { //Comprobamos si son correctos
 	                textoJugador.setText("Usuario incorrecto");
 	                return;
 	            }
 
-	            if (usuarios.stream().anyMatch(x -> x.getNombre().equals(user))) {
+	            if (usuarios.stream().anyMatch(x -> x.getNombre().equals(user))) { //Comprobamos que el mismo usuario no entre dos veces en la misma partida
 	                textoJugador.setText("Ese usuario ya está en la partida");
 	                return;
 	            }
 
-	            usuarios.add(u);
+	            usuarios.add(u); //Añadimos el usuario validado a la lista de jugadores
 	            actual++;
 
+
+		        /*
+		         * Si todavía faltan jugadores por iniciar sesión,
+		         * limpiamos los campos y actualizamos el texto.
+		         */
+	            
 	            if (actual < totalJugadores) {
 	                userField.clear();
 	                passField.clear();
 	                actualizarTexto();
 	            } else {
-	                irAlJuego(event);
+	                irAlJuego(event); //Si ya han iniciado sesión todos, entran al juego
 	            }
 
 	        } catch (Exception e) {
@@ -72,10 +84,10 @@ public class LoginMultipleController {
 	    }
 
 	    private void actualizarTexto() {
-	        textoJugador.setText("Jugador " + (actual + 1));
+	        textoJugador.setText("Jugador " + (actual + 1)); //Actualizamos texto para mostrar quien inicia sesión
 	    }
 
-	    private void irAlJuego(ActionEvent event) throws IOException {
+	    private void irAlJuego(ActionEvent event) throws IOException { //Carganis oestala de juego
 	    	
 	    	
 
@@ -95,6 +107,11 @@ public class LoginMultipleController {
 	        stage.show();
 	    }
 
+	    /*
+		 * Carga la pantalla de creación de usuario.
+		 * Además, le pasa el estado actual del login para no perder el progreso.
+		 */
+	    
 	    @FXML
 	    private void crearUsuario(ActionEvent event) {
 	        try {
@@ -111,7 +128,7 @@ public class LoginMultipleController {
 	            e.printStackTrace();
 	        }
 	    }
-	    
+	    //Restauramos el estado del login al volver desde la pantalla de crear usuario.
 	    public void setEstado(int actual, ArrayList<Usuario> usuarios) {
 	        this.actual = actual;
 	        this.usuarios = usuarios;
