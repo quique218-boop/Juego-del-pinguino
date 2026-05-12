@@ -32,16 +32,16 @@ public class GestorTablero {
 
 	public void añadirJugador(Jugador jugador) {
 
-		tablero.getArrayListJugador().add(jugador);
+		tablero.getArrayListJugador().add(jugador); //Añadimos jugador
 	}
 
 	public int tirarDado(Jugador jugador) {
 
 		Dado dadoDefault = new Dado();
 
-		int resultado = dadoDefault.tirarDado();
+		int resultado = dadoDefault.tirarDado(); //guardamos número que salga en el dado
 
-		gestorjugador.jugadorSeMueve(jugador, resultado);
+		gestorjugador.jugadorSeMueve(jugador, resultado); //El jugador avança las casillas correspondientes
 
 		return resultado;
 
@@ -51,7 +51,7 @@ public class GestorTablero {
 
 		jugador.quitarItem(dadoOpcional);
 
-		int resultado = dadoOpcional.tirarDado();
+		int resultado = dadoOpcional.tirarDado(); 
 
 		gestorjugador.jugadorSeMueve(jugador, resultado);
 
@@ -60,20 +60,20 @@ public class GestorTablero {
 	}
 
 	public ArrayList<String> estadoPeleas() {
+		// Devuelve una lista con los mensajes/estados de pelea de los jugadores
+		ArrayList<Jugador> jugadores = tablero.getArrayListJugador(); //Obtiene todos los jugadores
 
-		ArrayList<Jugador> jugadores = tablero.getArrayListJugador();
+		ArrayList<String> estado = new ArrayList<>(); // Lista donde se guardarán los textos de las peleas
 
-		ArrayList<String> estado = new ArrayList<>();
-
-		for (Jugador jugador : jugadores) {
+		for (Jugador jugador : jugadores) { //Recorre todos los jugadores
 
 			String pelea = jugador.getPelea();
 
-			if (pelea != null)
+			if (pelea != null) // Si el jugador tiene información de pelea, la añadimos a la lista
 				estado.add(pelea);
 		}
 
-		return estado;
+		return estado; //Devuelve todos los estados
 	}
 
 	public ArrayList<String> estadoGolpeos() {
@@ -85,7 +85,7 @@ public class GestorTablero {
 		return estado;
 	}
 
-	public ArrayList<ArrayList<Integer>> ejecutarTurnoCompleto(Foca foca) {
+	public ArrayList<ArrayList<Integer>> ejecutarTurnoCompleto(Foca foca) { //Se ejecuta el turno de la foca
 
 		ArrayList<ArrayList<Integer>> acciones = new ArrayList<>();
 
@@ -114,11 +114,11 @@ public class GestorTablero {
 		int limiteSuperiorRand = -1;
 
 		if (dadoRapido.size() != 0 && dadoLento.size() != 0) { // Encontrado los dos tipos
-			limiteSuperiorRand = 3;
+			limiteSuperiorRand = 3; //Tiene los 3 tipos de dados
 		} else if (dadoRapido.size() != 0 || dadoLento.size() != 0) { // Encontrado rapido o lento
-			limiteSuperiorRand = 2;
+			limiteSuperiorRand = 2; //Dado normal o especial
 		} else { // Encontrado ninguno
-			limiteSuperiorRand = 1;
+			limiteSuperiorRand = 1; //Solamente dado normal
 		}
 
 		// Elegir dado
@@ -218,17 +218,17 @@ public class GestorTablero {
 		return acciones;
 	}
 
-	public ArrayList<PairMovimiento> procesarTurnoJugador(Jugador jugador) {
+	public ArrayList<PairMovimiento> procesarTurnoJugador(Jugador jugador) { // Procesa las consecuencias del turno de un jugador:
 
-		ArrayList<PairMovimiento> jugadorYMovimientos = new ArrayList<>();
+		ArrayList<PairMovimiento> jugadorYMovimientos = new ArrayList<>(); //Guarda los movimientos y  PairMovimiento relaciona nombre del jugador + nueva posición.
 
 		ArrayList<Integer> posiciones = new ArrayList<>();
 
-		posiciones.addAll(gestorcasilla.ejecutarCasilla(this.tablero, jugador));
+		posiciones.addAll(gestorcasilla.ejecutarCasilla(this.tablero, jugador)); // Ejecuta la acción de la casilla donde está el jugador.
 
 		if (!posiciones.isEmpty()) {
 			for (int posicion : posiciones) {
-				jugadorYMovimientos.add(new PairMovimiento(jugador.getNombre(), posicion));
+				jugadorYMovimientos.add(new PairMovimiento(jugador.getNombre(), posicion)); // Si la casilla movió al jugador, guardamos ese movimiento.
 			}
 		}
 
@@ -237,9 +237,9 @@ public class GestorTablero {
 
 		do {
 
-			oldPos = jugador.getPos();
+			oldPos = jugador.getPos(); //Posicion antes de comprobar
 
-			ArrayList<Jugador> listaJugadoresEnCasilla = BuscarJugadoresEnCasilla(jugador);
+			ArrayList<Jugador> listaJugadoresEnCasilla = BuscarJugadoresEnCasilla(jugador); //Miramos si hay otro jugador en la misma casilla
 
 			if (listaJugadoresEnCasilla.size() == 0) {
 				System.out.println("NO HAY NADIE EN  CASILLA");
@@ -262,10 +262,10 @@ public class GestorTablero {
 
 					Inventario inventarioPinguino = pinguino.getInventario();
 
-					if (inventarioPinguino.getPez().size() == 0) {
+					if (inventarioPinguino.getPez().size() == 0) { //Si el pinguino no tiene peces la foca lo golpe
 
 						jugadorYMovimientos.add(new PairMovimiento(pinguino.getNombre(),
-								jugadorFoca.golpearJugador(pinguino, tablero)));
+								jugadorFoca.golpearJugador(pinguino, tablero))); //Guardamos el movimineto provocado
 						jugadorYMovimientos.addAll(procesarTurnoJugador(pinguino));
 
 					} else {
@@ -276,7 +276,7 @@ public class GestorTablero {
 						return jugadorYMovimientos;
 					}
 				}
-			} else {
+			} else { //Si no es foca
 
 				Random rand = new Random();
 				Jugador jugadorEnCasilla;
@@ -339,11 +339,11 @@ public class GestorTablero {
 		if (jugadorPrincipalPos != 0) {
 			for (Jugador jugadorEnCasilla : tablero.getArrayListJugador()) {
 
-				if (jugadorPrincipalPos == jugadorEnCasilla.getPos()) {
+				if (jugadorPrincipalPos == jugadorEnCasilla.getPos()) { //Si estan en la misma pos
 
-					if (jugadorEnCasilla != jugador) {
+					if (jugadorEnCasilla != jugador) { // No es el mismo jugador
 
-						listaJugadores.add(jugadorEnCasilla);
+						listaJugadores.add(jugadorEnCasilla); //Lo añadimos
 
 					}
 				}
@@ -357,17 +357,17 @@ public class GestorTablero {
 
 	}
 
-	public void siguienteTurno() {
+	public void siguienteTurno() { //Cambiamos al siguiente jugador de la lista
 
 		int i = tablero.getJugadorActual().getPos();
 
 		if (i + 1 <= tablero.getArrayListJugador().size()) {
 
-			tablero.setJugadorActual(tablero.getJugador(i + 1));
+			tablero.setJugadorActual(tablero.getJugador(i + 1)); //Pasa al siguiente jugadir
 
 		} else {
 
-			tablero.setJugadorActual(tablero.getJugador(0));
+			tablero.setJugadorActual(tablero.getJugador(0)); //Si llega al final vuelve al primer jugador
 
 		}
 

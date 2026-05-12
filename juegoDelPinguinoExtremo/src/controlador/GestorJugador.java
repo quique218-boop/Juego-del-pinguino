@@ -14,12 +14,12 @@ public class GestorJugador {
 
 	public void jugadorUsarItem(Pinguino jugador, Item nItem) {
 
-		if (jugador == null || nItem == null)
+		if (jugador == null || nItem == null) //Si no hay jugador y no tiene item no hace nada
 			return;
 
 		Inventario inventario = jugador.getInventario();
 
-		if (inventario == null)
+		if (inventario == null) //Si el inventario esta vacio
 			return;
 
 		if (nItem instanceof BolaDeNieve) {
@@ -65,7 +65,7 @@ public class GestorJugador {
 
 	public void pinguinoGuerra(Pinguino jugador, Pinguino jugador2) {
 
-		jugador.gestionarBatalla(jugador2);
+		jugador.gestionarBatalla(jugador2); //Si se encuentran en la misma casilla se ejecuta la guerra
 	}
 
 	public void focaInteractua(Pinguino jugador, Foca foca, String opc, Tablero tablero) {
