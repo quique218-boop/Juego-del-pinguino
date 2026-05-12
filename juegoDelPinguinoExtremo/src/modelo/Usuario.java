@@ -6,13 +6,13 @@ public class Usuario {
 	
 	public Usuario(String nombre) {
 		
-		this.nombre = nombre;
+		this.nombre = nombre; //Recibe un nombre y lo guarda en el atributo
 		
 	}
 	
 	public String getNombre(){
 		
-		return nombre;
+		return nombre; //Devuelve el nombre
 		
 	}
 
