@@ -21,6 +21,7 @@ public class LoginMultipleController {
 
 	    private int totalJugadores;
 	    private int actual = 0;
+	    private GestorBBDD gestorbbdd;
 
 	    private ArrayList<Usuario> usuarios = new ArrayList<>();
 
@@ -42,7 +43,7 @@ public class LoginMultipleController {
 
 	            Usuario u = new Usuario(user);
 
-	            if (!GestorBBDD.validarUsuario(u, pass)) {
+	            if (!gestorbbdd.validarUsuario(u, pass)) {
 	                textoJugador.setText("Usuario incorrecto");
 	                return;
 	            }

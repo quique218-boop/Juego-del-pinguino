@@ -27,6 +27,7 @@ public class CrearUsuarioController {
     private int totalJugadores;
     private int actual;
     private ArrayList<Usuario> usuarios;
+    private GestorBBDD gestorbbdd;
 
     public void setContextoLogin(int total, int act, ArrayList<Usuario> users) {
         this.totalJugadores = total;
@@ -52,14 +53,14 @@ public class CrearUsuarioController {
             return;
         }
 
-        if (GestorBBDD.validarUsuario(usuario, pass)) {
+        if (gestorbbdd.validarUsuario(usuario, pass)) {
             mensajeError.setText("El usuario ya existe");
             return;
         }
 
         Usuario u = new Usuario(user);
 
-        if (GestorBBDD.crearUsuario(u, pass)) {
+        if (gestorbbdd.crearUsuario(u, pass)) {
             mensajeError.setText("Usuario creado correctamente");
         } else {
             mensajeError.setText("Error al crear usuario");
