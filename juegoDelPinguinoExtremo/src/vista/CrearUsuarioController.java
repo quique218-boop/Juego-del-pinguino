@@ -24,11 +24,18 @@ public class CrearUsuarioController {
     @FXML private PasswordField confirmField;
     @FXML private Label mensajeError;
     
+    private GestorBBDD gestorBBDD;
+    
     private int totalJugadores;
     private int actual;
     private ArrayList<Usuario> usuarios;
     private GestorBBDD gestorbbdd;
 
+    @FXML
+    private void initialize() {
+    	gestorBBDD = new GestorBBDD();
+    }
+    
     public void setContextoLogin(int total, int act, ArrayList<Usuario> users) {
         this.totalJugadores = total;
         this.actual = act;
