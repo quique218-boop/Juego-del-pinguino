@@ -64,7 +64,7 @@ public class Pinguino extends Jugador {
 
 		if (misBolas > susBolas) { 
 
-			jugador.moverPosicion(susBolas - misBolas); //El jugador que gane la guerra retrocedera la diferencia de bolas de nieve
+			jugador.moverPosicion(susBolas - misBolas); //El jugador que pierda la guerra retrocedera la diferencia de bolas de nieve
 			
 
 		} else if (susBolas > misBolas) {
