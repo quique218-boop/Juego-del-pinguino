@@ -1045,7 +1045,7 @@ public class PantallaJuego {
 		    }
 
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/Victoria.fxml")); //Cargamos la pantalla de victoria
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/victoria.fxml")); //Cargamos la pantalla de victoria
 			Parent root = loader.load();
 
 			Victoria controller = loader.getController(); //Obtenemos el controlador de la pantalla de victoria.
