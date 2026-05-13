@@ -179,7 +179,7 @@ public class PantallaJuego {
 		// Creacion gestor base de datos
 		gestorBBDD = new GestorBBDD();
 
-		if (tablero == null) {
+		if (tablero == null) { //Creacion tablero
 			gestorTablero.NuevoTablero();
 
 			for (int i = 0; i < usuarios.size(); i++) {
@@ -283,7 +283,7 @@ public class PantallaJuego {
 		PantallaJuego controller = loader.getController();
 		controller.setUsuarios(usuarios);
 
-		controller.inicio(null);
+		controller.inicio(null); //Si no hay tablero se crea uno nuevo, si preguntan como miramos en Tablero
 
 		Stage stage = (Stage) tablero.getScene().getWindow();
 		stage.setScene(new Scene(root));
@@ -298,13 +298,13 @@ public class PantallaJuego {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/recursos/slots.fxml"));
 			Parent root = loader.load();
 
-			Slots controller = loader.getController();
+			Slots controller = loader.getController(); //Obtenemos controlador
 
-			controller.setModo(false);
-			controller.setPartida(gestorTablero.getPartida());
-			controller.setEscenaAnterior(P1.getScene());
+			controller.setModo(false); //Estamos en modo guardar
+			controller.setPartida(gestorTablero.getPartida()); //Pasamos la partida actual a los slots (obtiene partida de gestor tablero)
+			controller.setEscenaAnterior(P1.getScene()); //Pasamos a slots la escena actual para que luego pueda volver
 
-			Stage stage = (Stage) P1.getScene().getWindow();
+			Stage stage = (Stage) P1.getScene().getWindow(); 
 			stage.setScene(new Scene(root));
 			stage.show();
 
@@ -323,9 +323,9 @@ public class PantallaJuego {
 
 			Slots controller = loader.getController();
 
-			controller.setModo(true);
-			controller.setPartida(gestorTablero.getPartida());
-			controller.setEscenaAnterior(P1.getScene());
+			controller.setModo(true); //Estamos en modo cargar
+			controller.setPartida(gestorTablero.getPartida()); //Obtenemos la partida desde slots
+			controller.setEscenaAnterior(P1.getScene()); //Guardamos la escena anterior
 
 			Stage stage = (Stage) P1.getScene().getWindow();
 			stage.setScene(new Scene(root));
